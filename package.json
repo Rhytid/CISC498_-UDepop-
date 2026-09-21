@@ -1,6 +1,7 @@
 {
   "name": "udepop",
   "main": "expo-router/entry",
+  "homepage": "https://github.io",
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~57.0.19",
@@ -38,6 +39,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint"
+    "predeploy": "npx expo export -p web",
+    "deploy": "gh-pages -d dist"
   },
   "private": true
 }
