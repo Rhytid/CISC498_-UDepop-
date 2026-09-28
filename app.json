@@ -38,6 +38,12 @@
       "typedRoutes": true,
       "reactCompiler": true,
       "baseUrl": "/CISC498_-UDepop-"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "62abab80-80ed-49b6-bf80-5f5de51f2e2b"
+      }
     }
   }
 }
