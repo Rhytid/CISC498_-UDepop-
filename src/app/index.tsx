@@ -27,7 +27,7 @@ function getDevMenuHint() {
 export default function HomeScreen() {
   return (
     <div>
-      <h1>Main Display</h1>
+      <h1>UDepop</h1>
       <ItemD />
     </div>
   );
