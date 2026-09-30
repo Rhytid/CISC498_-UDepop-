@@ -1,3 +1,5 @@
+import type { TagType } from "@/Tag/TagDef";
+import AnimatedMulti from "@/Tag/TagDef";
 import React, { useState } from "react";
 import type { Item, ItemLists } from "./ItemDef";
 
@@ -15,7 +17,7 @@ export function ItemD() {
   //Initialize the state to hold the textbox value
   const [Name, setName] = useState<string>("");
   const [Price, setPrice] = useState<number>(0);
-  const [Tags, setTags] = useState<string[]>([]);
+  const [Tags, setTags] = useState<TagType[]>([]);
   const [Description, setDescription] = useState<string>("");
   const [ItemListing, setItemListing] = useState<ItemLists>({ Items: [] });
 
@@ -30,12 +32,7 @@ export function ItemD() {
   }) => {
     setPrice(Number(event.target.value));
   };
-  /*const tagsSet = (event: {
-    //Eventually thisll be a dropdown of a premade tag list
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setTags(event.target.value);
-  };*/
+
   const descriptionSet = (event: {
     target: { value: React.SetStateAction<string> };
   }) => {
@@ -46,13 +43,9 @@ export function ItemD() {
   };
 
   function AddItem() {
-    const NewItem: Item = {
-      Name: Name,
-      Price: Price,
-      Tags: Tags,
-      Description: Description,
-    };
+    const NewItem: Item = { Name, Price, Tags, Description };
     setItemListing((prev) => ({ Items: [...prev.Items, NewItem] }));
+    setTags([]);
   }
 
   return (
@@ -72,13 +65,8 @@ export function ItemD() {
         onChange={priceSet}
         placeholder="Type something..."
       />
-      {/*<input
-        id="tags"
-        type="text"
-        value={Tags}
-        onChange={tagsSet}
-        placeholder="Type something..."
-      />*/}
+      <AnimatedMulti value={Tags} onChange={setTags} />
+
       <input
         id="description"
         type="text"
@@ -97,6 +85,9 @@ export function ItemD() {
         {ItemListing.Items.map((item, i) => (
           <li key={i}>
             {item.Name} — ${item.Price} — {item.Description}
+            {item.Tags.length > 0 && (
+              <> — [{item.Tags.map((t) => t.label).join(", ")}]</>
+            )}
           </li>
         ))}
       </ul>
