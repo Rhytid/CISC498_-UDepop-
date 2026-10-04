@@ -3,6 +3,7 @@ import { MaxContentWidth } from "@/constants/theme";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import React from "react";
+import ItemDisplay from "@/Items/ItemDisplay";
 
 export default function ProfileScreen() {
 
@@ -10,9 +11,11 @@ export default function ProfileScreen() {
     <ScrollView>
       <View style={styles.banner}>
         <ProfilePicture/>
-        <Text style={styles.bannerText}>@username <Ionicons name="star" size={20} color="gold" /></Text>
+        <Text style={styles.bannerText}>@username <Ionicons name="star" size={25} color="gold"/> 5.0</Text>
+        <Text>3 Products | 50 Followers</Text>
       </View>
-      <Text>Profile Display</Text>
+      <Text>Products:</Text>
+      <Text>Items go here</Text>
     </ScrollView>
   );
 }
