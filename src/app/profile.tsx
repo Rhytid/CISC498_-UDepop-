@@ -3,10 +3,10 @@ import { MaxContentWidth } from "@/constants/theme";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function ProfileScreen() {
+
   return (
     <ScrollView>
       <View style={styles.banner}>
-        <Text style={styles.bannerText}>Banner</Text>
         <ProfilePicture/>
       </View>
       <Text>Profile Display</Text>
