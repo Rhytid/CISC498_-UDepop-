@@ -1,13 +1,7 @@
-import AnimatedMulti, { type TagType } from "@/Tag/TagDef";
+import AnimatedMulti, { type TagType } from "@/tag/tagDef";
 import { useConvex, useMutation, useQuery } from "convex/react";
 import React, { useState } from "react";
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
