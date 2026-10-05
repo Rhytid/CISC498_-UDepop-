@@ -3,7 +3,8 @@ import { Platform, StyleSheet } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { BottomTabInset, MaxContentWidth, Spacing } from "@/constants/theme";
-import { ItemD } from "@/Items/ItemDisplay";
+import ItemD from "@/Items/ItemDisplay";
+import React from "react";
 
 function getDevMenuHint() {
   if (Platform.OS === "web") {
@@ -27,8 +28,10 @@ function getDevMenuHint() {
 export default function HomeScreen() {
   return (
     <div>
-      <h1>Main Display</h1>
-      <ItemD />
+      <h2>Hello</h2>
+      <h1>
+        <ItemD />
+      </h1>
     </div>
   );
 }

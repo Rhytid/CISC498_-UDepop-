@@ -6,6 +6,7 @@ export interface Item {
   Description: string;
 }
 
+/* Unneeded now that we're moving data straight to the cloud
 export interface ItemLists {
   Items: Item[];
-}
+}*/
