@@ -5,6 +5,8 @@ import { ThemedText } from "@/components/themed-text";
 import { BottomTabInset, MaxContentWidth, Spacing } from "@/constants/theme";
 import { ItemD } from "@/Items/ItemDisplay";
 
+import SearchBar from "../components/searchbar";
+
 function getDevMenuHint() {
   if (Platform.OS === "web") {
     return <ThemedText type="small">use browser devtools</ThemedText>;
@@ -27,7 +29,7 @@ function getDevMenuHint() {
 export default function HomeScreen() {
   return (
     <div>
-      <h1>UDepop</h1>
+      <SearchBar />
       <ItemD />
     </div>
   );
