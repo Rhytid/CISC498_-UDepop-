@@ -4,6 +4,7 @@ import { Platform, StyleSheet } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { BottomTabInset, MaxContentWidth, Spacing } from "@/constants/theme";
 import { ItemD } from "@/Items/ItemDisplay";
+import React from "react";
 
 function getDevMenuHint() {
   if (Platform.OS === "web") {

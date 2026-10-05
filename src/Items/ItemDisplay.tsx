@@ -38,10 +38,9 @@ export function ItemD() {
   }) => {
     setDescription(event.target.value);
   };
-  const ItemListingSet = () => {
-    setItemListing({ Items: [tempItem] });
-  };
 
+  //Funton to update the textboxes and make a new Item
+  //Eventually need to send this to user database and global database
   function AddItem() {
     const NewItem: Item = { Name, Price, Tags, Description };
     setItemListing((prev) => ({ Items: [...prev.Items, NewItem] }));
