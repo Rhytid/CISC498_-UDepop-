@@ -4,79 +4,66 @@ import AnimatedMulti from "@/Tag/TagDef";
 import { useMutation, useQuery } from "convex/react";
 import React, { useState } from "react";
 import { api } from "../../convex/_generated/api";
-import type { Item } from "./ItemDef";
-
-const tempItem: Item = {
-  Name: "test",
-  Tags: [],
-  Price: 42,
-  Description: "This is an item",
-};
 
 export function ItemD() {
-  //Creates callable functions from the functions created in Itembase.ts
+  // Create callable functions from the functions defined in listings.ts
+  const items = useQuery(api.listings.list);
+  const createItem = useMutation(api.listings.create);
+  const deleteItem = useMutation(api.listings.remove);
 
-  const items = useQuery(api.Itembase.get);
-  const createItem = useMutation(api.Itembase.add);
-  const deleteItem = useMutation(api.Itembase.remove);
+  // Initialize the state to hold the textbox values
+  const [title, setTitle] = useState<string>("");
+  const [price, setPrice] = useState<number>(0);
+  const [tags, setTags] = useState<TagType[]>([]);
+  const [description, setDescription] = useState<string>("");
 
-  //Initialize the state to hold the textbox value
-  const [Name, setName] = useState<string>("");
-  const [Price, setPrice] = useState<number>(0);
-  const [Tags, setTags] = useState<TagType[]>([]);
-  const [Description, setDescription] = useState<string>("");
-
-  // Updates the State whenever the user types
-  const nameSet = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setName(event.target.value);
+  // Updates the state whenever the user types
+  const titleSet = (event: { target: { value: string } }) => {
+    setTitle(event.target.value);
   };
-  const priceSet = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
+  const priceSet = (event: { target: { value: string } }) => {
     setPrice(Number(event.target.value));
   };
-
-  const descriptionSet = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
+  const descriptionSet = (event: { target: { value: string } }) => {
     setDescription(event.target.value);
   };
 
-  //Funton to update the textboxes and make a new Item
-  //Eventually need to send this to user database and global database
+  // Create a new listing from the textboxes and tag selector
   function AddItem() {
-    const NewItem: Item = { Name, Price, Tags, Description };
+    createItem({
+      title,
+      price,
+      tags: tags.map((t) => t.value),
+      description,
+    });
     setTags([]);
-    createItem(NewItem);
   }
 
   return (
     <div style={{ padding: "20px" }}>
-      <label htmlFor="username">Enter Item Name: </label>
+      <label htmlFor="name">Enter Item Name: </label>
       <input
         id="name"
         type="text"
-        value={Name}
-        onChange={nameSet}
+        value={title}
+        onChange={titleSet}
         placeholder="Type something..."
       />
-      <label htmlFor="username">Enter Item Price: </label>
+      <label htmlFor="price">Enter Item Price: </label>
       <input
         id="price"
         type="text"
-        value={Price}
+        value={price}
         onChange={priceSet}
         placeholder="Type something..."
       />
-      <label htmlFor="username">Select Relevant Tags: </label>
-      <AnimatedMulti value={Tags} onChange={setTags} />
-      <label htmlFor="username">Enter Item Description: </label>
+      <label htmlFor="tags">Select Relevant Tags: </label>
+      <AnimatedMulti value={tags} onChange={setTags} />
+      <label htmlFor="description">Enter Item Description: </label>
       <input
         id="description"
         type="text"
-        value={Description}
+        value={description}
         onChange={descriptionSet}
         placeholder="Type something..."
       />
@@ -90,9 +77,8 @@ export function ItemD() {
       {items?.map((item) => (
         <div key={item._id}>
           <ThemedText>
-            {item.Name} - ${item.Price} -{" "}
-            {item.Tags.map((t: { label: TagType }) => t.label).join(", ")} -{" "}
-            {item.Description}
+            {item.title} - ${item.price} - {item.tags.join(", ")} -{" "}
+            {item.description}
           </ThemedText>
           <button onClick={() => deleteItem({ id: item._id })}>Delete</button>
         </div>
