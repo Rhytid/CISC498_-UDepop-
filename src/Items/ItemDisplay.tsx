@@ -1,11 +1,11 @@
+import { ThemedText } from "@/components/themed-text";
 import type { TagType } from "@/Tag/TagDef";
 import AnimatedMulti from "@/Tag/TagDef";
+import { useMutation, useQuery } from "convex/react";
 import React, { useState } from "react";
-import type { Item, ItemLists } from "./ItemDef";
+import { api } from "../../convex/_generated/api";
+import type { Item } from "./ItemDef";
 
-const tempListing: ItemLists = {
-  Items: [],
-};
 const tempItem: Item = {
   Name: "test",
   Tags: [],
@@ -14,12 +14,17 @@ const tempItem: Item = {
 };
 
 export function ItemD() {
+  //Creates callable functions from the functions created in Itembase.ts
+
+  const items = useQuery(api.Itembase.get);
+  const createItem = useMutation(api.Itembase.add);
+  const deleteItem = useMutation(api.Itembase.remove);
+
   //Initialize the state to hold the textbox value
   const [Name, setName] = useState<string>("");
   const [Price, setPrice] = useState<number>(0);
   const [Tags, setTags] = useState<TagType[]>([]);
   const [Description, setDescription] = useState<string>("");
-  const [ItemListing, setItemListing] = useState<ItemLists>({ Items: [] });
 
   // Updates the State whenever the user types
   const nameSet = (event: {
@@ -43,13 +48,13 @@ export function ItemD() {
   //Eventually need to send this to user database and global database
   function AddItem() {
     const NewItem: Item = { Name, Price, Tags, Description };
-    setItemListing((prev) => ({ Items: [...prev.Items, NewItem] }));
     setTags([]);
+    createItem(NewItem);
   }
 
   return (
     <div style={{ padding: "20px" }}>
-      <label htmlFor="username">Enter Name: </label>
+      <label htmlFor="username">Enter Item Name: </label>
       <input
         id="name"
         type="text"
@@ -57,6 +62,7 @@ export function ItemD() {
         onChange={nameSet}
         placeholder="Type something..."
       />
+      <label htmlFor="username">Enter Item Price: </label>
       <input
         id="price"
         type="text"
@@ -64,8 +70,9 @@ export function ItemD() {
         onChange={priceSet}
         placeholder="Type something..."
       />
+      <label htmlFor="username">Select Relevant Tags: </label>
       <AnimatedMulti value={Tags} onChange={setTags} />
-
+      <label htmlFor="username">Enter Item Description: </label>
       <input
         id="description"
         type="text"
@@ -80,16 +87,16 @@ export function ItemD() {
         Add Item
       </button>
 
-      <ul>
-        {ItemListing.Items.map((item, i) => (
-          <li key={i}>
-            {item.Name} — ${item.Price} — {item.Description}
-            {item.Tags.length > 0 && (
-              <> — [{item.Tags.map((t) => t.label).join(", ")}]</>
-            )}
-          </li>
-        ))}
-      </ul>
+      {items?.map((item) => (
+        <div key={item._id}>
+          <ThemedText>
+            {item.Name} - ${item.Price} -{" "}
+            {item.Tags.map((t: { label: TagType }) => t.label).join(", ")} -{" "}
+            {item.Description}
+          </ThemedText>
+          <button onClick={() => deleteItem({ id: item._id })}>Delete</button>
+        </div>
+      ))}
     </div>
   );
 }
