@@ -1,7 +1,7 @@
 import type { TagType } from "@/Tag/TagDef";
 import AnimatedMulti from "@/Tag/TagDef";
 import React, { useState } from "react";
-import type { Item, ItemLists } from "./ItemDef";
+import type { Item, ItemLists } from "./itemDef";
 
 const tempListing: ItemLists = {
   Items: [],
