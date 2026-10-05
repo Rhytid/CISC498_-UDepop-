@@ -36,6 +36,10 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Convex
+convex/_generated/
+.convex/
+
 example
 
 # generated native folders
