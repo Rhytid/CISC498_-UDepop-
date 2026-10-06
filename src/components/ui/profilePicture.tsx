@@ -1,5 +1,5 @@
 import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function ProfilePicture() {
@@ -9,7 +9,7 @@ export default function ProfilePicture() {
    *  image when hover in react native".
    *
    *  See below:
-   * 
+   *
    */
   const [picture, setPicture] = useState<string | null>(null);
   const [hovered, setHovered] = useState(false);
