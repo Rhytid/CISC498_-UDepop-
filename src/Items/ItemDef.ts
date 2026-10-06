@@ -1,11 +1,12 @@
 import type { TagType } from "@/Tag/TagDef";
 export interface Item {
-  Name: string;
-  Price: number;
-  Tags: TagType[];
-  Description: string;
+  name: string;
+  price: number;
+  tags: TagType[];
+  description: string;
+  image: string;
 }
 
 export interface ItemLists {
-  Items: Item[];
+  items: Item[];
 }

@@ -1,7 +1,27 @@
 {
-    "name": "Item Data",
-    "price": 100,
-    "tags": [],
-    "description": "This is a sample item description.",
-    "image": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/airpods-5-select-202609_FMT_WHH?wid=752&hei=636&fmt=jpeg&qlt=90&.v=1787675712940"
+    "items": [
+        {
+            "name": "Airpods 5th Generation",
+            "price": 149,
+            "tags": [],
+            "description": "The fifth-generation AirPods are the latest wireless earbuds from Apple, featuring improved sound quality, longer battery life, and a more comfortable fit. They come with a wireless charging case and support for spatial audio.",
+            "image": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/airpods-5-select-202609_FMT_WHH?wid=752&hei=636&fmt=jpeg&qlt=90&.v=1787675712940"
+        },
+        {
+            "name": "iPhone Duo",
+            "price": 1999,
+            "tags": [],
+            "description": "The iPhone Duo is a revolutionary smartphone that combines the power of two devices in one. With its dual-screen design, users can multitask like never before, running multiple apps simultaneously and enjoying an immersive viewing experience. The iPhone Duo also features advanced camera capabilities, allowing for stunning photography and videography.",
+            "image": "https://www.att.com/scmsassets/global/devices/other/apple/apple-iphone-duo/defaultimage/star-white-hero-zoom.png"
+        },
+        {
+            "name": "Macbook Pro 2023",
+            "price": 2499,
+            "tags": [],
+            "description": "The MacBook Pro 2023 is a high-performance laptop designed for professionals and power users. It features the latest Apple M-series chip, providing exceptional speed and efficiency for demanding tasks such as video editing, software development, and graphic design. The MacBook Pro 2023 also boasts a stunning Retina display, enhanced battery life, and a sleek, lightweight design.",
+            "image": "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/mbp16-spacegray-select-202301?wid=904&hei=840&fmt=jpeg&qlt=80&.v=1671317339936"
+        }
+    ]
 }
+
+

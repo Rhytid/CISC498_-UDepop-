@@ -1,9 +1,12 @@
 import ProfilePicture from "@/components/ui/profilePicture";
 import { MaxContentWidth } from "@/constants/theme";
 import ItemCard from "@/Items/itemCard";
+import itemData from "../data/itemData.json";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+
+const items = Object.values(itemData).flat();
 
 export default function ProfileScreen() {
   return (
@@ -18,7 +21,9 @@ export default function ProfileScreen() {
       <Text>Products:</Text>
       <Text>Items go here</Text>
       <View style={styles.itemContainer}>
-        <ItemCard/>
+        {items.map((item) => (
+          <ItemCard key={item.name} item={item} />
+        ))}
       </View>
     </ScrollView>
   );
