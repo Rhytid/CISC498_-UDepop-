@@ -4,10 +4,16 @@ import { mutation, query } from "./_generated/server";
 // Shared shape for a listing's writable fields. Keeps the schema and the
 // functions in agreement as new fields are added.
 const listingFields = {
-  title: v.string(),
+  ownerId: v.id("users"),
+
   price: v.number(),
+  title: v.string(),
   description: v.string(),
   tags: v.array(v.string()),
+  photos: v.array(v.string()),
+
+  createdAt: v.number(),
+  updatedAt: v.number(),
 };
 
 export const create = mutation({
