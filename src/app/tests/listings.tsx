@@ -28,10 +28,14 @@ export default function ListingsTest() {
   const submitCreate = async () => {
     if (!title || !price) return;
     await createListing({
+      ownerId: "someUserId" as Id<"users">,
       title,
       price: Number(price),
       description,
       tags: tags.map((t) => t.value),
+      photos: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     });
     setTitle("");
     setPrice("");
@@ -58,10 +62,14 @@ export default function ListingsTest() {
     }
     const updated = await updateListing({
       id: lookupId as Id<"listings">,
+      ownerId: cur.ownerId,
       title: cur.title,
       price: Number(newPrice),
       description: cur.description,
       tags: cur.tags,
+      photos: cur.photos,
+      createdAt: cur.createdAt,
+      updatedAt: Date.now(),
     });
     setResult(JSON.stringify(updated, null, 2));
     setNewPrice("");
