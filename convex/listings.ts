@@ -19,7 +19,11 @@ const listingFields = {
 export const create = mutation({
   args: listingFields,
   handler: async (ctx, args) => {
-    return await ctx.db.insert("listings", args);
+    return await ctx.db.insert("listings", {
+      ...args,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
   },
 });
 
@@ -41,7 +45,10 @@ export const update = mutation({
   args: { id: v.id("listings"), ...listingFields },
   handler: async (ctx, args) => {
     const { id, ...fields } = args;
-    await ctx.db.replace(id, fields);
+    await ctx.db.replace(id, {
+      ...fields,
+      updatedAt: Date.now(),
+    });
     return await ctx.db.get(id);
   },
 });
