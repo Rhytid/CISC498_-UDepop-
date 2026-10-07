@@ -15,13 +15,15 @@ import { ThemedView } from './themed-view';
 
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 
+import { useState } from 'react';
 
 export default function AppTabs() {
+  const [isOpen, setIsOpen] = useState(true);
   return (
     <Tabs>
       <TabSlot style={{ height: '100%', paddingLeft: 200, }} />
       <TabList asChild>
-        <CustomTabList>
+        <CustomTabList isOpen={isOpen} setIsOpen={setIsOpen}>
           <TabTrigger name="home" href="/" asChild>
             <TabButton>Home</TabButton>
           </TabTrigger>
@@ -51,13 +53,18 @@ export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps
   );
 }
 
-export function CustomTabList(props: TabListProps) {
+export function CustomTabList(props: TabListProps & {isOpen: boolean; setIsOpen: (value:boolean) => void}) {
   const scheme = useColorScheme();
   const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
 
   return (
-    <View {...props} style={styles.tabListContainer}>
-      <ThemedView type="backgroundElement" style={styles.innerContainer}>
+    <View {...props} style={[styles.tabListContainer, { width: props.isOpen ? 240 : 80},]}>
+      <ThemedView type="backgroundElement" style={[styles.innerContainer, !props.isOpen && styles.collapsedContainer]}>
+        <Pressable onPress={() => props.setIsOpen(!props.isOpen)}>
+          <ThemedText>☰</ThemedText>
+        </Pressable>
+        {props.isOpen && (
+          <>
         <ThemedText type="smallBold" style={styles.brandText}>
           UDepop
         </ThemedText>
@@ -74,6 +81,8 @@ export function CustomTabList(props: TabListProps) {
             />
           </Pressable>
         </ExternalLink>
+        </>
+        )}
       </ThemedView>
     </View>
   );
@@ -86,8 +95,8 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     padding: Spacing.three,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
     flexDirection: 'column',
   },
   innerContainer: {
@@ -118,5 +127,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.one,
     marginLeft: Spacing.three,
+  },
+  collapsedContainer: {
+    width: 60,
+    height: 60,
+    flexGrow: 0,
+    padding: 0,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
