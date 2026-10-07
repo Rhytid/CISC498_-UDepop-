@@ -22,6 +22,20 @@ export default function AppTabs() {
   return (
     <Tabs>
       <TabSlot style={{ height: '100%', paddingLeft: 200, }} />
+      <View style={styles.topActions}>
+        <Pressable style={styles.iconButton}>
+          <SymbolView name={{ ios: 'bell', web: 'alarm' }} size={22} />
+        </Pressable>
+
+        <Pressable style={styles.iconButton}>
+          <SymbolView name={{ ios: 'envelope', web: 'mail' }} size={22} />
+        </Pressable>
+
+        <Pressable style={styles.iconButton}>
+          <SymbolView name={{ ios: 'cart', web: 'shopping_cart' }} size={20} />
+        </Pressable>
+        </View>
+
       <TabList asChild>
         <CustomTabList isOpen={isOpen} setIsOpen={setIsOpen}>
           <TabTrigger name="home" href="/" asChild>
@@ -63,6 +77,7 @@ export function CustomTabList(props: TabListProps & {isOpen: boolean; setIsOpen:
         <Pressable onPress={() => props.setIsOpen(!props.isOpen)}>
           <ThemedText>☰</ThemedText>
         </Pressable>
+
         {props.isOpen && (
           <>
         <ThemedText type="smallBold" style={styles.brandText}>
@@ -136,5 +151,22 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
+  },
+  topActions: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+  
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
   },
 });
