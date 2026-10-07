@@ -7,7 +7,15 @@ import {
   View,
 } from "react-native";
 
+import AuthTest from "./tests/auth";
 import ListingsTest from "./tests/listings";
+import UsersTest from "./tests/users";
+import SavedTest from "./tests/saved";
+import ConversationsTest from "./tests/conversations";
+import MessagesTest from "./tests/messages";
+import ReviewsTest from "./tests/reviews";
+import NotificationsTest from "./tests/notifications";
+import PhotosTest from "./tests/photos";
 
 type TestEntry = {
   id: string;
@@ -17,7 +25,15 @@ type TestEntry = {
 
 // Add a new entry here for each backend test screen.
 const tests: TestEntry[] = [
-  { id: "listings", title: "Listings test", component: ListingsTest },
+  { id: "auth", title: "Auth (who am I / sign out)", component: AuthTest },
+  { id: "listings", title: "Listings", component: ListingsTest },
+  { id: "users", title: "Users", component: UsersTest },
+  { id: "saved", title: "Saved", component: SavedTest },
+  { id: "conversations", title: "Conversations", component: ConversationsTest },
+  { id: "messages", title: "Messages", component: MessagesTest },
+  { id: "reviews", title: "Reviews", component: ReviewsTest },
+  { id: "notifications", title: "Notifications", component: NotificationsTest },
+  { id: "photos", title: "Photos", component: PhotosTest },
 ];
 
 export default function TestingScreen() {
