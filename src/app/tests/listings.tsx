@@ -1,7 +1,8 @@
 import AnimatedMulti, { type TagType } from "@/tag/tagDef";
+import { AuthNote, Button, Field, Result, Section } from "@/components/test-ui";
 import { useConvex, useMutation, useQuery } from "convex/react";
 import React, { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
@@ -9,34 +10,43 @@ import type { Id } from "../../../convex/_generated/dataModel";
 export default function ListingsTest() {
   const convex = useConvex();
 
-  const listings = useQuery(api.listings.list);
+  const listings = useQuery(api.listings.list, {});
   const createListing = useMutation(api.listings.create);
-  const updateListing = useMutation(api.listings.update);
   const removeListing = useMutation(api.listings.remove);
+  const markSold = useMutation(api.listings.markSold);
 
   // Create form state
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
   const [tags, setTags] = useState<TagType[]>([]);
 
-  // Get / update state
+  // Lookup state
   const [lookupId, setLookupId] = useState("");
-  const [newPrice, setNewPrice] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [result, setResult] = useState("");
 
   const submitCreate = async () => {
     if (!title || !price) return;
-    await createListing({
-      title,
-      price: Number(price),
-      description,
-      tags: tags.map((t) => t.value),
-    });
-    setTitle("");
-    setPrice("");
-    setDescription("");
-    setTags([]);
+    try {
+      await createListing({
+        title,
+        description,
+        category: category || "Other",
+        price: Number(price),
+        tags: tags.map((t) => t.value),
+        photos: [],
+      });
+      setTitle("");
+      setPrice("");
+      setDescription("");
+      setCategory("");
+      setTags([]);
+      setResult("");
+    } catch (e) {
+      setResult(String(e));
+    }
   };
 
   const doGet = async () => {
@@ -47,70 +57,72 @@ export default function ListingsTest() {
     setResult(doc === null ? "Not found" : JSON.stringify(doc, null, 2));
   };
 
-  const doUpdate = async () => {
-    if (!convex || !lookupId || !newPrice) return;
-    const cur = await convex.query(api.listings.get, {
-      id: lookupId as Id<"listings">,
+  const doSearch = async () => {
+    if (!convex || !searchQuery) return;
+    const found = await convex.query(api.listings.search, {
+      query: searchQuery,
     });
-    if (cur === null) {
-      setResult("Not found");
-      return;
+    setResult(JSON.stringify(found, null, 2));
+  };
+
+  const doMarkSold = async (id: string, sold: boolean) => {
+    try {
+      await markSold({ id: id as Id<"listings">, sold });
+    } catch (e) {
+      setResult(String(e));
     }
-    const updated = await updateListing({
-      id: lookupId as Id<"listings">,
-      title: cur.title,
-      price: Number(newPrice),
-      description: cur.description,
-      tags: cur.tags,
-    });
-    setResult(JSON.stringify(updated, null, 2));
-    setNewPrice("");
+  };
+
+  const doDelete = async (id: string) => {
+    try {
+      await removeListing({ id: id as Id<"listings"> });
+    } catch (e) {
+      setResult(String(e));
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.section}>Create</Text>
-      <View style={styles.form}>
-        <TextInput
-          placeholder="Title"
-          value={title}
-          onChangeText={setTitle}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Price"
-          value={price}
-          onChangeText={setPrice}
-          keyboardType="numeric"
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Description"
-          value={description}
-          onChangeText={setDescription}
-          style={styles.input}
-        />
-        <AnimatedMulti value={tags} onChange={setTags} />
-        <Pressable onPress={submitCreate} style={styles.button}>
-          <Text style={styles.buttonText}>Create listing</Text>
-        </Pressable>
-      </View>
+      <AuthNote />
 
-      <Text style={styles.section}>List ({listings?.length ?? 0})</Text>
+      <Section>Create</Section>
+      <Field label="Title" value={title} onChangeText={setTitle} />
+      <Field
+        label="Price"
+        value={price}
+        onChangeText={setPrice}
+        keyboardType="numeric"
+      />
+      <Field label="Description" value={description} onChangeText={setDescription} />
+      <Field label="Category" value={category} onChangeText={setCategory} />
+      <AnimatedMulti value={tags} onChange={setTags} />
+      <Button label="Create listing" onPress={submitCreate} />
+
+      <Section>List ({(listings?.page ?? []).length})</Section>
       {listings === undefined ? (
         <Text>Loading…</Text>
       ) : (
-        listings.map((item) => (
+        (listings.page ?? []).map((item) => (
           <View key={item._id} style={styles.row}>
             <View style={styles.rowText}>
               <Text style={styles.rowTitle}>
-                {item.title}(id: {item._id}) — ${item.price}
+                {item.title} (id: {item._id}) — ${item.price}
+                {item.sold ? " — SOLD" : ""}
               </Text>
               <Text>{item.description}</Text>
-              <Text style={styles.rowTags}>{item.tags.join(", ")}</Text>
+              <Text style={styles.rowTags}>
+                {item.category}
+                {item.tags.length > 0 ? ` · ${item.tags.join(", ")}` : ""}
+              </Text>
             </View>
             <Pressable
-              onPress={() => removeListing({ id: item._id })}
+              onPress={() => doMarkSold(item._id, !item.sold)}
+              style={styles.soldButton}
+            >
+              <Text style={styles.soldText}>{item.sold ? "Unsell" : "Sold"}</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => doDelete(item._id)}
               style={styles.deleteButton}
             >
               <Text style={styles.deleteText}>Delete</Text>
@@ -119,72 +131,39 @@ export default function ListingsTest() {
         ))
       )}
 
-      <Text style={styles.section}>Get by id</Text>
-      <View style={styles.form}>
-        <TextInput
-          placeholder="Listing id"
-          value={lookupId}
-          onChangeText={setLookupId}
-          style={styles.input}
-        />
-        <Pressable onPress={doGet} style={styles.button}>
-          <Text style={styles.buttonText}>Get</Text>
-        </Pressable>
-      </View>
+      <Section>Get by id</Section>
+      <Field label="Listing id" value={lookupId} onChangeText={setLookupId} />
+      <Button label="Get" onPress={doGet} />
 
-      <Text style={styles.section}>Update price by id</Text>
-      <View style={styles.form}>
-        <TextInput
-          placeholder="New price"
-          value={newPrice}
-          onChangeText={setNewPrice}
-          keyboardType="numeric"
-          style={styles.input}
-        />
-        <Pressable onPress={doUpdate} style={styles.button}>
-          <Text style={styles.buttonText}>Update</Text>
-        </Pressable>
-      </View>
+      <Section>Search</Section>
+      <Field label="Query" value={searchQuery} onChangeText={setSearchQuery} />
+      <Button label="Search" onPress={doSearch} />
 
-      {result !== "" && <Text style={styles.result}>{result}</Text>}
+      <Result value={result} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 12, gap: 12 },
-  section: { fontSize: 16, fontWeight: "600", marginTop: 8 },
-  form: { gap: 8 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 10,
-  },
-  button: {
-    backgroundColor: "#2563eb",
-    borderRadius: 8,
-    padding: 12,
-    alignItems: "center",
-  },
-  buttonText: { color: "#fff", fontWeight: "600" },
+  container: { padding: 12, gap: 8 },
   row: {
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1,
     borderColor: "#eee",
     paddingVertical: 8,
+    gap: 6,
   },
   rowText: { flex: 1 },
   rowTitle: { fontWeight: "600" },
   rowTags: { color: "#666", fontSize: 12 },
+  soldButton: {
+    padding: 8,
+    backgroundColor: "#eef2ff",
+    borderRadius: 6,
+  },
+  soldText: { color: "#3730a3", fontSize: 12 },
   deleteButton: { padding: 8 },
   deleteText: { color: "#dc2626" },
-  result: {
-    fontFamily: "monospace",
-    fontSize: 12,
-    padding: 10,
-    backgroundColor: "#f3f4f6",
-    borderRadius: 8,
-  },
 });
+
