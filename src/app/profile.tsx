@@ -18,8 +18,7 @@ export default function ProfileScreen() {
         </Text>
         <Text>3 Products | 50 Followers</Text>
       </View>
-      <Text>Products:</Text>
-      <Text>Items go here</Text>
+      <Text style={styles.bannerText}>Products:</Text>
       <View style={styles.itemContainer}>
         {items.map((item) => (
           <ItemCard key={item.name} item={item} />
