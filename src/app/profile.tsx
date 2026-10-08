@@ -50,6 +50,8 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "center",
+    alignItems: "flex-start",
   },
 });

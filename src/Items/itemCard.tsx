@@ -27,7 +27,7 @@ export default function ItemCard({ item }: { item: Item }) {
             <Image source={{ uri: item.image }} style={styles.image} />
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.price}>${item.price.toFixed(2)}</Text>
-            <Text>{item.description}</Text>
+            <Text style={styles.description}>{item.description}</Text>
         </Animated.View>
     </Pressable>
     );
@@ -35,17 +35,19 @@ export default function ItemCard({ item }: { item: Item }) {
 
 const styles = StyleSheet.create({
 cardWrapper: {
-    width: "100%",
-    margin: 10,
+    alignSelf: "flex-start",
+    borderRadius: 20,
   },
   card: {
-    width: "30%",
+    width: 300,
+    height: 400,
+    overflow: "hidden",
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 20,
     padding: 10,
     margin: 10,
-    backgroundColor: "#be3333",
+    backgroundColor: "#ddd",
   },
   name: {
     fontSize: 18,
@@ -55,6 +57,10 @@ cardWrapper: {
   price: {
     fontSize: 16,
     marginBottom: 5,
+  },
+  description: {
+    fontSize: 14,
+    padding: 10,
   },
   image: {
     width: "100%",
