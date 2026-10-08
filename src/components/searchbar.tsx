@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function SearchBar() {
   const [search, setSearch] = useState('');
+  const suggestions = ["Shirt", "T-Shirt", "Jeans", "Furniture", "Technology"];
+  const filteredSuggestions = suggestions.filter((item) => item.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <View style={[styles.searchBubble]}>
@@ -12,6 +14,15 @@ export default function SearchBar() {
         value={search}
         onChangeText={setSearch}
     />
+    {search.trim().length > 0 && !suggestions.some((item) => item.toLowerCase() === search.trim().toLowerCase()) && (
+      <View style={styles.dropDown}>
+        {filteredSuggestions.map((item) => (
+          <TouchableOpacity key={item} onPress={() => setSearch(item)}>
+            <Text>{item}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    )}
     </View>
   );
 }
@@ -36,6 +47,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     borderRadius: 25,
     padding: 6,
-    alignSelf: "flex-start"
+    alignSelf: "flex-start",
+    zIndex: 100,
   },
+  
+  dropDown: {
+    position: "absolute",
+    top: "100%",
+    left: 6,
+    right: 6,
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 10,
+    zIndex: 100,
+    elevation: 10,
+  }
 });
