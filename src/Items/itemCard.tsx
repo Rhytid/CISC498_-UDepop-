@@ -6,22 +6,17 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { Item } from "./itemDef";
+import { Button } from "expo-router/build/react-navigation";
 
 export default function ItemCard({ item }: { item: Item }) {
 	const [expanded, setExpanded] = React.useState(false);
 	const hoverAnim = useSharedValue<number>(0);
-	const expandAnim = useSharedValue<number>(400);
+	const expandAnim = useSharedValue<number>(300);
 
 	const animatedCard = useAnimatedStyle(() => {
 		return {
 			transform: [{ translateY: hoverAnim.value }],
 			height: expandAnim.value,
-		};
-	});
-
-	const animatedExpand = useAnimatedStyle(() => {
-		return {
-			transform: [{ scale: expandAnim.value }],
 		};
 	});
 
@@ -35,8 +30,8 @@ export default function ItemCard({ item }: { item: Item }) {
 
 	const handlePress = () => {
 		expanded
-			? (expandAnim.value = withTiming(400, { duration: 300 }))
-			: (expandAnim.value = withTiming(600, { duration: 300 }));
+			? (expandAnim.value = withTiming(300, { duration: 300 }))
+			: (expandAnim.value = withTiming(500, { duration: 300 }));
 		setExpanded(!expanded);
 	};
 
@@ -52,6 +47,7 @@ export default function ItemCard({ item }: { item: Item }) {
 				<Text style={styles.name}>{item.name}</Text>
 				<Text style={styles.price}>${item.price.toFixed(2)}</Text>
 				<Text style={styles.description}>{item.description}</Text>
+        <Button onPress={() => {}}>View Details</Button>
 			</Animated.View>
 		</Pressable>
 	);
@@ -64,7 +60,7 @@ const styles = StyleSheet.create({
 	},
 	card: {
 		width: 300,
-		height: 400,
+		height: 300,
 		overflow: "hidden",
 		borderWidth: 1,
 		borderColor: "#ccc",
@@ -85,6 +81,7 @@ const styles = StyleSheet.create({
 	description: {
 		fontSize: 14,
 		padding: 10,
+    marginBottom: 10,
 	},
 	image: {
 		width: "100%",
