@@ -21,7 +21,7 @@ export default function AppTabs() {
   const [isOpen, setIsOpen] = useState(true);
   return (
     <Tabs>
-      <TabSlot style={{ height: '100%', paddingLeft: 200, }} />
+      <TabSlot style={{ height: '100%', paddingLeft: isOpen ? 240 : 80, }} />
       <View style={styles.topActions}>
         <Pressable style={styles.iconButton}>
           <SymbolView name={{ ios: 'bell', web: 'alarm' }} size={22} />

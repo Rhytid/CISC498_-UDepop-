@@ -49,17 +49,21 @@ const styles = StyleSheet.create({
     padding: 6,
     alignSelf: "flex-start",
     zIndex: 100,
+    position: 'relative',
   },
   
   dropDown: {
     position: "absolute",
     top: "100%",
-    left: 6,
-    right: 6,
+    left: 0,
+    right: 0,
     backgroundColor: "white",
     borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "black",
     padding: 10,
     zIndex: 100,
     elevation: 10,
+    width: 400,
   }
 });
