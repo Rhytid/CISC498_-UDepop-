@@ -1,5 +1,4 @@
 import ProfilePicture from "@/components/ui/profilePicture";
-import { MaxContentWidth } from "@/constants/theme";
 import ItemCard from "@/Items/itemCard";
 import itemData from "../data/itemData.json";
 import { Ionicons } from "@expo/vector-icons";

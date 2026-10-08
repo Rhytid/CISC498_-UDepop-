@@ -1,10 +1,8 @@
 import * as Device from "expo-device";
-import { Platform, StyleSheet } from "react-native";
+import React from "react";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-import { BottomTabInset, MaxContentWidth, Spacing } from "@/constants/theme";
-import { ItemD } from "@/Items/itemDisplay";
-import React from "react";
 
 function getDevMenuHint() {
   if (Platform.OS === "web") {
@@ -27,45 +25,20 @@ function getDevMenuHint() {
 
 export default function HomeScreen() {
   return (
-    <div>
-      <h1>Main Display</h1>
-      <ItemD />
-    </div>
+    <View style={styles.container}>
+      <Text style={styles.title}>This is the home screen</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    flexDirection: "row",
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: "center",
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
     alignItems: "center",
     justifyContent: "center",
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
   },
   title: {
-    textAlign: "center",
-  },
-  code: {
-    textTransform: "uppercase",
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: "stretch",
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+    fontSize: 18,
+    fontWeight: "600",
   },
 });

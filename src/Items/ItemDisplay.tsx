@@ -1,16 +1,17 @@
-import type { TagType } from "@/Tag/TagDef";
-import AnimatedMulti from "@/Tag/TagDef";
+import type { TagType } from "@/tags/tagDef";
+import AnimatedMulti from "@/tags/tagDef";
 import React, { useState } from "react";
-import type { Item, ItemLists } from "./itemDef";
+import type { Item, ItemLists } from "@/Items/itemDef";
 
 const tempListing: ItemLists = {
-  Items: [],
+  items: [],
 };
 const tempItem: Item = {
-  Name: "test",
-  Tags: [],
-  Price: 42,
-  Description: "This is an item",
+  name: "test",
+  tags: [],
+  price: 42,
+  description: "This is an item",
+  image: ""
 };
 
 export function ItemD() {
@@ -19,7 +20,7 @@ export function ItemD() {
   const [Price, setPrice] = useState<number>(0);
   const [Tags, setTags] = useState<TagType[]>([]);
   const [Description, setDescription] = useState<string>("");
-  const [ItemListing, setItemListing] = useState<ItemLists>({ Items: [] });
+  const [ItemListing, setItemListing] = useState<ItemLists>({ items: [] });
 
   // Updates the State whenever the user types
   const nameSet = (event: {
@@ -39,12 +40,15 @@ export function ItemD() {
     setDescription(event.target.value);
   };
   const ItemListingSet = () => {
-    setItemListing({ Items: [tempItem] });
+    setItemListing({ items: [tempItem] });
   };
 
   function AddItem() {
-    const NewItem: Item = { Name, Price, Tags, Description };
-    setItemListing((prev) => ({ Items: [...prev.Items, NewItem] }));
+    const NewItem: Item = {
+      name: Name, price: Price, tags: Tags, description: Description,
+      image: ""
+    };
+    setItemListing((prev) => ({ items: [...prev.items, NewItem] }));
     setTags([]);
   }
 
@@ -82,11 +86,11 @@ export function ItemD() {
       </button>
 
       <ul>
-        {ItemListing.Items.map((item, i) => (
+        {ItemListing.items.map((item, i) => (
           <li key={i}>
-            {item.Name} — ${item.Price} — {item.Description}
-            {item.Tags.length > 0 && (
-              <> — [{item.Tags.map((t) => t.label).join(", ")}]</>
+            {item.name} — ${item.price} — {item.description}
+            {item.tags.length > 0 && (
+              <> — [{item.tags.map((t) => t.label).join(", ")}]</>
             )}
           </li>
         ))}
