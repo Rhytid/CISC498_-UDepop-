@@ -1,8 +1,11 @@
 import ProfilePicture from "@/components/ui/profilePicture";
-import { MaxContentWidth } from "@/constants/theme";
+import ItemCard from "@/Items/itemCard";
+import itemData from "../data/itemData.json";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+
+const items = Object.values(itemData).flat();
 
 export default function ProfileScreen() {
   return (
@@ -14,8 +17,12 @@ export default function ProfileScreen() {
         </Text>
         <Text>3 Products | 50 Followers</Text>
       </View>
-      <Text>Products:</Text>
-      <Text>Items go here</Text>
+      <Text style={styles.bannerText}>Products:</Text>
+      <View style={styles.itemContainer}>
+        {items.map((item) => (
+          <ItemCard key={item.name} item={item} />
+        ))}
+      </View>
     </ScrollView>
   );
 }
@@ -23,14 +30,6 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-  },
-  contentContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  container: {
-    maxWidth: MaxContentWidth,
-    flexGrow: 1,
   },
   banner: {
     width: "100%",
@@ -46,5 +45,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     paddingTop: 20,
+  },
+  itemContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "flex-start",
   },
 });

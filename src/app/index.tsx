@@ -1,10 +1,10 @@
 import * as Device from "expo-device";
-import { Platform, StyleSheet } from "react-native";
+
+import SearchBar from "../components/searchbar";
+import React from "react";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-
-import React from "react";
-import SearchBar from "../components/searchbar";
 
 function getDevMenuHint() {
   if (Platform.OS === "web") {
