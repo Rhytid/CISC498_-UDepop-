@@ -1,4 +1,6 @@
 import * as Device from "expo-device";
+
+import SearchBar from "../components/searchbar";
 import React from "react";
 import { Platform, StyleSheet, Text, View } from "react-native";
 
@@ -25,9 +27,9 @@ function getDevMenuHint() {
 
 export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>This is the home screen</Text>
-    </View>
+    <div>
+      <SearchBar />
+    </div>
   );
 }
 

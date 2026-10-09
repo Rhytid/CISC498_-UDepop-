@@ -1,13 +1,13 @@
 import {
-  Tabs,
   TabList,
-  TabTrigger,
-  TabSlot,
-  TabTriggerSlotProps,
   TabListProps,
+  TabSlot,
+  TabTrigger,
+  TabTriggerSlotProps,
+  Tabs,
 } from 'expo-router/ui';
 import { SymbolView } from 'expo-symbols';
-import { Pressable, useColorScheme, View, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View, useColorScheme } from 'react-native';
 
 import { ExternalLink } from './external-link';
 import { ThemedText } from './themed-text';
@@ -15,17 +15,37 @@ import { ThemedView } from './themed-view';
 
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 
+import { useState } from 'react';
+
 export default function AppTabs() {
+  const [isOpen, setIsOpen] = useState(true);
   return (
     <Tabs>
-      <TabSlot style={{ height: '100%' }} />
+      <TabSlot style={{ height: '100%', paddingLeft: isOpen ? 240 : 80, }} />
+      <View style={styles.topActions}>
+        <Pressable style={styles.iconButton}>
+          <SymbolView name={{ ios: 'bell', web: 'alarm' }} size={22} />
+        </Pressable>
+
+        <Pressable style={styles.iconButton}>
+          <SymbolView name={{ ios: 'envelope', web: 'mail' }} size={22} />
+        </Pressable>
+
+        <Pressable style={styles.iconButton}>
+          <SymbolView name={{ ios: 'cart', web: 'shopping_cart' }} size={20} />
+        </Pressable>
+        </View>
+
       <TabList asChild>
-        <CustomTabList>
+        <CustomTabList isOpen={isOpen} setIsOpen={setIsOpen}>
           <TabTrigger name="home" href="/" asChild>
             <TabButton>Home</TabButton>
           </TabTrigger>
           <TabTrigger name="explore" href="/explore" asChild>
             <TabButton>Explore</TabButton>
+          </TabTrigger>
+          <TabTrigger name="settings" href="/settings" asChild>
+            <TabButton>Settings</TabButton>
           </TabTrigger>
           <TabTrigger name="profile" href="/profile" asChild>
             <TabButton>Profile</TabButton>
@@ -53,22 +73,28 @@ export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps
   );
 }
 
-export function CustomTabList(props: TabListProps) {
+export function CustomTabList(props: TabListProps & {isOpen: boolean; setIsOpen: (value:boolean) => void}) {
   const scheme = useColorScheme();
   const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
 
   return (
-    <View {...props} style={styles.tabListContainer}>
-      <ThemedView type="backgroundElement" style={styles.innerContainer}>
+    <View {...props} style={[styles.tabListContainer, { width: props.isOpen ? 240 : 80},]}>
+      <ThemedView type="backgroundElement" style={[styles.innerContainer, !props.isOpen && styles.collapsedContainer]}>
+        <Pressable onPress={() => props.setIsOpen(!props.isOpen)}>
+          <ThemedText>☰</ThemedText>
+        </Pressable>
+
+        {props.isOpen && (
+          <>
         <ThemedText type="smallBold" style={styles.brandText}>
-          Expo Starter
+          UDepop
         </ThemedText>
 
         {props.children}
 
         <ExternalLink href="https://docs.expo.dev" asChild>
           <Pressable style={styles.externalPressable}>
-            <ThemedText type="link">Docs</ThemedText>
+            <ThemedText type="link">Contact Us</ThemedText>
             <SymbolView
               tintColor={colors.text}
               name={{ ios: 'arrow.up.right.square', web: 'link' }}
@@ -76,6 +102,8 @@ export function CustomTabList(props: TabListProps) {
             />
           </Pressable>
         </ExternalLink>
+        </>
+        )}
       </ThemedView>
     </View>
   );
@@ -84,24 +112,27 @@ export function CustomTabList(props: TabListProps) {
 const styles = StyleSheet.create({
   tabListContainer: {
     position: 'absolute',
-    width: '100%',
+    left: 0,
+    top: 0,
+    bottom: 0,
     padding: Spacing.three,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexDirection: 'column',
   },
   innerContainer: {
-    paddingVertical: Spacing.two,
+    paddingVertical: Spacing.three,
     paddingHorizontal: Spacing.five,
     borderRadius: Spacing.five,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'column',
+    alignItems: 'stretch',
     flexGrow: 1,
     gap: Spacing.two,
     maxWidth: MaxContentWidth,
+    justifyContent: 'flex-start',
   },
   brandText: {
-    marginRight: 'auto',
+    marginBottom: Spacing.two,
   },
   pressed: {
     opacity: 0.7,
@@ -117,5 +148,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.one,
     marginLeft: Spacing.three,
+  },
+  collapsedContainer: {
+    width: 60,
+    height: 60,
+    flexGrow: 0,
+    padding: 0,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  topActions: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+  
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
   },
 });
