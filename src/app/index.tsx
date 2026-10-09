@@ -2,9 +2,8 @@ import * as Device from "expo-device";
 import { Platform, StyleSheet } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-import { BottomTabInset, MaxContentWidth, Spacing } from "@/constants/theme";
-import { ItemD } from "@/Items/ItemDisplay";
 
+import React from "react";
 import SearchBar from "../components/searchbar";
 
 function getDevMenuHint() {
@@ -30,7 +29,6 @@ export default function HomeScreen() {
   return (
     <div>
       <SearchBar />
-      <ItemD />
     </div>
   );
 }
@@ -38,35 +36,11 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    flexDirection: "row",
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: "center",
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
     alignItems: "center",
     justifyContent: "center",
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
   },
   title: {
-    textAlign: "center",
-  },
-  code: {
-    textTransform: "uppercase",
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: "stretch",
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+    fontSize: 18,
+    fontWeight: "600",
   },
 });
