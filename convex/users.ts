@@ -108,3 +108,11 @@ export const search = query({
     return results;
   },
 });
+
+//Gives a mass list of all Users
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("users").collect();
+  },
+});
