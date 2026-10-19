@@ -1,10 +1,12 @@
 import * as Device from "expo-device";
-
-import SearchBar from "../components/searchbar";
 import React from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
+import ItemC from "@/Items/ItemCreation";
+import { ListingList } from "@/Items/ItemDisplay";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 function getDevMenuHint() {
   if (Platform.OS === "web") {
@@ -26,9 +28,11 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
+  const itemList = useQuery(api.listings.list, {});
   return (
     <div>
-      <SearchBar />
+      <ItemC />
+      <ListingList />
     </div>
   );
 }
