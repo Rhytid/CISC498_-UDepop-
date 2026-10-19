@@ -1,10 +1,11 @@
 import * as Device from "expo-device";
-
-import React from "react";
-import { Image, Platform, StyleSheet, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, Easing, Platform, StyleSheet, Text, View } from "react-native";
 
 import SearchBar from '@/components/searchbar';
 import { ThemedText } from "@/components/themed-text";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 function getDevMenuHint() {
   if (Platform.OS === "web") {
@@ -26,14 +27,58 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
+  const itemList = useQuery(api.listings.list, {});
+  const rotatingWords = ['outfit.', 'book.', 'hobby.', 'couch.'];
+  const [rotatingWordIndex, setRotatingWordIndex] = useState(0);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      Animated.timing(slideAnim, {
+        toValue: -40,
+        duration: 400,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: true,
+      }).start(({ finished }) => {
+        if (!finished) return;
+
+        setRotatingWordIndex((previous) => (previous + 1) % rotatingWords.length);
+
+        // Place the next word below
+        slideAnim.setValue(40);
+
+        // Slide the new word upward into position
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 400,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }).start();
+      });
+    }, 3000);
+
+    return () => {
+      clearInterval(interval);
+      slideAnim.stopAnimation();
+    };
+  }, [slideAnim]);
+
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/images/tempBanner.png')}
-      style={styles.banner}
-      resizeMode="cover"
-      />
-      <View style={styles.searchContainer}>
-        <SearchBar/>
+      <View style={styles.banner}>
+        <View style={styles.insideBanner}>
+          <View style={styles.textContainer}>
+            <Text style={styles.searchBannerText}>
+              Find your new favorite {""}
+            </Text>
+            <View>
+              <Animated.Text style={[styles.searchBannerText, styles.rotatingText, { transform: [{ translateY: slideAnim }],},]}>
+                {rotatingWords[rotatingWordIndex]}
+              </Animated.Text>
+            </View>
+          </View>
+          <SearchBar/>
+        </View>
       </View>
     </View>
   );
@@ -50,14 +95,46 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   banner: {
-    width: '100%',
+    width: '75%',
     height: '25%',
     borderRadius: 20,
+    backgroundColor: '#607D8B',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchContainer: {
-    position: 'absolute',
-    top: '50%',
+    width: '70%',
     alignItems: 'center',
-    transform: [{ translateY: -25 }],
+    justifyContent: 'center',
+  },
+  searchBannerText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  insideBanner: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column'
+  },
+  rotatingContainer: {
+    width: 200,
+    height: 40,
+    overflow: 'hidden',
+    justifyContent: 'center',
+  },
+  rotatingText: {
+    color: '#FFDF85',
+    textAlign: 'left',
+  },
+  textContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 15,
+    flexWrap: 'wrap',
   }
 });
