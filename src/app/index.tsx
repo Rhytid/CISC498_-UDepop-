@@ -1,9 +1,9 @@
 import * as Device from "expo-device";
 
-import SearchBar from "../components/searchbar";
 import React from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { Image, Platform, StyleSheet, View } from "react-native";
 
+import SearchBar from '@/components/searchbar';
 import { ThemedText } from "@/components/themed-text";
 
 function getDevMenuHint() {
@@ -27,9 +27,15 @@ function getDevMenuHint() {
 
 export default function HomeScreen() {
   return (
-    <div>
-      <SearchBar />
-    </div>
+    <View style={styles.container}>
+      <Image source={require('../../assets/images/tempBanner.png')}
+      style={styles.banner}
+      resizeMode="cover"
+      />
+      <View style={styles.searchContainer}>
+        <SearchBar/>
+      </View>
+    </View>
   );
 }
 
@@ -43,4 +49,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
   },
+  banner: {
+    width: '100%',
+    height: '25%',
+    borderRadius: 20,
+  },
+  searchContainer: {
+    position: 'absolute',
+    top: '50%',
+    alignItems: 'center',
+    transform: [{ translateY: -25 }],
+  }
 });
