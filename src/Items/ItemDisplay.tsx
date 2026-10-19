@@ -1,101 +1,51 @@
-import type { TagType } from "@/tags/tagDef";
-import AnimatedMulti from "@/tags/tagDef";
+import { useQuery } from "convex/react";
 import React, { useState } from "react";
-import type { Item, ItemLists } from "@/Items/itemDef";
+import { FlatList, Text, TextInput, View } from "react-native";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 
-const tempListing: ItemLists = {
-  items: [],
-};
-const tempItem: Item = {
-  name: "test",
-  tags: [],
-  price: 42,
-  description: "This is an item",
-  image: ""
-};
+export function ListingList() {
+  const [search, setSearch] = useState("");
 
-export function ItemD() {
-  //Initialize the state to hold the textbox value
-  const [Name, setName] = useState<string>("");
-  const [Price, setPrice] = useState<number>(0);
-  const [Tags, setTags] = useState<TagType[]>([]);
-  const [Description, setDescription] = useState<string>("");
-  const [ItemListing, setItemListing] = useState<ItemLists>({ items: [] });
+  const result = useQuery(api.listings.list, {
+    searchText: search || undefined, // empty string would trigger the search branch
+  });
 
-  // Updates the State whenever the user types
-  const nameSet = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setName(event.target.value);
-  };
-  const priceSet = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setPrice(Number(event.target.value));
-  };
-
-  const descriptionSet = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setDescription(event.target.value);
-  };
-  const ItemListingSet = () => {
-    setItemListing({ items: [tempItem] });
-  };
-
-  function AddItem() {
-    const NewItem: Item = {
-      name: Name, price: Price, tags: Tags, description: Description,
-      image: ""
-    };
-    setItemListing((prev) => ({ items: [...prev.items, NewItem] }));
-    setTags([]);
+  if (result === undefined) {
+    return <Text>Loading...</Text>;
   }
+  //Function to display the seller name
+  function SellerName({ userId }: { userId: Id<"users"> }) {
+    const user = useQuery(api.users.getById, { userId });
 
+    if (user === undefined) return <Text>Seller: ...</Text>;
+    if (user === null) return <Text>Seller: Unknown</Text>;
+    return <Text>Seller: {user.username}</Text>;
+  }
   return (
-    <div style={{ padding: "20px" }}>
-      <label htmlFor="username">Enter Name: </label>
-      <input
-        id="name"
-        type="text"
-        value={Name}
-        onChange={nameSet}
-        placeholder="Type something..."
+    <View style={{ padding: 20, flex: 1 }}>
+      <TextInput
+        value={search}
+        onChangeText={setSearch}
+        placeholder="Search listings..."
       />
-      <input
-        id="price"
-        type="text"
-        value={Price}
-        onChange={priceSet}
-        placeholder="Type something..."
-      />
-      <AnimatedMulti value={Tags} onChange={setTags} />
 
-      <input
-        id="description"
-        type="text"
-        value={Description}
-        onChange={descriptionSet}
-        placeholder="Type something..."
+      <FlatList
+        data={result.page}
+        keyExtractor={(item) => item._id}
+        ListEmptyComponent={<Text>No listings found.</Text>}
+        renderItem={({ item }) => (
+          <View style={{ paddingVertical: 12 }}>
+            <Text style={{ fontWeight: "bold" }}>{item.title}</Text>
+            <Text>
+              <SellerName userId={item.ownerId} />
+            </Text>
+            <Text>${item.price}</Text>
+            <Text>{item.description}</Text>
+            <Text>{item.tags.join(", ")}</Text>
+          </View>
+        )}
       />
-      <button
-        onClick={AddItem}
-        style={{ backgroundColor: "#841584", color: "white" }}
-      >
-        Add Item
-      </button>
-
-      <ul>
-        {ItemListing.items.map((item, i) => (
-          <li key={i}>
-            {item.name} — ${item.price} — {item.description}
-            {item.tags.length > 0 && (
-              <> — [{item.tags.map((t) => t.label).join(", ")}]</>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+    </View>
   );
 }
-export default ItemD;

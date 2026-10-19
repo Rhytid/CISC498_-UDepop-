@@ -1,8 +1,8 @@
 import { v } from "convex/values";
+import type { Doc, Id } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
 import { getCurrentUser, orderPair, requireUser } from "./lib";
-import type { Id, Doc } from "./_generated/dataModel";
 
 type Conversation = Doc<"conversations">;
 
@@ -113,10 +113,7 @@ export const start = mutation({
     const existing = await ctx.db
       .query("conversations")
       .withIndex("by_listing_pair", (q) =>
-        q
-          .eq("listingId", args.listingId)
-          .eq("userA", userA)
-          .eq("userB", userB),
+        q.eq("listingId", args.listingId).eq("userA", userA).eq("userB", userB),
       )
       .first();
     if (existing !== null) {
@@ -198,5 +195,36 @@ export const unarchive = mutation({
     }
     await ctx.db.patch(args.id, { archived: false });
     return await ctx.db.get(args.id);
+  },
+});
+
+// Find the existing conversation between me and a username (null if none yet).
+export const getConvoId = query({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    const me = await getCurrentUser(ctx);
+    if (me === null) return null;
+
+    const other = await ctx.db
+      .query("users")
+      .withIndex("by_username", (q) => q.eq("username", args.username))
+      .unique();
+    if (other === null) return null;
+
+    const asA = await ctx.db
+      .query("conversations")
+      .withIndex("by_users", (q) =>
+        q.eq("userA", me._id).eq("userB", other._id),
+      )
+      .unique();
+    if (asA !== null) return asA._id;
+
+    const asB = await ctx.db
+      .query("conversations")
+      .withIndex("by_users", (q) =>
+        q.eq("userA", other._id).eq("userB", me._id),
+      )
+      .unique();
+    return asB?._id ?? null;
   },
 });
