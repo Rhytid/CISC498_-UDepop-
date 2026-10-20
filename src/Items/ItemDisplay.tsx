@@ -1,3 +1,4 @@
+import MessageButton from "@/app/UserMessaging/CallingMessagePopup";
 import { useQuery } from "convex/react";
 import React, { useState } from "react";
 import { FlatList, Text, TextInput, View } from "react-native";
@@ -15,6 +16,9 @@ export function ListingList() {
     return <Text>Loading...</Text>;
   }
   //Function to display the seller name
+
+  // Pulls the userId from the item and then searches in the directory for the User
+
   function SellerName({ userId }: { userId: Id<"users"> }) {
     const user = useQuery(api.users.getById, { userId });
 
@@ -43,6 +47,7 @@ export function ListingList() {
             <Text>${item.price}</Text>
             <Text>{item.description}</Text>
             <Text>{item.tags.join(", ")}</Text>
+            <MessageButton listingId={item._id} />
           </View>
         )}
       />

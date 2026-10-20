@@ -1,5 +1,11 @@
 import { ConvexAuthProvider, useConvexAuth } from "@convex-dev/auth/react";
-import { DarkTheme, DefaultTheme, ThemeProvider } from "expo-router";
+import {
+  DarkTheme,
+  DefaultTheme,
+  Slot,
+  ThemeProvider,
+  usePathname
+} from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React from "react";
 import { useColorScheme } from "react-native";
@@ -14,10 +20,20 @@ SplashScreen.preventAutoHideAsync();
 
 function AppContent() {
   const { isLoading, isAuthenticated } = useConvexAuth();
+  const pathname = usePathname();
+  const isPopup = pathname.startsWith("/UserMessaging/MessagePopup");
   if (isLoading) {
     return null; // the splash overlay covers the loading state
   }
-  return isAuthenticated ? <AppTabs /> : <SignInScreen />;
+  if (!isAuthenticated) {
+    return <SignInScreen />;
+  }
+
+  // Popup renders its own route with no tab bar
+  if (isPopup) {
+    return <Slot />;
+  }
+  return <AppTabs />;
 }
 
 export default function RootLayout() {
