@@ -7,6 +7,7 @@ import ItemC from "@/Items/ItemCreation";
 import { ListingList } from "@/Items/ItemDisplay";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import OwnMessages from "./UserMessaging/OwnMessages";
 
 function getDevMenuHint() {
   if (Platform.OS === "web") {
@@ -33,6 +34,7 @@ export default function HomeScreen() {
     <div>
       <ItemC />
       <ListingList />
+      <OwnMessages />
     </div>
   );
 }

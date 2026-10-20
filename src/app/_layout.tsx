@@ -4,7 +4,7 @@ import {
   DefaultTheme,
   Slot,
   ThemeProvider,
-  usePathname
+  usePathname,
 } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React from "react";
@@ -21,7 +21,7 @@ SplashScreen.preventAutoHideAsync();
 function AppContent() {
   const { isLoading, isAuthenticated } = useConvexAuth();
   const pathname = usePathname();
-  const isPopup = pathname.startsWith("/UserMessaging/MessagePopup");
+  const isPopup = pathname.startsWith("/UserMessaging/");
   if (isLoading) {
     return null; // the splash overlay covers the loading state
   }
