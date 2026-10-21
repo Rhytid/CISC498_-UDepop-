@@ -19,18 +19,12 @@ import React, { useState } from 'react';
 
 import { usePathname } from 'expo-router';
 
-import SearchBar from '@/components/searchbar';
 
 export default function AppTabs() {
   const [isOpen, setIsOpen] = useState(true);
   const pathname = usePathname();
   return (
     <Tabs>
-      {pathname !== '/' && (
-        <View style={styles.topSearchBar}>
-          <SearchBar/>
-        </View>
-      )}
       <TabSlot style={{ height: '100%', paddingLeft: isOpen ? 240 : 80, }} />
       <View style={styles.topActions}>
         <Pressable style={styles.iconButton}>
@@ -184,13 +178,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f2f2f2',
-  },
-  topSearchBar: {
-    position: 'absolute',
-  top: 20,
-  left: 220,
-  right: 20,
-  zIndex: 100,
-  alignItems: 'center',
   },
 });
