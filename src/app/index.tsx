@@ -31,6 +31,9 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
+  const me = useQuery(api.users.getMe);
+  const currentUserId = me?._id; //undefined while loading
+
 	const [search, setSearch] = React.useState("")
 	const result = useQuery(api.listings.list, {
 		searchText: search || undefined, // empty string would trigger the search branch
@@ -44,7 +47,7 @@ export default function HomeScreen() {
 			<Text style={styles.bannerText}>Listings:</Text>
 			<View style={styles.itemContainer}>
 				{result.page.map((item) => (
-					<ItemCard key={item._id} listing={item} />
+					<ItemCard key={item._id} listing={item} currentUserId={currentUserId} />
 				))}
 			</View>
 			<OwnMessages />
