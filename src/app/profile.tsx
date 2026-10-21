@@ -7,12 +7,8 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
 
-const items = Object.values(itemData).flat();
-
 export default function ProfileScreen() {
   const [search, setSearch] = React.useState("");
-
-  const itemList = useQuery(api.listings.list, {});
   const result = useQuery(api.listings.list, {
       searchText: search || undefined, // empty string would trigger the search branch
   });

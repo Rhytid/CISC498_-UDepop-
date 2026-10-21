@@ -50,12 +50,10 @@ export default function ItemCard({ listing, onMessageSeller }: ItemCardProps) {
 		>
 			{
 				<Animated.View style={[styles.card, animatedCard]}>
-					{listing.photos[0] && (
-						<Image
-							source={{ uri: listing.photos[0] }}
-							style={styles.image}
-						/>
-					)}
+          <Image
+            source={listing.photos.length > 0 ? { uri: listing.photos[0] }: require("../../assets/images/no-image.jpg")}
+            style={styles.image}
+          />
 					<Text style={styles.name}>
 						{listing.title}
 						{listing.sold && (
