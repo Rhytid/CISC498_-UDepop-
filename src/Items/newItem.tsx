@@ -1,17 +1,18 @@
-import type { newListingInput } from "@/items/listingActions";
-import type { TagType } from "@/tags/tagDef";
-import { useMutation } from "convex/react";
 import React, { useState } from "react";
-import { Modal, ScrollView } from "react-native";
+import { Modal, Pressable, ScrollView, Text, StyleSheet } from "react-native";
+import type { NewListingInput } from "@/items/listingActions";
+import type { TagType } from "@/tags/tagDef";
 import { api } from "../../convex/_generated/api";
+import { useMutation } from "convex/react";
+import { Ionicons } from "@expo/vector-icons";
 
-interface newItemProps {
+interface NewItemProps {
 	visible: boolean;
 	onClose: () => void;
-	onSubmit: (input: newListingInput) => Promise<boolean>;
+	onSubmit: (input: NewListingInput) => Promise<boolean>;
 }
 
-export function newItem() {
+export function NewItem({ visible, onClose, onSubmit}: NewItemProps) {
 	const [title, setTitle] = useState<string>("");
 	const [price, setPrice] = useState<number>(0);
 	const [tags, setTags] = useState<TagType[]>([]);
@@ -42,8 +43,19 @@ export function newItem() {
 	}
 
 	return (
-		<Modal>
-			<ScrollView></ScrollView>
+		<Modal visible={visible} animationType="fade" onRequestClose={onClose} transparent>
+			<ScrollView style={styles.popup}>
+                <Text>Popup</Text>
+                <Pressable onPress={onClose}><Ionicons name="close"></Ionicons></Pressable>
+            </ScrollView>
 		</Modal>
 	);
 }
+
+const styles = StyleSheet.create({
+    popup: {
+        width: "70%",
+        height: "70%",
+        backgroundColor: "ccc"
+    }
+})

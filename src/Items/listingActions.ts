@@ -4,7 +4,7 @@ import { useMutation } from "convex/react";
 import { Id } from "../../convex/_generated/dataModel";
 import { TagType } from "@/tags/tagDef";
 
-export interface newListingInput {
+export interface NewListingInput {
     title: string;
     price: number;
     tags: string[];
@@ -16,7 +16,7 @@ export interface newListingInput {
 export function useListingActions(){
     const createListing = useMutation(api.listings.create);
     const addListing = useCallback(
-        async(input: newListingInput): Promise<boolean> => {
+        async(input: NewListingInput): Promise<boolean> => {
             try {
                 await createListing(input);
                 return true;
