@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
-import { useListingActions } from "@/items/listingActions";
 import ProfilePicture from "@/components/ui/profilePicture";
+import { useListingActions } from "@/hooks/listingActions";
 import ItemCard from "@/items/itemCard";
+import { NewItem } from "@/items/newItem";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
+import React, { useState } from "react";
+import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../convex/_generated/api";
-import { NewItem } from "@/items/newItem";
 
 export default function ProfileScreen() {
 	const me = useQuery(api.users.getMe);
 	const currentUserId = me?._id; //undefined while loading
 
-  const [showPopup, setShowPopup] = useState<boolean>(false);
+	const [showPopup, setShowPopup] = useState<boolean>(false);
 	const { addListing, deleteListing } = useListingActions();
 
 	const myListings = useQuery(
@@ -35,9 +35,16 @@ export default function ProfileScreen() {
 			</View>
 			<Text style={styles.bannerText}>Products:</Text>
 			<View style={styles.itemContainer}>
-        {myListings.length === 0 && <Text>You have no listings</Text>}
-        <Button title="New Listing" onPress={() => setShowPopup(true)}></Button>
-        <NewItem visible={showPopup} onClose={() => setShowPopup(false)} onSubmit={addListing}></NewItem>
+				{myListings.length === 0 && <Text>You have no listings</Text>}
+				<Button
+					title="New Listing"
+					onPress={() => setShowPopup(true)}
+				></Button>
+				<NewItem
+					visible={showPopup}
+					onClose={() => setShowPopup(false)}
+					onSubmit={addListing}
+				></NewItem>
 				{myListings.map((item) => (
 					<ItemCard
 						key={item._id}
