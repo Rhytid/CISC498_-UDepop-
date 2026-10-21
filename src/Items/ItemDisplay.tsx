@@ -1,106 +1,51 @@
+import { useQuery } from "convex/react";
 import React, { useState } from "react";
-import type { Item, ItemLists } from "./ItemDef";
+import { FlatList, Text, TextInput, View } from "react-native";
+import { api } from "../../convex/_generated/api";
+import { Id } from "../../convex/_generated/dataModel";
 
-const tempListing: ItemLists = {
-  Items: [],
-};
-const tempItem: Item = {
-  Name: "test",
-  Tags: [],
-  Price: 42,
-  Description: "This is an item",
-};
+export function ListingList() {
+  const [search, setSearch] = useState("");
 
-export function ItemD() {
-  //Initialize the state to hold the textbox value
-  const [Name, setName] = useState<string>("");
-  const [Price, setPrice] = useState<number>(0);
-  const [Tags, setTags] = useState<string[]>([]);
-  const [Description, setDescription] = useState<string>("");
-  const [ItemListing, setItemListing] = useState<ItemLists>({ Items: [] });
+  const result = useQuery(api.listings.list, {
+    searchText: search || undefined, // empty string would trigger the search branch
+  });
 
-  // Updates the State whenever the user types
-  const nameSet = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setName(event.target.value);
-  };
-  const priceSet = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setPrice(Number(event.target.value));
-  };
-  /*const tagsSet = (event: {
-    //Eventually thisll be a dropdown of a premade tag list
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setTags(event.target.value);
-  };*/
-  const descriptionSet = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setDescription(event.target.value);
-  };
-  const ItemListingSet = () => {
-    setItemListing({ Items: [tempItem] });
-  };
-
-  function AddItem() {
-    const NewItem: Item = {
-      Name: Name,
-      Price: Price,
-      Tags: Tags,
-      Description: Description,
-    };
-    setItemListing((prev) => ({ Items: [...prev.Items, NewItem] }));
+  if (result === undefined) {
+    return <Text>Loading...</Text>;
   }
+  //Function to display the seller name
+  function SellerName({ userId }: { userId: Id<"users"> }) {
+    const user = useQuery(api.users.getById, { userId });
 
+    if (user === undefined) return <Text>Seller: ...</Text>;
+    if (user === null) return <Text>Seller: Unknown</Text>;
+    return <Text>Seller: {user.username}</Text>;
+  }
   return (
-    <div style={{ padding: "20px" }}>
-      <label htmlFor="username">Enter Name: </label>
-      <input
-        id="name"
-        type="text"
-        value={Name}
-        onChange={nameSet}
-        placeholder="Type something..."
+    <View style={{ padding: 20, flex: 1 }}>
+      <TextInput
+        value={search}
+        onChangeText={setSearch}
+        placeholder="Search listings..."
       />
-      <input
-        id="price"
-        type="text"
-        value={Price}
-        onChange={priceSet}
-        placeholder="Type something..."
-      />
-      {/*<input
-        id="tags"
-        type="text"
-        value={Tags}
-        onChange={tagsSet}
-        placeholder="Type something..."
-      />*/}
-      <input
-        id="description"
-        type="text"
-        value={Description}
-        onChange={descriptionSet}
-        placeholder="Type something..."
-      />
-      <button
-        onClick={AddItem}
-        style={{ backgroundColor: "#841584", color: "white" }}
-      >
-        Add Item
-      </button>
 
-      <ul>
-        {ItemListing.Items.map((item, i) => (
-          <li key={i}>
-            {item.Name} — ${item.Price} — {item.Description}
-          </li>
-        ))}
-      </ul>
-    </div>
+      <FlatList
+        data={result.page}
+        keyExtractor={(item) => item._id}
+        ListEmptyComponent={<Text>No listings found.</Text>}
+        renderItem={({ item }) => (
+          <View style={{ paddingVertical: 12 }}>
+            <Text style={{ fontWeight: "bold" }}>{item.title}</Text>
+            <Text>
+              <SellerName userId={item.ownerId} />
+            </Text>
+            <Text>${item.price}</Text>
+            <Text>{item.description}</Text>
+            <Text>{item.tags.join(", ")}</Text>
+          </View>
+        )}
+      />
+    </View>
   );
 }
-export default ItemD;

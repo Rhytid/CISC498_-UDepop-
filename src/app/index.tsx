@@ -1,9 +1,12 @@
 import * as Device from "expo-device";
+import React from "react";
 import { Platform, StyleSheet } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-import { BottomTabInset, MaxContentWidth, Spacing } from "@/constants/theme";
-import { ItemD } from "@/Items/ItemDisplay";
+import ItemC from "@/Items/ItemCreation";
+import { ListingList } from "@/Items/ItemDisplay";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 function getDevMenuHint() {
   if (Platform.OS === "web") {
@@ -25,10 +28,11 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
+  const itemList = useQuery(api.listings.list, {});
   return (
     <div>
-      <h1>Main Display</h1>
-      <ItemD />
+      <ItemC />
+      <ListingList />
     </div>
   );
 }
@@ -36,35 +40,11 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    flexDirection: "row",
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: "center",
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
     alignItems: "center",
     justifyContent: "center",
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
   },
   title: {
-    textAlign: "center",
-  },
-  code: {
-    textTransform: "uppercase",
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: "stretch",
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+    fontSize: 18,
+    fontWeight: "600",
   },
 });
