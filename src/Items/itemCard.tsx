@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Image, Pressable, StyleSheet, Text } from "react-native";
+import { Button, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -51,29 +51,31 @@ export default function ItemCard({ listing, onMessageSeller }: ItemCardProps) {
 			{
 				<Animated.View style={[styles.card, animatedCard]}>
           <Image
-            source={listing.photos.length > 0 ? { uri: listing.photos[0] }: require("../../assets/images/no-image.jpg")}
+            source={listing.photos[0] ? { uri: listing.photos[0] }: require("../../assets/images/no-image.jpg")}
             style={styles.image}
           />
 					<Text style={styles.name}>
 						{listing.title}
-						{listing.sold && (
-							<Text style={{ color: "red" }}> (Sold)</Text>
-						)}
+						{listing.sold && (<Text style={{ color: "red" }}> (Sold)</Text>)}
 					</Text>
-					<Text style={styles.price}>
-						${listing.price.toFixed(2)}
-					</Text>
-					<Text style={styles.description}>
-						{listing.description}
-					</Text>
-					<Button
-						title="Message Seller"
-						onPress={() => {
-							if (onMessageSeller) {
-								onMessageSeller(listing.ownerId);
-							}
-						}}
-					/>
+					<Text style={styles.price}>${listing.price.toFixed(2)}</Text>
+          {listing.tags.length > 0 && (
+            <Text style={{ fontStyle: "italic" }}>Tags: {listing.tags.join(", ")}</Text>
+          )}
+          {expanded && (
+            <View>
+              <Text style={styles.description}>{listing.description}</Text>
+              <Button
+                title="Message Seller"
+                onPress={() => {
+                  if (onMessageSeller) {
+                    onMessageSeller(listing.ownerId);
+                  }
+                }}
+              />
+          </View>
+          )
+        }
 				</Animated.View>
 			}
 		</Pressable>
