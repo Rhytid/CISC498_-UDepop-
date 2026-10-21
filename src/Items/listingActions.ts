@@ -1,3 +1,3 @@
-export function deleteListing(){
-    const deleteListing = async (listingId: string) => {
+export function deleteListing() {
+  const deleteListing = async (listingId: string) => {};
 }
