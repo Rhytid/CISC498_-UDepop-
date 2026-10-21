@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
-import { describe, expect, test } from "vitest";
 import { convexTest, type TestConvex } from "convex-test";
+import { describe, expect, test } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { asUser, seedListing, seedUser } from "./testHelpers";
@@ -20,9 +20,12 @@ async function messageSeller(t: TestConvex<typeof schema>) {
   const listingId = await seedListing(t, seller, listingInput);
   const buyerId = await seedUser(t, { username: "buyer" });
   const asBuyer = asUser(t, buyerId);
-  const conversationId = await asBuyer.mutation(api.conversations.start, {
-    listingId,
-  });
+  const conversationId = await asBuyer.mutation(
+    api.conversations.startItemConvo,
+    {
+      listingId,
+    },
+  );
   await asBuyer.mutation(api.messages.send, {
     conversationId,
     body: "hello",
@@ -45,7 +48,9 @@ describe("notifications", () => {
     const id = list![0]._id;
     await asSeller.mutation(api.notifications.markRead, { id });
     expect(await asSeller.query(api.notifications.unreadCount)).toBe(0);
-    expect((await asSeller.query(api.notifications.list))?.[0]?.read).toBe(true);
+    expect((await asSeller.query(api.notifications.list))?.[0]?.read).toBe(
+      true,
+    );
   });
 
   test("markAllRead clears every unread notification", async () => {
