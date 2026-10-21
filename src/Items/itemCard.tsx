@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
+	FadeOut,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -10,9 +11,11 @@ import { Doc, Id } from "../../convex/_generated/dataModel";
 export interface ItemCardProps {
 	listing: Doc<"listings">;
 	onMessageSeller?: (sellerId: Id<"users">) => void;
+	onEditListing?: (listingId: Id<"listings">) => void;
+	onDeleteListing?: (listingId: Id<"listings">) => void;
 }
 
-export default function ItemCard({ listing, onMessageSeller }: ItemCardProps) {
+export default function ItemCard({ listing, onMessageSeller, onEditListing, onDeleteListing }: ItemCardProps) {
 	const [expanded, setExpanded] = React.useState(false);
 	const hoverAnim = useSharedValue<number>(0);
 	const expandAnim = useSharedValue<number>(300);
@@ -49,33 +52,54 @@ export default function ItemCard({ listing, onMessageSeller }: ItemCardProps) {
 			onPress={handlePress}
 		>
 			{
-				<Animated.View style={[styles.card, animatedCard]}>
-          <Image
-            source={listing.photos[0] ? { uri: listing.photos[0] }: require("../../assets/images/no-image.jpg")}
-            style={styles.image}
-          />
+			<Animated.View style={[styles.card, animatedCard]}>
+				<Image
+					source={listing.photos[0] ? { uri: listing.photos[0] }: require("../../assets/images/no-image.jpg")}
+					style={styles.image}
+				/>
 					<Text style={styles.name}>
 						{listing.title}
 						{listing.sold && (<Text style={{ color: "red" }}> (Sold)</Text>)}
 					</Text>
 					<Text style={styles.price}>${listing.price.toFixed(2)}</Text>
-          {listing.tags.length > 0 && (
-            <Text style={{ fontStyle: "italic" }}>Tags: {listing.tags.join(", ")}</Text>
-          )}
-          {expanded && (
-            <View>
-              <Text style={styles.description}>{listing.description}</Text>
-              <Button
-                title="Message Seller"
-                onPress={() => {
-                  if (onMessageSeller) {
-                    onMessageSeller(listing.ownerId);
-                  }
-                }}
-              />
-          </View>
-          )
-        }
+					{expanded && (
+						<Animated.View
+							exiting={FadeOut.duration(300)}
+						>
+							{listing.tags.length > 0 && (
+								<Text style={{ fontStyle: "italic" }}>
+									Tags: {listing.tags.join(", ")}
+								</Text>
+							)}
+							<View>
+								<Text style={styles.description}>{listing.description}</Text>
+								<Button
+									title="Message Seller"
+									onPress={() => {
+										if (onMessageSeller) {
+											onMessageSeller(listing.ownerId);
+										}
+									}}
+								/>
+								<Button
+									title="Edit Listing"
+									onPress={() => {
+										if (onEditListing) {
+											onEditListing(listing._id);
+										}
+									}}
+								/>
+								<Button
+									title="Delete Listing"
+									onPress={() => {
+										if (onDeleteListing) {
+											onDeleteListing(listing._id);
+										}
+									}}
+								/>
+							</View>
+						</Animated.View>
+					)}
 				</Animated.View>
 			}
 		</Pressable>
