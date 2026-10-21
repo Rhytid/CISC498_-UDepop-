@@ -1,12 +1,10 @@
 import * as Device from "expo-device";
 import React from "react";
-import { Platform, StyleSheet } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import ItemC from "@/Items/ItemCreation";
 import { ListingList } from "@/Items/ItemDisplay";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import OwnMessages from "./UserMessaging/OwnMessages";
 
 function getDevMenuHint() {
@@ -29,21 +27,19 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
-  const itemList = useQuery(api.listings.list, {});
   return (
-    <div>
+    <View style={styles.container}>
       <ItemC />
       <ListingList />
       <OwnMessages />
-    </div>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    padding: 16,
   },
   title: {
     fontSize: 18,
