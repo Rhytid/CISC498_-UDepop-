@@ -1,8 +1,9 @@
 import ProfilePicture from "@/components/ui/profilePicture";
 import ItemCard from "@/Items/itemCard";
-import itemData from "../data/itemData.json";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
+import itemData from "../data/itemData.json";
+
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 const items = Object.values(itemData).flat();

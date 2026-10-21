@@ -9,7 +9,7 @@ export default function MessageButton({
 }: {
   listingId: Id<"listings">;
 }) {
-  const startConvo = useMutation(api.conversations.startItemConvo);
+  const startConvo = useMutation(api.conversations.start);
   const popupRef = useRef<Window | null>(null);
 
   if (Platform.OS !== "web") return null;
