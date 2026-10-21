@@ -5,10 +5,18 @@ import React from "react";
 import itemData from "../data/itemData.json";
 
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-
-const items = Object.values(itemData).flat();
+import { api } from "../../convex/_generated/api";
+import { useQuery } from "convex/react";
 
 export default function ProfileScreen() {
+  const [search, setSearch] = React.useState("");
+  const result = useQuery(api.listings.list, {
+      searchText: search || undefined, // empty string would trigger the search branch
+  });
+  if (result === undefined) {
+      return <Text>Loading...</Text>;
+  }
+
   return (
     <ScrollView>
       <View style={styles.banner}>
@@ -20,8 +28,8 @@ export default function ProfileScreen() {
       </View>
       <Text style={styles.bannerText}>Products:</Text>
       <View style={styles.itemContainer}>
-        {items.map((item) => (
-          <ItemCard key={item.name} item={item} />
+        {result.page.map((item) => (
+          <ItemCard key={item._id} listing={item} />
         ))}
       </View>
     </ScrollView>
