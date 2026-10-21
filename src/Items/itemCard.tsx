@@ -10,6 +10,7 @@ import { Doc, Id } from "../../convex/_generated/dataModel";
 
 export interface ItemCardProps {
 	listing: Doc<"listings">;
+	currentUserId: Doc<"users">["_id"]
 	onMessageSeller?: (sellerId: Id<"users">) => void;
 	onEditListing?: (listingId: Id<"listings">) => void;
 	onDeleteListing?: (listingId: Id<"listings">) => void;

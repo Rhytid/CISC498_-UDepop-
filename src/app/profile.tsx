@@ -6,8 +6,10 @@ import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";
+import { useListingActions } from "@/Items/listingActions";
 
 export default function ProfileScreen() {
+  const { deleteListing } = useListingActions();
   const [search, setSearch] = React.useState("");
   const result = useQuery(api.listings.list, {
       searchText: search || undefined, // empty string would trigger the search branch
@@ -15,6 +17,7 @@ export default function ProfileScreen() {
   if (result === undefined) {
       return <Text>Loading...</Text>;
   }
+
 
   return (
     <ScrollView>
@@ -28,7 +31,7 @@ export default function ProfileScreen() {
       <Text style={styles.bannerText}>Products:</Text>
       <View style={styles.itemContainer}>
         {result.page.map((item) => (
-          <ItemCard key={item._id} listing={item} />
+          <ItemCard key={item._id} listing={item} currentUserId={item.ownerId} onDeleteListing={deleteListing}/>
         ))}
       </View>
     </ScrollView>
