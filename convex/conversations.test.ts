@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
-import { describe, expect, test } from "vitest";
 import { convexTest } from "convex-test";
+import { describe, expect, test } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { asUser, seedListing, seedUser } from "./testHelpers";
@@ -23,10 +23,10 @@ describe("conversations", () => {
     const buyerId = await seedUser(t, { username: "buyer" });
     const asBuyer = asUser(t, buyerId);
 
-    const first = await asBuyer.mutation(api.conversations.start, {
+    const first = await asBuyer.mutation(api.conversations.startItemConvo, {
       listingId,
     });
-    const second = await asBuyer.mutation(api.conversations.start, {
+    const second = await asBuyer.mutation(api.conversations.startItemConvo, {
       listingId,
     });
     expect(second).toBe(first);
@@ -39,7 +39,7 @@ describe("conversations", () => {
     const asSeller = asUser(t, sellerId);
 
     await expect(
-      asSeller.mutation(api.conversations.start, { listingId }),
+      asSeller.mutation(api.conversations.startItemConvo, { listingId }),
     ).rejects.toThrow("yourself");
   });
 
@@ -49,7 +49,9 @@ describe("conversations", () => {
     const listingId = await seedListing(t, sellerId, listingInput);
     const buyerId = await seedUser(t, { username: "buyer" });
     const asBuyer = asUser(t, buyerId);
-    const id = await asBuyer.mutation(api.conversations.start, { listingId });
+    const id = await asBuyer.mutation(api.conversations.startItemConvo, {
+      listingId,
+    });
 
     const list = await asBuyer.query(api.conversations.list);
     expect(list).toHaveLength(1);
@@ -66,7 +68,9 @@ describe("conversations", () => {
     const listingId = await seedListing(t, sellerId, listingInput);
     const buyerId = await seedUser(t, { username: "buyer" });
     const asBuyer = asUser(t, buyerId);
-    const id = await asBuyer.mutation(api.conversations.start, { listingId });
+    const id = await asBuyer.mutation(api.conversations.startItemConvo, {
+      listingId,
+    });
 
     await asBuyer.mutation(api.conversations.archive, { id });
     expect((await asBuyer.query(api.conversations.get, { id }))?.archived).toBe(
