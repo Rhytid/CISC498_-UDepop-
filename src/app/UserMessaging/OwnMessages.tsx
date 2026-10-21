@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Button, Platform } from "react-native";
+import { Platform, Pressable, Text, Button } from "react-native";
 
 export default function OwnMessages() {
   const popupRef = useRef<Window | null>(null);

@@ -18,6 +18,7 @@ export function ListingList() {
   //Function to display the seller name
 
   // Pulls the userId from the item and then searches in the directory for the User
+
   function SellerName({ userId }: { userId: Id<"users"> }) {
     const user = useQuery(api.users.getById, { userId });
 

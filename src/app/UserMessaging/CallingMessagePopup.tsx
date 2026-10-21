@@ -1,6 +1,6 @@
 import { useMutation } from "convex/react";
 import React, { useRef } from "react";
-import { Button, Platform } from "react-native";
+import { Platform, Pressable, Text, Button } from "react-native";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 
