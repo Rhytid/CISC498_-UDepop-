@@ -96,7 +96,7 @@ export const get = query({
 
 // Start (or reuse) a conversation about a listing. The seller is the other
 // participant, so this is idempotent per (listing, buyer, seller).
-export const start = mutation({
+export const startItemConvo = mutation({
   args: { listingId: v.id("listings") },
   handler: async (ctx, args) => {
     const me = await requireUser(ctx);
