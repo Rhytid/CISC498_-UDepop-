@@ -1,11 +1,13 @@
 import * as Device from "expo-device";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing, Platform, StyleSheet, Text, View } from "react-native";
+import { Animated, Easing, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import SearchBar from '@/components/searchbar';
 import { ThemedText } from "@/components/themed-text";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 function getDevMenuHint() {
   if (Platform.OS === "web") {
@@ -31,6 +33,11 @@ export default function HomeScreen() {
   const rotatingWords = ['outfit.', 'book.', 'hobby.', 'couch.'];
   const [rotatingWordIndex, setRotatingWordIndex] = useState(0);
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const categories = [ 
+    {name: 'Furniture', icon: 'sofa' },
+    {name: 'Clothing', icon: 'tshirt-crew' },
+    {name: 'Electronics', icon: 'laptop'},
+  ] as const;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -64,7 +71,9 @@ export default function HomeScreen() {
   }, [slideAnim]);
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
+      
+      {/* Banner & Search Code */}
       <View style={styles.banner}>
         <View style={styles.insideBanner}>
           <View style={styles.textContainer}>
@@ -80,7 +89,33 @@ export default function HomeScreen() {
           <SearchBar/>
         </View>
       </View>
-    </View>
+      {/* End Banner & Search Code */}
+
+      {/* Category Buttons */}
+      <View style={styles.categoriesContainer}>
+        <Text style={styles.categoriesTitle}>
+          Start Here:
+        </Text>
+
+        <View style={styles.categoryRow}>
+          {categories.map((category) => (
+            <Pressable key={category.name}
+              style={styles.categoryButton}
+              onPress={() => console.log(category.name)}
+            >
+              <MaterialCommunityIcons
+              name={category.icon}
+              size={32}
+              color="white"
+              />
+              <Text style={styles.categoryText}>
+                {category.name}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 
@@ -90,6 +125,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     paddingTop: 20,
+    paddingBottom: 40,
   },
   title: {
     fontSize: 18,
@@ -100,11 +136,6 @@ const styles = StyleSheet.create({
     height: '25%',
     borderRadius: 20,
     backgroundColor: '#607D8B',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  searchContainer: {
-    width: '70%',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -137,5 +168,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 15,
     flexWrap: 'wrap',
+  },
+  categoriesContainer: {
+    width: '75%',
+    marginTop: 40,
+  },
+  categoriesTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  categoryRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 20,
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  categoryButton: {
+    backgroundColor: '#607D8B',
+    paddingVertical: 30,
+    paddingHorizontal: 25,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    flexGrow: 1,
+    flexBasis: 160,
+  },
+  categoryText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   }
 });
