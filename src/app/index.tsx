@@ -3,8 +3,12 @@ import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
+import ItemCard from "@/Items/itemCard";
 import ItemC from "@/Items/ItemCreation";
 import { ListingList } from "@/Items/ItemDisplay";
+import { useQuery } from "convex/react";
+import { Text } from "expo-router/build/react-navigation";
+import { api } from "../../convex/_generated/api";
 import OwnMessages from "./UserMessaging/OwnMessages";
 
 function getDevMenuHint() {
@@ -27,22 +31,52 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
+  const [search, setSearch] = React.useState("");
+
+  const result = useQuery(api.listings.list, {
+    searchText: search || undefined, // empty string would trigger the search branch
+  });
+  if (result === undefined) {
+    return <Text>Loading...</Text>;
+  }
   return (
     <View style={styles.container}>
       <ItemC />
-      <ListingList />
+      <Text style={styles.bannerText}>Products:</Text>
+      <View style={styles.itemContainer}>
+        {result.page.map((item) => (
+          <ItemCard key={item._id} listing={item} />
+        ))}
+      </View>
       <OwnMessages />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
     padding: 16,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "600",
+  banner: {
+    width: "100%",
+    height: 250,
+    borderRadius: 10,
+    marginTop: 10,
+    backgroundColor: "#ccc",
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  bannerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    paddingTop: 20,
+  },
+  itemContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "flex-start",
   },
 });

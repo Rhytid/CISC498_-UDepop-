@@ -156,6 +156,7 @@ export const update = mutation({
   },
 });
 
+//Function to remove a listing
 export const remove = mutation({
   args: { id: v.id("listings") },
   handler: async (ctx, args) => {

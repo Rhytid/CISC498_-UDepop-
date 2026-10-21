@@ -1,21 +1,31 @@
+import MessageButton from "@/app/UserMessaging/CallingMessagePopup";
 import React from "react";
-import { Pressable, StyleSheet } from "react-native";
-import {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
+import { Button, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import Animated, {
+	FadeOut,
+	useAnimatedStyle,
+	useSharedValue,
+	withTiming,
 } from "react-native-reanimated";
+import { Doc, Id } from "../../convex/_generated/dataModel";
+export interface ItemCardProps {
+  listing: Doc<"listings">;
+  onMessageSeller?: (sellerId: Id<"users">) => void;
+  onEditListing?: (listingId: Id<"listings">) => void;
+  onDeleteListing?: (listingId: Id<"listings">) => void;
+}
 
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-
-export default function ItemCard() {
+export default function ItemCard({
+  listing,
+  onMessageSeller,
+  onEditListing,
+  onDeleteListing,
+}: ItemCardProps) {
   const [expanded, setExpanded] = React.useState(false);
   const hoverAnim = useSharedValue<number>(0);
   const expandAnim = useSharedValue<number>(300);
 
   //Pulls the list of items from the cloud
-  const itemList = useQuery(api.listings.list, {});
 
   const animatedCard = useAnimatedStyle(() => {
     return {
@@ -46,14 +56,52 @@ export default function ItemCard() {
       onHoverOut={handleHoverOut}
       onPress={handlePress}
     >
-      {/*<Animated.View style={[styles.card, animatedCard]} key={item.name}>
-        <Image source={{ uri: item.image }} style={styles.image} />
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.price}>${item.price.toFixed(2)}</Text>
-        <Text style={styles.description}>{item.description}</Text>
-        <Button onPress={() => {}}>View Details</Button>
-        <Button onPress = {() => {}}>Message User</Button>
-      </Animated.View>*/}
+      {
+        <Animated.View style={[styles.card, animatedCard]}>
+          <Image
+            source={
+              listing.photos[0]
+                ? { uri: listing.photos[0] }
+                : require("../../assets/images/no-image.jpg")
+            }
+            style={styles.image}
+          />
+          <Text style={styles.name}>
+            {listing.title}
+            {listing.sold && <Text style={{ color: "red" }}> (Sold)</Text>}
+          </Text>
+          <Text style={styles.price}>${listing.price.toFixed(2)}</Text>
+          {expanded && (
+            <Animated.View exiting={FadeOut.duration(300)}>
+              {listing.tags.length > 0 && (
+                <Text style={{ fontStyle: "italic" }}>
+                  Tags: {listing.tags.join(", ")}
+                </Text>
+              )}
+              <View>
+                <Text style={styles.description}>{listing.description}</Text>
+                <MessageButton listingId={listing._id} />
+                <Button
+                  title="Edit Listing"
+                  onPress={() => {
+                    if (onEditListing) {
+                      onEditListing(listing._id);
+                    }
+                  }}
+                />
+                <Button
+                  title="Delete Listing"
+                  onPress={() => {
+                    if (onDeleteListing) {
+                      onDeleteListing(listing._id);
+                    }
+                  }}
+                />
+              </View>
+            </Animated.View>
+          )}
+        </Animated.View>
+      }
     </Pressable>
   );
 }
