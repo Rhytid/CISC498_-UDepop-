@@ -1,6 +1,6 @@
 import { useMutation } from "convex/react";
 import React, { useRef } from "react";
-import { Platform, Pressable, Text } from "react-native";
+import { Platform, Pressable, Text, Button } from "react-native";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 
@@ -22,8 +22,8 @@ export default function MessageButton({
     if (!popupRef.current || popupRef.current.closed) {
       const w = 400,
         h = 500;
-      const left = window.screenX + (window.outerWidth - w) / 2;
-      const top = window.screenY + (window.outerHeight - h) / 2;
+      const left = window.screen.availWidth - w;
+      const top = window.screen.availHeight - h;
       popupRef.current = window.open(
         "about:blank",
         "MyPopup",
@@ -44,9 +44,5 @@ export default function MessageButton({
     }
   };
 
-  return (
-    <Pressable onPress={onPress}>
-      <Text style={{ color: "blue" }}>Message seller</Text>
-    </Pressable>
-  );
+  return <Button title="Message Seller" onPress={onPress} />;
 }

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Platform, Pressable, Text } from "react-native";
+import { Platform, Pressable, Text, Button } from "react-native";
 
 export default function OwnMessages() {
   const popupRef = useRef<Window | null>(null);
@@ -26,9 +26,5 @@ export default function OwnMessages() {
     );
   };
 
-  return (
-    <Pressable onPress={onPress}>
-      <Text style={{ color: "blue" }}>My messages</Text>
-    </Pressable>
-  );
+  return <Button title="My Messages" onPress={onPress} />;
 }
