@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "convex/react";
 import React, { useState } from "react";
 import {
+    Button,
     Modal,
     Pressable,
     StyleSheet,
@@ -68,6 +69,7 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
                     <TextInput style={styles.input} placeholder="Enter price" inputMode="numeric" value={price === 0 ? '' : price.toString()} onChangeText={(value) => setPrice(+value)}/>
                     <TextInput style={[styles.input, styles.multilineinput]} multiline maxLength={500} placeholder="Enter description (max 500 characters)" value={description} onChangeText={setDescription}/>
                     <AnimatedMulti value={tags} onChange={setTags}/>
+                    <Button title={"Create"} onPress={handleSubmit}/>
 				</View>
 			</View>
 		</Modal>
