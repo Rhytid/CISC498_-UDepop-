@@ -7,7 +7,9 @@ import { ThemedText } from "@/components/themed-text";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
+import ItemCard from "@/Items/itemCard";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import itemData from "../data/itemData.json";
 
 function getDevMenuHint() {
   if (Platform.OS === "web") {
@@ -38,6 +40,7 @@ export default function HomeScreen() {
     {name: 'Clothing', icon: 'tshirt-crew' },
     {name: 'Electronics', icon: 'laptop'},
   ] as const;
+  const items = Object.values(itemData).flat();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -114,6 +117,12 @@ export default function HomeScreen() {
             </Pressable>
           ))}
         </View>
+      </View>
+
+      <View style={styles.itemContainer}>
+        {items.map((item) => (
+          <ItemCard key={item.name} item={item} />
+        ))}
       </View>
     </ScrollView>
   );
@@ -200,5 +209,11 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
-  }
+  },
+  itemContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "flex-start",
+  },
 });
