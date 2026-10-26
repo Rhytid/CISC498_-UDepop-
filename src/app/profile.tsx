@@ -1,8 +1,9 @@
 import ProfilePicture from "@/components/ui/profilePicture";
 import ItemCard from "@/Items/itemCard";
-import itemData from "../data/itemData.json";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
+import itemData from "../data/itemData.json";
+
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../convex/_generated/api";
 import { useQuery } from "convex/react";

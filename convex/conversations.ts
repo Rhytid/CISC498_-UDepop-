@@ -96,11 +96,13 @@ export const get = query({
 
 // Start (or reuse) a conversation about a listing. The seller is the other
 // participant, so this is idempotent per (listing, buyer, seller).
-export const start = mutation({
+export const startItemConvo = mutation({
   args: { listingId: v.id("listings") },
   handler: async (ctx, args) => {
     const me = await requireUser(ctx);
+
     const listing = await ctx.db.get(args.listingId);
+
     if (listing === null) {
       throw new Error("Listing not found");
     }
@@ -195,36 +197,5 @@ export const unarchive = mutation({
     }
     await ctx.db.patch(args.id, { archived: false });
     return await ctx.db.get(args.id);
-  },
-});
-
-// Find the existing conversation between me and a username (null if none yet).
-export const getConvoId = query({
-  args: { username: v.string() },
-  handler: async (ctx, args) => {
-    const me = await getCurrentUser(ctx);
-    if (me === null) return null;
-
-    const other = await ctx.db
-      .query("users")
-      .withIndex("by_username", (q) => q.eq("username", args.username))
-      .unique();
-    if (other === null) return null;
-
-    const asA = await ctx.db
-      .query("conversations")
-      .withIndex("by_users", (q) =>
-        q.eq("userA", me._id).eq("userB", other._id),
-      )
-      .unique();
-    if (asA !== null) return asA._id;
-
-    const asB = await ctx.db
-      .query("conversations")
-      .withIndex("by_users", (q) =>
-        q.eq("userA", other._id).eq("userB", me._id),
-      )
-      .unique();
-    return asB?._id ?? null;
   },
 });

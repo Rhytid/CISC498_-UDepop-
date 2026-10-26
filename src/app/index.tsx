@@ -2,12 +2,14 @@ import * as Device from "expo-device";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Easing, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
+import ItemC from "@/Items/ItemCreation";
+import ItemCard from "@/Items/itemCard";
 import SearchBar from '@/components/searchbar';
 import { ThemedText } from "@/components/themed-text";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import OwnMessages from "./UserMessaging/OwnMessages";
 
-import ItemCard from "@/Items/itemCard";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import itemData from "../data/itemData.json";
 
@@ -41,6 +43,11 @@ export default function HomeScreen() {
     {name: 'Electronics', icon: 'laptop'},
   ] as const;
   const items = Object.values(itemData).flat();
+  const [search, setSearch] = React.useState("");
+
+  const result = useQuery(api.listings.list, {
+    searchText: search || undefined,
+  });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -73,8 +80,14 @@ export default function HomeScreen() {
     };
   }, [slideAnim]);
 
+  if (result === undefined) {
+    return <Text>Loading...</Text>;
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView 
+    style={styles.scrollView}
+    contentContainerStyle={styles.container}>
       
       {/* Banner & Search Code */}
       <View style={styles.banner}>
@@ -118,12 +131,16 @@ export default function HomeScreen() {
           ))}
         </View>
       </View>
+      <ItemC />
+      <Text style={styles.bannerText}>Products:</Text>
 
       <View style={styles.itemContainer}>
-        {items.map((item) => (
-          <ItemCard key={item.name} item={item} />
+        {result.page.map((item) => (
+          <ItemCard key={item._id} listing={item} />
         ))}
       </View>
+
+      <OwnMessages />
     </ScrollView>
   );
 }
@@ -136,9 +153,24 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 40,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "600",
+  scrollView: {
+    flex: 1,
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
+  content: {
+    paddingBottom: 40,
+  },
+  itemContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "flex-start",
+  },
+  bannerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    paddingTop: 20,
   },
   banner: {
     width: '75%',
@@ -209,11 +241,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
-  },
-  itemContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    alignItems: "flex-start",
   },
 });
