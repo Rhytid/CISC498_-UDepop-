@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
@@ -7,9 +8,12 @@ export const TagList: string[] = [
   "sophomore",
   "junior",
   "senior",
-  "delivery",
   "drop-off",
   "pickup",
+  "furniture",
+  "clothes",
+  "decor",
+  "class materials",
 ];
 
 const tagOptions: TagType[] = TagList.map((t) => ({ id: t, value: t }));
@@ -46,7 +50,7 @@ export function TagPicker({ value, onChange }: tagProps) {
           <View key={tag.id} style={styles.multiValue}>
             <Text style={styles.multiValueLabel}>{tag.value}</Text>
             <Pressable onPress={() => toggle(tag)} hitSlop={8}>
-              <Text style={styles.multiValueLabel}>x</Text>
+              <Text style={styles.multiValueLabel}><Ionicons name="close"></Ionicons></Text>
             </Pressable>
           </View>
         ))}
@@ -90,6 +94,7 @@ const styles = StyleSheet.create({
     minHeight: 38,
     paddingHorizontal: 8,
     paddingVertical: 4,
+    marginBottom: 10,
     backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#ccc",
