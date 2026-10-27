@@ -7,6 +7,7 @@ import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
 	Button,
+	Image,
 	Modal,
 	Pressable,
 	StyleSheet,
@@ -51,6 +52,7 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
 
 		if (!result.canceled) {
 			setPhotos((prev) => [...prev, ...result.assets.map((a) => a.uri)]);
+			console.log(photos);
 		}
 	};
 
@@ -112,8 +114,40 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
 					<Pressable style={styles.closeButton} onPress={onClose}>
 						<Ionicons name="close" size={24} color="#000" />
 					</Pressable>
+					<Text
+						style={{
+							paddingBottom: 10,
+							paddingTop: 10,
+							fontWeight: "bold",
+						}}
+					>
+						Add New Listing:
+					</Text>
 					<Button title={"Add Pictures"} onPress={pickPhotos} />
-					<Text>Add New Listing</Text>
+					{photos.length > 0 &&
+						photos.map((p) => (
+							<View key={p}>
+								<Image
+									source={{ uri: p }}
+									style={{
+										width: 150,
+										height: 150,
+										margin: 5,
+									}}
+								/>
+								<Pressable
+									onPress={() =>
+										setPhotos((current) =>
+											current.filter(
+												(photo) => photo !== p,
+											),
+										)
+									}
+								>
+									<Ionicons name="close" color={"red"} />
+								</Pressable>
+							</View>
+						))}
 					<TextInput
 						style={styles.input}
 						placeholder="Enter title"
@@ -151,7 +185,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	card: {
-		width: "70%",
+		width: "50%",
 		backgroundColor: "#fff",
 		borderRadius: 20,
 		padding: 16,
@@ -164,6 +198,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: "#ccc",
 		borderRadius: 10,
+		color: "#999",
 		padding: 10,
 		marginBottom: 10,
 	},

@@ -5,7 +5,7 @@ import { NewItem } from "@/items/newItem";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
 import React, { useState } from "react";
-import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Button, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../convex/_generated/api";
 
 export default function ProfileScreen() {
@@ -34,17 +34,18 @@ export default function ProfileScreen() {
 				<Text>3 Products | 50 Followers</Text>
 			</View>
 			<Text style={styles.bannerText}>Products:</Text>
-			<View style={styles.itemContainer}>
+			<View style={{ alignItems: "center" }}>
 				{myListings.length === 0 && <Text>You have no listings</Text>}
-				<Button
-					title="New Listing"
-					onPress={() => setShowPopup(true)}
-				></Button>
-				<NewItem
-					visible={showPopup}
-					onClose={() => setShowPopup(false)}
-					onSubmit={addListing}
-				></NewItem>
+					<Pressable onPress={() => setShowPopup(true)} style={styles.button}>
+						<Text>New Listing</Text>
+					</Pressable>
+					<NewItem
+						visible={showPopup}
+						onClose={() => setShowPopup(false)}
+						onSubmit={addListing}
+					></NewItem>
+			</View>
+			<View style={styles.itemContainer}>
 				{myListings.map((item) => (
 					<ItemCard
 						key={item._id}
@@ -83,4 +84,11 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "flex-start",
 	},
+	button: {
+		backgroundColor: "#eee",
+		borderRadius: 10,
+		padding: 10,
+		margin: 10,
+		width: "10%"
+	}
 });
