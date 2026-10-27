@@ -14,6 +14,9 @@ export const TagList: string[] = [
   "clothes",
   "decor",
   "class materials",
+  "electronics",
+  "kitchen",
+  "enterainment"
 ];
 
 const tagOptions: TagType[] = TagList.map((t) => ({ id: t, value: t }));
