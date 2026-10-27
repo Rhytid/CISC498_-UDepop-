@@ -3,6 +3,9 @@ import React from "react";
 import { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
+/**
+ * Tag labels available in the picker. Each label is also used as the tag ID.
+ */
 export const TagList: string[] = [
   "freshman",
   "sophomore",
@@ -19,15 +22,31 @@ export const TagList: string[] = [
   "enterainment"
 ];
 
+// Convert the public label list to the shape consumed by TagPicker.
 const tagOptions: TagType[] = TagList.map((t) => ({ id: t, value: t }));
 
+/** A tag's stable identifier and user-visible label. */
 export type TagType = { id: string; value: string };
 
+/**
+ * Props for TagPicker. The selected values are controlled by the parent.
+ * `onChange` receives the complete updated selection after a tag is toggled.
+ */
 interface tagProps {
   value: TagType[];
   onChange: (next: TagType[]) => void;
 };
 
+/**
+ * Displays selected tags as removable chips and an expandable list of choices.
+ *
+ * Selection is controlled by `value` and `onChange`; only whether the choices
+ * menu is open is managed internally. Tapping an option toggles it in the
+ * selection, and tapping a chip's close icon removes it.
+ *
+ * Implementation note: most of this component was generated with Claude
+ * Sonnet 5.5.
+ */
 export function TagPicker({ value, onChange }: tagProps) {
   const [open, setOpen] = useState(false);
 
