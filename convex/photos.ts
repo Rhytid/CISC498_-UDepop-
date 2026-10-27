@@ -26,7 +26,7 @@ export const attach = mutation({
     if (listing.ownerId !== user._id) {
       throw new Error("You can only edit your own listings");
     }
-
+    if (listing.photos.length >= 6) throw new Error("Photo limit reached");
     const photos = [...listing.photos, args.storageId];
     await ctx.db.patch(args.listingId, { photos, updatedAt: Date.now() });
     return await ctx.db.get(args.listingId);
@@ -48,6 +48,9 @@ export const removePhoto = mutation({
     if (listing.ownerId !== user._id) {
       throw new Error("You can only edit your own listings");
     }
+    if (!listing.photos.includes(args.storageId)) {
+   	  throw new Error("Photo not on this listing");
+   }
 
     const photos = listing.photos.filter((id) => id !== args.storageId);
     await ctx.db.patch(args.listingId, { photos, updatedAt: Date.now() });

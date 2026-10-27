@@ -1,20 +1,20 @@
 import type { NewListingInput } from "@/hooks/listingActions";
 import type { TagType } from "@/tags/tags";
+import { TagPicker } from "@/tags/tags";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "convex/react";
+import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import {
-    Button,
-    Modal,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
+	Button,
+	Modal,
+	Pressable,
+	StyleSheet,
+	Text,
+	TextInput,
+	View,
 } from "react-native";
 import { api } from "../../convex/_generated/api";
-import AnimatedMulti from "@/tags/tagDef";
-import { TagPicker } from "@/tags/tags";
 
 interface NewItemProps {
 	visible: boolean;
@@ -30,17 +30,72 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
 	const [category, setCategory] = useState<string>("");
 	const [photos, setPhotos] = useState<string[]>([]);
 
-	const createItem = useMutation(api.listings.create);
+	const pickPhotos = async () => {
+		const permissionResult =
+			await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+		if (permissionResult.granted === false) {
+			alert("Permission to access camera roll is required.");
+			return;
+		}
+
+		let result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: "images",
+			allowsMultipleSelection: true,
+			allowsEditing: true,
+			aspect: [1, 1],
+			quality: 1,
+		});
+
+		console.log(result);
+
+		if (!result.canceled) {
+			setPhotos((prev) => [...prev, ...result.assets.map((a) => a.uri)]);
+		}
+	};
+
+	const generateUploadUrl = useMutation(api.photos.generateUploadUrl);
+	async function uploadPhoto(uri: string): Promise<string> {
+		const uploadUrl = await generateUploadUrl();
+
+		// Turn the local file into a Blob so it can be sent as a request body
+		const blob = await (await fetch(uri)).blob();
+
+		const res = await fetch(uploadUrl, {
+			method: "POST",
+			headers: { "Content-Type": blob.type || "image/jpeg" },
+			body: blob,
+		});
+		if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+
+		const { storageId } = await res.json();
+		return storageId;
+	}
+
 	async function handleSubmit() {
-		const ok = await onSubmit({ title, description, price, category, tags: tags.map((t) => t.value), photos})
-		if (ok) {
-			// reset the form after success
-			setTitle("");
-			setPrice(0);
-			setTags([]);
-			setDescription("");
-			setPhotos([]);
-			onClose();
+		try {
+			// Upload all photos, get back storage IDs
+			const storageIds = await Promise.all(photos.map(uploadPhoto));
+
+			const ok = await onSubmit({
+				title,
+				description,
+				price,
+				category,
+				tags: tags.map((t) => t.value),
+				photos: storageIds, // IDs, not local URIs
+			});
+			if (ok) {
+				setTitle("");
+				setPrice(0);
+				setTags([]);
+				setDescription("");
+				setPhotos([]);
+				onClose();
+			}
+		} catch (e) {
+			console.error(e);
+			alert("Couldn't upload photos. Please try again.");
 		}
 	}
 
@@ -55,14 +110,33 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
 				<Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
 				<View style={styles.card}>
 					<Pressable style={styles.closeButton} onPress={onClose}>
-                        <Ionicons name="close" size={24} color="#000" />
-                    </Pressable>
-                    <Text>Add New Listing</Text>
-                    <TextInput style={styles.input} placeholder="Enter title" value={title} onChangeText={setTitle}/>
-                    <TextInput style={styles.input} placeholder="Enter price" inputMode="numeric" value={price === 0 ? '' : price.toString()} onChangeText={(value) => setPrice(+value)}/>
-                    <TextInput style={[styles.input, styles.multilineinput]} multiline maxLength={500} placeholder="Enter description (max 500 characters)" value={description} onChangeText={setDescription}/>
-                    <TagPicker value={tags} onChange={setTags}/>
-                    <Button title={"Create"} onPress={handleSubmit}/>
+						<Ionicons name="close" size={24} color="#000" />
+					</Pressable>
+					<Button title={"Add Pictures"} onPress={pickPhotos} />
+					<Text>Add New Listing</Text>
+					<TextInput
+						style={styles.input}
+						placeholder="Enter title"
+						value={title}
+						onChangeText={setTitle}
+					/>
+					<TextInput
+						style={styles.input}
+						placeholder="Enter price"
+						inputMode="numeric"
+						value={price === 0 ? "" : price.toString()}
+						onChangeText={(value) => setPrice(+value)}
+					/>
+					<TextInput
+						style={[styles.input, styles.multilineinput]}
+						multiline
+						maxLength={500}
+						placeholder="Enter description (max 500 characters)"
+						value={description}
+						onChangeText={setDescription}
+					/>
+					<TagPicker value={tags} onChange={setTags} />
+					<Button title={"Create"} onPress={handleSubmit} />
 				</View>
 			</View>
 		</Modal>
@@ -86,15 +160,15 @@ const styles = StyleSheet.create({
 	closeButton: {
 		alignSelf: "flex-end",
 	},
-    input: {
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 10,
-        padding: 10,
-        marginBottom: 10,
-    },
-    multilineinput: {
-        minHeight: 80,
-        textAlignVertical: "top",
-    }
+	input: {
+		borderWidth: 1,
+		borderColor: "#ccc",
+		borderRadius: 10,
+		padding: 10,
+		marginBottom: 10,
+	},
+	multilineinput: {
+		minHeight: 80,
+		textAlignVertical: "top",
+	},
 });

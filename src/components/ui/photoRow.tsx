@@ -10,25 +10,26 @@ import {
     View,
 } from "react-native";
 import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 export default function PhotoRow({ photos }: { photos?: string[] }) {
 	const [index, setIndex] = React.useState(0);
 
-	if (!photos || photos.length === 0) {
-		return (
-        <View>
-            <Image source={require("../../../assets/images/no-image.jpg")} style={styles.image}></Image>
-        </View>)
-	}
+	const hasPhotos = !!photos && photos.length > 0;
+  	const areUrls = hasPhotos && photos!.every((p) => p.startsWith("http"));
 
-	// Detect if photos are already URLs
-	const areUrls = photos.every((p) => p.startsWith("http"));
-
-	// Resolve storage IDs → URLs
 	const urlMap = useQuery(
 		api.storage.getUrls,
-		!areUrls ? { storageIds: photos } : "skip",
+		hasPhotos && !areUrls ? { storageIds: photos as Id<"_storage">[] } : "skip",
 	) as Record<string, string | null> | undefined;
+
+	if (!hasPhotos) {
+		return (
+		<View>
+			<Image source={require("../../../assets/images/no-image.jpg")} style={styles.image} />
+		</View>
+		);
+	}
 
 	// Get current photo URI
 	const current = photos[index];
