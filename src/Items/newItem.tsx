@@ -1,5 +1,5 @@
 import type { NewListingInput } from "@/hooks/listingActions";
-import type { TagType } from "@/tags/tagDef";
+import type { TagType } from "@/tags/tags";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "convex/react";
 import React, { useState } from "react";
@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { api } from "../../convex/_generated/api";
 import AnimatedMulti from "@/tags/tagDef";
+import { TagPicker } from "@/tags/tags";
 
 interface NewItemProps {
 	visible: boolean;
@@ -31,23 +32,15 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
 
 	const createItem = useMutation(api.listings.create);
 	async function handleSubmit() {
-		try {
-			await createItem({
-				title: title,
-				description: description,
-				price: price,
-				category: category,
-				tags: tags.map((t) => t.value),
-				photos: [...photos],
-			});
+		const ok = await onSubmit({ title, description, price, category, tags: tags.map((t) => t.value), photos})
+		if (ok) {
 			// reset the form after success
 			setTitle("");
 			setPrice(0);
 			setTags([]);
 			setDescription("");
 			setPhotos([]);
-		} catch (err) {
-			console.error("Failed to create listing:", err);
+			onClose();
 		}
 	}
 
@@ -65,10 +58,10 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
                         <Ionicons name="close" size={24} color="#000" />
                     </Pressable>
                     <Text>Add New Listing</Text>
-                    <TextInput style={styles.input} placeholder="Enter name" value={title} onChangeText={setTitle}/>
+                    <TextInput style={styles.input} placeholder="Enter title" value={title} onChangeText={setTitle}/>
                     <TextInput style={styles.input} placeholder="Enter price" inputMode="numeric" value={price === 0 ? '' : price.toString()} onChangeText={(value) => setPrice(+value)}/>
                     <TextInput style={[styles.input, styles.multilineinput]} multiline maxLength={500} placeholder="Enter description (max 500 characters)" value={description} onChangeText={setDescription}/>
-                    <AnimatedMulti value={tags} onChange={setTags}/>
+                    <TagPicker value={tags} onChange={setTags}/>
                     <Button title={"Create"} onPress={handleSubmit}/>
 				</View>
 			</View>
