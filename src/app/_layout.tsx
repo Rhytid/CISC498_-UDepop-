@@ -21,7 +21,10 @@ SplashScreen.preventAutoHideAsync();
 function AppContent() {
   const { isLoading, isAuthenticated } = useConvexAuth();
   const pathname = usePathname();
-  const isPopup = pathname.startsWith("/UserMessaging/");
+  const isPopup =
+    pathname === "/UserMessaging/MessagePopup" ||
+    pathname === "/UserMessaging/ConversationsPopup" ||
+    pathname === "/ListingEditing/editingPopup"; // add this
   if (isLoading) {
     return null; // the splash overlay covers the loading state
   }

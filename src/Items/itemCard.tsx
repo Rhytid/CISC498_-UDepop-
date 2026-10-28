@@ -1,13 +1,14 @@
+import EditListingButton from "@/app/ListingEditing/itemEditing";
 import MessageButton from "@/app/UserMessaging/CallingMessagePopup";
 import PhotoRow from "@/components/ui/photoRow";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated, {
-	FadeOut,
-	useAnimatedStyle,
-	useSharedValue,
-	withTiming,
+  FadeOut,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from "react-native-reanimated";
 import { Doc, Id } from "../../convex/_generated/dataModel";
 
@@ -99,18 +100,7 @@ export default function ItemCard({
                       <MessageButton listingId={listing._id}></MessageButton>
                     </Pressable>
                   )}
-                  {isOwner && (
-                    <Pressable
-                      style={styles.button}
-                      onPress={() => {
-                        if (onEditListing) {
-                          onEditListing(listing._id);
-                        }
-                      }}
-                    >
-                      <Ionicons name="create-outline" size={40} />
-                    </Pressable>
-                  )}
+                  {isOwner && <EditListingButton listingId={listing._id} />}
 
                   {isOwner && (
                     <Pressable
