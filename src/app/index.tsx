@@ -2,10 +2,10 @@ import * as Device from "expo-device";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Easing, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import ItemC from "@/Items/ItemCreation";
-import ItemCard from "@/Items/itemCard";
 import SearchBar from '@/components/searchbar';
 import { ThemedText } from "@/components/themed-text";
+import ItemC from "@/items/ItemCreation";
+import ItemCard from "@/items/itemCard";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import OwnMessages from "./UserMessaging/OwnMessages";
@@ -14,22 +14,23 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import itemData from "../data/itemData.json";
 
 function getDevMenuHint() {
-  if (Platform.OS === "web") {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === "android" ? "cmd+m (or ctrl+m)" : "cmd+d";
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
+	if (Platform.OS === "web") {
+		return <ThemedText type="small">use browser devtools</ThemedText>;
+	}
+	if (Device.isDevice) {
+		return (
+			<ThemedText type="small">
+				shake device or press <ThemedText type="code">m</ThemedText> in
+				terminal
+			</ThemedText>
+		);
+	}
+	const shortcut = Platform.OS === "android" ? "cmd+m (or ctrl+m)" : "cmd+d";
+	return (
+		<ThemedText type="small">
+			press <ThemedText type="code">{shortcut}</ThemedText>
+		</ThemedText>
+	);
 }
 
 export default function HomeScreen() {
@@ -38,15 +39,18 @@ export default function HomeScreen() {
   const [rotatingWordIndex, setRotatingWordIndex] = useState(0);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const categories = [ 
-    {name: 'Furniture', icon: 'sofa' },
-    {name: 'Clothing', icon: 'tshirt-crew' },
-    {name: 'Electronics', icon: 'laptop'},
+    {name: 'Freshman', icon: 'sprout' },
+    {name: 'Sophomore', icon: 'bag-personal' },
+    {name: 'Junior', icon: 'book'},
+    {name: 'Senior', icon: 'school'},
   ] as const;
   const items = Object.values(itemData).flat();
   const [search, setSearch] = React.useState("");
+  const me = useQuery(api.users.getMe);
+  const currentUserId = me?._id; //undefined while loading
 
   const result = useQuery(api.listings.list, {
-    searchText: search || undefined,
+    searchText: search || undefined, // empty string would trigger the search branch
   });
 
   useEffect(() => {
@@ -132,15 +136,15 @@ export default function HomeScreen() {
         </View>
       </View>
       <ItemC />
-      <Text style={styles.bannerText}>Products:</Text>
+			<Text style={styles.bannerText}>Listings:</Text>
 
-      <View style={styles.itemContainer}>
-        {result.page.map((item) => (
-          <ItemCard key={item._id} listing={item} />
-        ))}
-      </View>
+			<View style={styles.itemContainer}>
+				{result.page.map((item) => (
+					<ItemCard key={item._id} listing={item} currentUserId={currentUserId} />
+				))}
+			</View>
 
-      <OwnMessages />
+			<OwnMessages />
     </ScrollView>
   );
 }
