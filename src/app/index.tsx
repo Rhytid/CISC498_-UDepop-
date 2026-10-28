@@ -48,6 +48,8 @@ export default function HomeScreen() {
   const [search, setSearch] = React.useState("");
   const me = useQuery(api.users.getMe);
   const currentUserId = me?._id; //undefined while loading
+  
+  const [filteredYear, setFilteredYear] = useState<string | "">("");
 
   const result = useQuery(api.listings.list, {
     searchText: search || undefined, // empty string would trigger the search branch
@@ -88,6 +90,10 @@ export default function HomeScreen() {
     return <Text>Loading...</Text>;
   }
 
+  const filteredListings = result.page.filter((item) =>
+    filteredYear === "" || item.tags.includes(filteredYear.toLowerCase())
+  );
+
   return (
     <ScrollView 
     style={styles.scrollView}
@@ -121,7 +127,9 @@ export default function HomeScreen() {
           {categories.map((category) => (
             <Pressable key={category.name}
               style={styles.categoryButton}
-              onPress={() => console.log(category.name)}
+              onPress={() => setFilteredYear(filteredYear === category.name ? "" : category.name
+                )
+              }
             >
               <MaterialCommunityIcons
               name={category.icon}
@@ -139,7 +147,7 @@ export default function HomeScreen() {
 			<Text style={styles.bannerText}>Listings:</Text>
 
 			<View style={styles.itemContainer}>
-				{result.page.map((item) => (
+				{filteredListings.map((item) => (
 					<ItemCard key={item._id} listing={item} currentUserId={currentUserId} />
 				))}
 			</View>
