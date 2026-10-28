@@ -15,10 +15,14 @@ import { ThemedView } from './themed-view';
 
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+
+import { usePathname } from 'expo-router';
+
 
 export default function AppTabs() {
   const [isOpen, setIsOpen] = useState(true);
+  const pathname = usePathname();
   return (
     <Tabs>
       <TabSlot style={{ height: '100%', paddingLeft: isOpen ? 240 : 80, }} />

@@ -26,6 +26,7 @@
     "expo-system-ui": "~57.0.4",
     "expo-web-browser": "~57.0.3",
     "git": "^0.1.5",
+    "motion": "^14.4.0",
     "npx": "^10.2.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
