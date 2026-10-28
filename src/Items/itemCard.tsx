@@ -1,24 +1,15 @@
 import MessageButton from "@/app/UserMessaging/CallingMessagePopup";
-import { useQuery } from "convex/react";
+import PhotoRow from "@/components/ui/photoRow";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import {
-	ActivityIndicator,
-	Button,
-	Image,
-	Pressable,
-	StyleSheet,
-	Text,
-	View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated, {
 	FadeOut,
 	useAnimatedStyle,
 	useSharedValue,
 	withTiming,
 } from "react-native-reanimated";
-import { api } from "../../convex/_generated/api";
 import { Doc, Id } from "../../convex/_generated/dataModel";
-import PhotoRow from "@/components/ui/photoRow";
 
 export interface ItemCardProps {
 	listing: Doc<"listings">;
@@ -60,8 +51,6 @@ export default function ItemCard({
 		setExpanded(!expanded);
 	};
 
-	
-
 	const isOwner =
 		currentUserId !== undefined && listing.ownerId === currentUserId;
 
@@ -70,51 +59,92 @@ export default function ItemCard({
 			style={styles.cardWrapper}
 			onHoverIn={handleHoverIn}
 			onHoverOut={handleHoverOut}
-			onPress={handlePress}
 		>
 			{
 				<Animated.View style={[styles.card, animatedCard]}>
-					<PhotoRow photos={listing.photos as string[] | undefined} />
-					<Text style={styles.name}>
-						{listing.title}
-						{listing.sold && (
-							<Text style={{ color: "red" }}> (Sold)</Text>
-						)}
-					</Text>
-					<Text style={styles.price}>
-						${listing.price.toFixed(2)}
-					</Text>
-					{expanded && (
-						<Animated.View exiting={FadeOut.duration(300)}>
-							{listing.tags.length > 0 && (
-								<Text style={{ fontStyle: "italic" }}>
-									Tags: {listing.tags.join(", ")}
-								</Text>
+					<Pressable onPress={handlePress}>
+						<PhotoRow
+							photos={listing.photos as string[] | undefined}
+						/>
+						<Text style={styles.name}>
+							{listing.title}
+							{listing.sold && (
+								<Text style={{ color: "red" }}> (Sold)</Text>
 							)}
-							<View>
+						</Text>
+						<Text style={styles.price}>
+							${listing.price.toFixed(2)}
+						</Text>
+					</Pressable>
+
+					{expanded && (
+						<Animated.View
+							style={{ flex: 1 }}
+							exiting={FadeOut.duration(300)}
+						>
+							<ScrollView
+								nestedScrollEnabled
+								showsVerticalScrollIndicator
+								contentContainerStyle={{ paddingBottom: 10 }}
+							>
+								{listing.tags.length > 0 && (
+									<Text style={{ fontStyle: "italic" }}>
+										Tags: {listing.tags.join(", ")}
+									</Text>
+								)}
 								<Text style={styles.description}>
 									{listing.description}
 								</Text>
-								<MessageButton listingId={listing._id} />
-								<Button
-									title="Edit Listing"
-									onPress={() => {
-										if (onEditListing) {
-											onEditListing(listing._id);
-										}
-									}}
-								/>
-								{isOwner && (
-									<Button
-										title="Delete Listing"
-										onPress={() => {
-											if (onDeleteListing) {
-												onDeleteListing(listing._id);
-											}
-										}}
-									/>
-								)}
-							</View>
+								<View style={{ flexDirection: "row", justifyContent: "center" }}>
+									{!isOwner && (
+										<Pressable
+											style={styles.button}
+											onPress={() => {
+												if (onMessageSeller) {
+													onMessageSeller(
+														listing.ownerId,
+													);
+												}
+											}}
+										>
+											<MessageButton
+												listingId={listing._id}
+											></MessageButton>
+										</Pressable>
+									)}
+									{isOwner && (
+										<Pressable
+											style={styles.button}
+											onPress={() => {
+												if (onEditListing) {
+													onEditListing(listing._id);
+												}
+											}}
+										>
+											<Ionicons
+												name="create-outline"
+												size={40}
+											/>
+										</Pressable>
+									)}
+
+									{isOwner && (
+										<Pressable
+											style={styles.button}
+											onPress={() => {
+												if (onDeleteListing) {
+													onDeleteListing(listing._id);
+												}
+											}}
+										>
+											<Ionicons
+												name="trash-outline"
+												size={40}
+											/>
+										</Pressable>
+									)}
+								</View>
+							</ScrollView>
 						</Animated.View>
 					)}
 				</Animated.View>
@@ -152,5 +182,12 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		padding: 10,
 		marginBottom: 10,
+	},
+	button: {
+		justifyContent: "center",
+		alignItems: "center",
+		width: "30%",
+		backgroundColor: "#fff",
+		borderRadius: 10,
 	},
 });

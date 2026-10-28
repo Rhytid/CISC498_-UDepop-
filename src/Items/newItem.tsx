@@ -14,6 +14,7 @@ import {
 	Text,
 	TextInput,
 	View,
+	ScrollView
 } from "react-native";
 import { api } from "../../convex/_generated/api";
 
@@ -108,7 +109,7 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
 			onRequestClose={onClose}
 			transparent
 		>
-			<View style={styles.overlay}>
+			<ScrollView contentContainerStyle={styles.overlay}>
 				<Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
 				<View style={styles.card}>
 					<Pressable style={styles.closeButton} onPress={onClose}>
@@ -124,30 +125,32 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
 						Add New Listing:
 					</Text>
 					<Button title={"Add Pictures"} onPress={pickPhotos} />
-					{photos.length > 0 &&
-						photos.map((p) => (
-							<View key={p}>
-								<Image
-									source={{ uri: p }}
-									style={{
-										width: 150,
-										height: 150,
-										margin: 5,
-									}}
-								/>
-								<Pressable
-									onPress={() =>
-										setPhotos((current) =>
-											current.filter(
-												(photo) => photo !== p,
-											),
-										)
-									}
-								>
-									<Ionicons name="close" color={"red"} />
-								</Pressable>
-							</View>
-						))}
+					<View style={{ marginTop: 10, flexDirection: "row", flexWrap: "wrap", justifyContent: "center" }}>
+						{photos.length > 0 &&
+							photos.map((p) => (
+								<View key={p}>
+									<Image
+										source={{ uri: p }}
+										style={{
+											width: 150,
+											height: 150,
+											margin: 5,
+										}}
+									/>
+									<Pressable
+										onPress={() =>
+											setPhotos((current) =>
+												current.filter(
+													(photo) => photo !== p,
+												),
+											)
+										}
+									>
+										<Ionicons name="close" color={"red"} />
+									</Pressable>
+								</View>
+							))}
+					</View>
 					<TextInput
 						style={styles.input}
 						placeholder="Enter title"
@@ -172,7 +175,7 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
 					<TagPicker value={tags} onChange={setTags} />
 					<Button title={"Create"} onPress={handleSubmit} />
 				</View>
-			</View>
+			</ScrollView>
 		</Modal>
 	);
 }

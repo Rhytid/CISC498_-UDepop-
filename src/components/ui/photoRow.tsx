@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
 	image: {
 		width: "100%",
 		height: 200,
-		resizeMode: "contain",
+		resizeMode: "cover",
 		backgroundColor: "#fff",
 		marginBottom: 20,
 		borderRadius: 10,
@@ -115,12 +115,16 @@ const styles = StyleSheet.create({
 		left: 10,
 		zIndex: 10,
 		padding: 10,
+		backgroundColor: "#fff",
+		borderRadius: 10,
 	},
 	arrowRightContainer: {
 		position: "absolute",
 		right: 10,
 		zIndex: 10,
 		padding: 10,
+		backgroundColor: "#fff",
+		borderRadius: 10,
 	},
 	arrow: {
         textShadowColor: ' rgba(0, 0, 0, 0.5)',

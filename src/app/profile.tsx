@@ -37,7 +37,7 @@ export default function ProfileScreen() {
 			<View style={{ alignItems: "center" }}>
 				{myListings.length === 0 && <Text>You have no listings</Text>}
 					<Pressable onPress={() => setShowPopup(true)} style={styles.button}>
-						<Text>New Listing</Text>
+						<Text>Create New Listing</Text>
 					</Pressable>
 					<NewItem
 						visible={showPopup}
@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		padding: 10,
 		margin: 10,
-		width: "10%"
+		width: 150,
+		alignItems: "center",
 	}
 });
