@@ -4,7 +4,6 @@ import { Animated, Easing, Platform, Pressable, ScrollView, StyleSheet, Text, Vi
 
 import SearchBar from '@/components/searchbar';
 import { ThemedText } from "@/components/themed-text";
-import ItemC from "@/items/ItemCreation";
 import ItemCard from "@/items/itemCard";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -48,12 +47,12 @@ export default function HomeScreen() {
   const [search, setSearch] = React.useState("");
   const me = useQuery(api.users.getMe);
   const currentUserId = me?._id; //undefined while loading
+  const scrollRef = useRef<ScrollView>(null);
+  const listingsPos = useRef(0);
   
   const [filteredYear, setFilteredYear] = useState<string | "">("");
 
-  const result = useQuery(api.listings.list, {
-    searchText: search || undefined, // empty string would trigger the search branch
-  });
+  const result = useQuery(api.listings.list, {})
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -70,7 +69,7 @@ export default function HomeScreen() {
         // Place the next word below
         slideAnim.setValue(40);
 
-        // Slide the new word upward into position
+        // Slide the new word upward
         Animated.timing(slideAnim, {
           toValue: 0,
           duration: 400,
@@ -86,16 +85,33 @@ export default function HomeScreen() {
     };
   }, [slideAnim]);
 
+  const searchSubmit = () => {
+
+    if (search.trim() !== ""){
+      scrollRef.current?.scrollTo({ y: listingsPos.current, animated: true,})
+    }
+  }
+
   if (result === undefined) {
     return <Text>Loading...</Text>;
   }
 
-  const filteredListings = result.page.filter((item) =>
-    filteredYear === "" || item.tags.includes(filteredYear.toLowerCase())
-  );
+  {/* Searches for item with tag or item with search word in name
+      Can use button and search combined (i.e., junior + 'kitchen') */}
+  const filteredListings = result.page.filter((item) => {
+    const matchesYear = filteredYear === "" || item.tags.includes(filteredYear.toLowerCase());
+
+    const searchText = search.toLowerCase().trim();
+
+    const matchesSearch =
+    item.title.toLowerCase().includes(searchText) || item.tags.some((tag) => tag.toLowerCase().includes(searchText));
+
+    return matchesYear && matchesSearch
+  });
 
   return (
-    <ScrollView 
+    <ScrollView
+    ref={scrollRef} 
     style={styles.scrollView}
     contentContainerStyle={styles.container}>
       
@@ -112,7 +128,7 @@ export default function HomeScreen() {
               </Animated.Text>
             </View>
           </View>
-          <SearchBar/>
+          <SearchBar search={search} setSearch={setSearch} onSubmit={searchSubmit}/>
         </View>
       </View>
       {/* End Banner & Search Code */}
@@ -143,9 +159,11 @@ export default function HomeScreen() {
           ))}
         </View>
       </View>
-      <ItemC />
-			<Text style={styles.bannerText}>Listings:</Text>
-
+      <View
+        onLayout={(event) => {listingsPos.current = event.nativeEvent.layout.y;}}
+        >
+          <Text style={styles.bannerText}>Listings:</Text>
+      </View>
 			<View style={styles.itemContainer}>
 				{filteredListings.map((item) => (
 					<ItemCard key={item._id} listing={item} currentUserId={currentUserId} />

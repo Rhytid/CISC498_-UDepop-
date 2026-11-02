@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-export default function SearchBar() {
-  const [search, setSearch] = useState('');
+type SearchBarProps = {
+  search: string;
+  setSearch: (text: string) => void;
+  onSubmit: () => void;
+};
+
+export default function SearchBar({ search, setSearch, onSubmit }: SearchBarProps) {
   const suggestions = ["Shirt", "T-Shirt", "Jeans", "Furniture", "Technology"];
   const filteredSuggestions = suggestions.filter((item) => item.toLowerCase().includes(search.toLowerCase()));
 
@@ -13,6 +18,7 @@ export default function SearchBar() {
         placeholder="Search..."
         value={search}
         onChangeText={setSearch}
+        onSubmitEditing={onSubmit}
     />
     {search.trim().length > 0 && !suggestions.some((item) => item.toLowerCase() === search.trim().toLowerCase()) && (
       <View style={styles.dropDown}>
