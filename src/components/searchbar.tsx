@@ -1,15 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 type SearchBarProps = {
   search: string;
   setSearch: (text: string) => void;
   onSubmit: () => void;
+  listings: {
+    _id: string;
+    title: string;
+    tags: string[];
+  }[];
 };
 
-export default function SearchBar({ search, setSearch, onSubmit }: SearchBarProps) {
-  const suggestions = ["Shirt", "T-Shirt", "Jeans", "Furniture", "Technology"];
-  const filteredSuggestions = suggestions.filter((item) => item.toLowerCase().includes(search.toLowerCase()));
+export default function SearchBar({ search, setSearch, onSubmit, listings }: SearchBarProps) {
+  const [delayedSearch, setDelayedSearch] = useState("") 
+  const [showSuggestions, setShowSuggestions] = useState(true);
+
+  useEffect(() => { const timer = setTimeout(() => { setDelayedSearch(search);}, 1000);
+    return () => clearTimeout(timer);}, [search]);
+
+  const filteredSuggestions = delayedSearch.trim() ? listings.filter(
+      (item) => item.title.toLowerCase().includes(delayedSearch.toLowerCase()) || item.tags.some((tag) => tag.toLowerCase().includes(delayedSearch.toLowerCase())))
+      .slice(0, 5): [];
 
   return (
     <View style={[styles.searchBubble]}>
@@ -17,14 +29,23 @@ export default function SearchBar({ search, setSearch, onSubmit }: SearchBarProp
       style={styles.searchBar}
         placeholder="Search..."
         value={search}
-        onChangeText={setSearch}
-        onSubmitEditing={onSubmit}
+        onChangeText={(text) => {setSearch(text); setShowSuggestions(true)}}
+        onSubmitEditing={() => {setShowSuggestions(false); onSubmit()}}
     />
-    {search.trim().length > 0 && !suggestions.some((item) => item.toLowerCase() === search.trim().toLowerCase()) && (
+    {showSuggestions && delayedSearch === search && filteredSuggestions.length > 0 && (
       <View style={styles.dropDown}>
         {filteredSuggestions.map((item) => (
-          <TouchableOpacity key={item} onPress={() => setSearch(item)}>
-            <Text>{item}</Text>
+          <TouchableOpacity
+            key={item._id}
+            onPress={() => {
+              setSearch(item.title);
+              setShowSuggestions(false);
+              onSubmit();
+            }}
+          >
+            <Text style={{padding: 8}}>
+              {item.title}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>

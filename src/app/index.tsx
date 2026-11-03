@@ -128,7 +128,7 @@ export default function HomeScreen() {
               </Animated.Text>
             </View>
           </View>
-          <SearchBar search={search} setSearch={setSearch} onSubmit={searchSubmit}/>
+          <SearchBar search={search} setSearch={setSearch} onSubmit={searchSubmit} listings={result.page}/>
         </View>
       </View>
       {/* End Banner & Search Code */}
@@ -209,6 +209,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#607D8B',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 10,
   },
   searchBannerText: {
     fontSize: 28,
