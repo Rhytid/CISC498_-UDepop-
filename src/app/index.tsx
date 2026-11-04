@@ -1,21 +1,21 @@
 import * as Device from "expo-device";
 import React, { useEffect, useRef, useState } from "react";
 import {
-	Animated,
-	Easing,
-	Platform,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	View,
+  Animated,
+  Easing,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 
 import SearchBar from "@/components/searchbar";
 import { ThemedText } from "@/components/themed-text";
-import ItemCard from "@/items/itemCard";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import ItemCard from "../Items/itemCard";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import itemData from "../data/itemData.json";

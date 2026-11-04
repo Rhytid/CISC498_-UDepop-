@@ -1,17 +1,11 @@
 import ProfilePicture from "@/components/ui/profilePicture";
 import { useListingActions } from "@/hooks/listingActions";
-import ItemCard from "@/items/itemCard";
-import { NewItem } from "@/items/newItem";
+import ItemCard from "@/Items/itemCard";
+import { NewItem } from "@/Items/newItem";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
 import React, { useState } from "react";
-import {
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	View
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../convex/_generated/api";
 import OwnMessages from "./UserMessaging/OwnMessages";
 
