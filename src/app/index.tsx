@@ -13,7 +13,7 @@ import {
 
 import SearchBar from "@/components/searchbar";
 import { ThemedText } from "@/components/themed-text";
-import { useQuery } from "convex/react";
+import { usePaginatedQuery, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import ItemCard from "../Items/itemCard";
 
@@ -40,7 +40,6 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
-  const itemList = useQuery(api.listings.list, {});
   const rotatingWords = ["outfit.", "book.", "hobby.", "couch."];
   const [rotatingWordIndex, setRotatingWordIndex] = useState(0);
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -55,9 +54,11 @@ export default function HomeScreen() {
   const me = useQuery(api.users.getMe);
   const currentUserId = me?._id; //undefined while loading
 
-  const result = useQuery(api.listings.list, {
-    searchText: search || undefined, // empty string would trigger the search branch
-  });
+  const { results, status, loadMore } = usePaginatedQuery(
+    api.listings.list,
+    { searchText: search || undefined },
+    { initialNumItems: 12 },
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -91,10 +92,6 @@ export default function HomeScreen() {
       slideAnim.stopAnimation();
     };
   }, [slideAnim]);
-
-  if (result === undefined) {
-    return <Text>Loading...</Text>;
-  }
 
   return (
     <ScrollView
@@ -149,14 +146,29 @@ export default function HomeScreen() {
       <Text style={styles.bannerText}>Listings:</Text>
 
       <View style={styles.itemContainer}>
-        {result.page.map((item) => (
-          <ItemCard
-            key={item._id}
-            listing={item}
-            currentUserId={currentUserId}
-          />
-        ))}
+        {status === "LoadingFirstPage" ? (
+          <Text>Loading listings...</Text>
+        ) : (
+          results.map((item) => (
+            <ItemCard
+              key={item._id}
+              listing={item}
+              currentUserId={currentUserId}
+            />
+          ))
+        )}
       </View>
+      {(status === "CanLoadMore" || status === "LoadingMore") && (
+        <Pressable
+          style={styles.loadMoreButton}
+          disabled={status === "LoadingMore"}
+          onPress={() => loadMore(12)}
+        >
+          <Text style={styles.loadMoreText}>
+            {status === "LoadingMore" ? "Loading..." : "Load more"}
+          </Text>
+        </Pressable>
+      )}
     </ScrollView>
   );
 }
@@ -254,6 +266,18 @@ const styles = StyleSheet.create({
     flexBasis: 160,
   },
   categoryText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  loadMoreButton: {
+    marginTop: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: "#607D8B",
+  },
+  loadMoreText: {
     color: "white",
     fontSize: 16,
     fontWeight: "600",

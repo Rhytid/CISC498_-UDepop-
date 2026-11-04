@@ -10,7 +10,9 @@ import type { Id } from "../../../convex/_generated/dataModel";
 export default function ListingsTest() {
 	const convex = useConvex();
 
-	const listings = useQuery(api.listings.list, {});
+	const listings = useQuery(api.listings.list, {
+		paginationOpts: { numItems: 50, cursor: null },
+	});
 	const createListing = useMutation(api.listings.create);
 	const removeListing = useMutation(api.listings.remove);
 	const markSold = useMutation(api.listings.markSold);

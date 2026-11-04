@@ -18,6 +18,7 @@ export function ListingList() {
 
   const result = useQuery(api.listings.list, {
     searchText: search || undefined,
+    paginationOpts: { numItems: 50, cursor: null },
   });
 
   if (result === undefined) {

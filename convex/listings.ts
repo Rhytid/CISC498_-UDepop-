@@ -1,4 +1,5 @@
 import { v } from "convex/values";
+import { paginationOptsValidator } from "convex/server";
 import { mutation, query } from "./_generated/server";
 import { notify, requireUser } from "./lib";
 
@@ -49,15 +50,9 @@ export const list = query({
     minPrice: v.optional(v.number()),
     maxPrice: v.optional(v.number()),
     includeSold: v.optional(v.boolean()),
-    paginationOpts: v.optional(
-      v.object({ numItems: v.number(), cursor: v.union(v.string(), v.null()) }),
-    ),
+    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const paginationOpts = args.paginationOpts ?? {
-      numItems: 50,
-      cursor: null,
-    };
     const includeSold = args.includeSold ?? false;
 
     const base = args.searchText
@@ -93,7 +88,7 @@ export const list = query({
         }
         return q.and(...conditions);
       })
-      .paginate(paginationOpts);
+      .paginate(args.paginationOpts);
   },
 });
 

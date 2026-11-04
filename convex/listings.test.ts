@@ -14,6 +14,7 @@ const listingInput = {
   price: 12,
   tags: ["dorm", "lighting"],
 };
+const paginationOpts = { numItems: 50, cursor: null };
 
 describe("listings", () => {
   test("create requires authentication", async () => {
@@ -33,7 +34,7 @@ describe("listings", () => {
       photos: [],
     });
 
-    const result = await t.query(api.listings.list, {});
+    const result = await t.query(api.listings.list, { paginationOpts });
     expect(result.page).toHaveLength(1);
     expect(result.page[0]).toMatchObject(listingInput);
     expect(result.page[0].sold).toBe(false);
@@ -65,14 +66,26 @@ describe("listings", () => {
     expect((await t.query(api.listings.get, { id }))?.sold).toBe(true);
 
     // Sold listings drop out of the default list.
-    expect((await t.query(api.listings.list, {})).page).toHaveLength(0);
     expect(
-      (await t.query(api.listings.list, { includeSold: true })).page,
+      (await t.query(api.listings.list, { paginationOpts })).page,
+    ).toHaveLength(0);
+    expect(
+      (
+        await t.query(api.listings.list, {
+          includeSold: true,
+          paginationOpts,
+        })
+      ).page,
     ).toHaveLength(1);
 
     await asSeller.mutation(api.listings.remove, { id });
     expect(
-      (await t.query(api.listings.list, { includeSold: true })).page,
+      (
+        await t.query(api.listings.list, {
+          includeSold: true,
+          paginationOpts,
+        })
+      ).page,
     ).toHaveLength(0);
   });
 
@@ -93,11 +106,17 @@ describe("listings", () => {
       price: 40,
     });
 
-    const books = await t.query(api.listings.list, { category: "Books" });
+    const books = await t.query(api.listings.list, {
+      category: "Books",
+      paginationOpts,
+    });
     expect(books.page).toHaveLength(1);
     expect(books.page[0].title).toBe("Textbook");
 
-    const cheap = await t.query(api.listings.list, { maxPrice: 20 });
+    const cheap = await t.query(api.listings.list, {
+      maxPrice: 20,
+      paginationOpts,
+    });
     expect(cheap.page).toHaveLength(1);
     expect(cheap.page[0].title).toBe("Desk Lamp");
   });
