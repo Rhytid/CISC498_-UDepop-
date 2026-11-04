@@ -1,14 +1,14 @@
 import * as Device from "expo-device";
 import React, { useEffect, useRef, useState } from "react";
 import {
-	Animated,
-	Easing,
-	Platform,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	View,
+  Animated,
+  Easing,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 
 import SearchBar from "@/components/searchbar";

@@ -5,13 +5,7 @@ import { NewItem } from "@/items/newItem";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
 import React, { useState } from "react";
-import {
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	View
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../convex/_generated/api";
 import OwnMessages from "./UserMessaging/OwnMessages";
 
@@ -20,7 +14,7 @@ export default function ProfileScreen() {
   const currentUserId = me?._id; //undefined while loading
 
   const [showPopup, setShowPopup] = useState<boolean>(false);
-  const { addListing, deleteListing } = useListingActions();
+  const { addListing, deleteListing, sellList } = useListingActions();
 
   const myListings = useQuery(
     api.listings.listByUser,
@@ -57,6 +51,7 @@ export default function ProfileScreen() {
             key={item._id}
             listing={item}
             currentUserId={item.ownerId}
+            onSellListing={sellList}
             onDeleteListing={deleteListing}
           />
         ))}

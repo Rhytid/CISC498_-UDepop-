@@ -18,6 +18,10 @@ export interface ItemCardProps {
   onMessageSeller?: (sellerId: Id<"users">) => void;
   onEditListing?: (listingId: Id<"listings">) => void;
   onDeleteListing?: (listingId: Id<"listings">) => void;
+  onSellListing?: (
+    listingId: Id<"listings">,
+    sold: boolean,
+  ) => Promise<boolean> | void;
 }
 
 export default function ItemCard({
@@ -26,6 +30,7 @@ export default function ItemCard({
   onMessageSeller,
   onEditListing,
   onDeleteListing,
+  onSellListing,
 }: ItemCardProps) {
   const [expanded, setExpanded] = React.useState(false);
   const hoverAnim = useSharedValue<number>(0);
@@ -101,6 +106,16 @@ export default function ItemCard({
                     </Pressable>
                   )}
                   {isOwner && <EditListingButton listingId={listing._id} />}
+                  {isOwner && (
+                    <Pressable
+                      style={styles.button}
+                      onPress={() => {
+                        if (onSellListing) {
+                          onSellListing(listing._id, !listing.sold);
+                        }
+                      }}
+                    ></Pressable>
+                  )}
 
                   {isOwner && (
                     <Pressable
