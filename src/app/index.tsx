@@ -16,7 +16,6 @@ import { ThemedText } from "@/components/themed-text";
 import ItemCard from "@/items/itemCard";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import OwnMessages from "./UserMessaging/OwnMessages";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import itemData from "../data/itemData.json";
@@ -158,8 +157,6 @@ export default function HomeScreen() {
           />
         ))}
       </View>
-
-      <OwnMessages />
     </ScrollView>
   );
 }
