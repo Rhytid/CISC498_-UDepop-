@@ -60,6 +60,7 @@ describe("conversations", () => {
     const got = await asBuyer.query(api.conversations.get, { id });
     expect(got?.otherUser?.username).toBe("seller");
     expect(got?.listing?.title).toBe("Lamp");
+    expect(got?.listing?.ownerId).toBe(sellerId);
   });
 
   test("archive and unarchive", async () => {

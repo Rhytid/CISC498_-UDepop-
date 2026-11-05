@@ -48,6 +48,12 @@ describe("messages", () => {
     expect(messages).toHaveLength(1);
 
     const asSeller = asUser(t, seller);
+    expect((await asBuyer.query(api.conversations.list))?.[0].unreadCount).toBe(
+      0,
+    );
+    expect((await asSeller.query(api.conversations.list))?.[0].unreadCount).toBe(
+      1,
+    );
     const notifications = await asSeller.query(api.notifications.list);
     expect(notifications).toHaveLength(1);
     expect(notifications?.[0]?.type).toBe("message");
@@ -73,6 +79,10 @@ describe("messages", () => {
       id: conversationId,
     });
     expect(conversation?.unreadCount).toBe(0);
+    expect(
+      (await asBuyer.query(api.conversations.get, { id: conversationId }))
+        ?.unreadCount,
+    ).toBe(0);
 
     const messages = await asSeller.query(api.messages.list, {
       conversationId,
