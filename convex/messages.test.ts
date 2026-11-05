@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
-import { describe, expect, test } from "vitest";
 import { convexTest, type TestConvex } from "convex-test";
+import { describe, expect, test } from "vitest";
 import { api } from "./_generated/api";
 import schema from "./schema";
 import { asUser, seedListing, seedUser } from "./testHelpers";
@@ -23,9 +23,12 @@ async function setup(t: TestConvex<typeof schema>) {
   const listingId = await seedListing(t, seller, listingInput);
   const buyerId = await seedUser(t, { username: "buyer", firstName: "Bob" });
   const asBuyer = asUser(t, buyerId);
-  const conversationId = await asBuyer.mutation(api.conversations.start, {
-    listingId,
-  });
+  const conversationId = await asBuyer.mutation(
+    api.conversations.startItemConvo,
+    {
+      listingId,
+    },
+  );
   return { seller, listingId, asBuyer, conversationId };
 }
 
@@ -45,6 +48,12 @@ describe("messages", () => {
     expect(messages).toHaveLength(1);
 
     const asSeller = asUser(t, seller);
+    expect((await asBuyer.query(api.conversations.list))?.[0].unreadCount).toBe(
+      0,
+    );
+    expect((await asSeller.query(api.conversations.list))?.[0].unreadCount).toBe(
+      1,
+    );
     const notifications = await asSeller.query(api.notifications.list);
     expect(notifications).toHaveLength(1);
     expect(notifications?.[0]?.type).toBe("message");
@@ -70,8 +79,14 @@ describe("messages", () => {
       id: conversationId,
     });
     expect(conversation?.unreadCount).toBe(0);
+    expect(
+      (await asBuyer.query(api.conversations.get, { id: conversationId }))
+        ?.unreadCount,
+    ).toBe(0);
 
-    const messages = await asSeller.query(api.messages.list, { conversationId });
+    const messages = await asSeller.query(api.messages.list, {
+      conversationId,
+    });
     expect(messages).toHaveLength(2);
     for (const message of messages ?? []) {
       expect(message.read).toBe(true);
@@ -113,8 +128,8 @@ describe("messages", () => {
     ).rejects.toThrow("own messages");
 
     await asBuyer.mutation(api.messages.remove, { id: message._id });
-    expect(await asBuyer.query(api.messages.list, { conversationId })).toHaveLength(
-      0,
-    );
+    expect(
+      await asBuyer.query(api.messages.list, { conversationId }),
+    ).toHaveLength(0);
   });
 });

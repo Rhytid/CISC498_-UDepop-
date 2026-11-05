@@ -1,3 +1,4 @@
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getCurrentUser, requireUser } from "./lib";
@@ -111,8 +112,16 @@ export const search = query({
 
 //Gives a mass list of all Users
 export const listAll = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("users").collect();
+  args: { paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
+    const results = await ctx.db.query("users").paginate(args.paginationOpts);
+    return {
+      ...results,
+      page: results.page.map((user) => ({
+        _id: user._id,
+        username: user.username,
+        pfp: user.profilePicture,
+      })),
+    };
   },
 });

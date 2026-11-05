@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireUser, notify } from "./lib";
+import { notify, requireUser } from "./lib";
 
 // Fields a client may write when creating/editing a listing. Owner, sold flag
 // and timestamps are derived server-side.
@@ -21,7 +21,7 @@ function buildSearchText(args: {
 }) {
   return [args.title, args.description, ...args.tags].join(" ").toLowerCase();
 }
-
+//Adds something to the list
 export const create = mutation({
   args: listingInput,
   handler: async (ctx, args) => {
@@ -54,16 +54,17 @@ export const list = query({
     ),
   },
   handler: async (ctx, args) => {
-    const paginationOpts = args.paginationOpts ?? { numItems: 50, cursor: null };
+    const paginationOpts = args.paginationOpts ?? {
+      numItems: 50,
+      cursor: null,
+    };
     const includeSold = args.includeSold ?? false;
 
     const base = args.searchText
       ? ctx.db
           .query("listings")
           .withSearchIndex("search_listings", (q) =>
-            q
-              .search("searchText", args.searchText as string)
-              .eq("sold", false),
+            q.search("searchText", args.searchText as string).eq("sold", false),
           )
       : includeSold
         ? ctx.db.query("listings").order("desc")
@@ -155,6 +156,7 @@ export const update = mutation({
   },
 });
 
+//Function to remove a listing
 export const remove = mutation({
   args: { id: v.id("listings") },
   handler: async (ctx, args) => {

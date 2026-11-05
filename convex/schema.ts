@@ -59,7 +59,10 @@ export default defineSchema({
     listingId: v.id("listings"),
 
     lastMessage: v.string(),
+    // Kept for older callers; per-participant counts drive current UI badges.
     unreadCount: v.number(),
+    unreadCountA: v.optional(v.number()),
+    unreadCountB: v.optional(v.number()),
 
     archived: v.boolean(),
     createdAt: v.number(),

@@ -8,7 +8,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 export default function ConversationsTest() {
   const convex = useConvex();
   const conversations = useQuery(api.conversations.list);
-  const start = useMutation(api.conversations.start);
+  const start = useMutation(api.conversations.startItemConvo);
   const markRead = useMutation(api.conversations.markRead);
   const archive = useMutation(api.conversations.archive);
   const unarchive = useMutation(api.conversations.unarchive);

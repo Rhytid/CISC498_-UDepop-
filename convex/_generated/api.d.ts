@@ -19,6 +19,7 @@ import type * as notifications from "../notifications.js";
 import type * as photos from "../photos.js";
 import type * as reviews from "../reviews.js";
 import type * as saved from "../saved.js";
+import type * as storage from "../storage.js";
 import type * as testHelpers from "../testHelpers.js";
 import type * as users from "../users.js";
 
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   photos: typeof photos;
   reviews: typeof reviews;
   saved: typeof saved;
+  storage: typeof storage;
   testHelpers: typeof testHelpers;
   users: typeof users;
 }>;

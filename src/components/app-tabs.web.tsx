@@ -1,178 +1,100 @@
+import React, { Fragment, useState } from "react";
+import { StyleSheet } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { useQuery } from "convex/react";
+import type { Href } from "expo-router";
+import { TabList, TabSlot, TabTrigger, Tabs } from "expo-router/ui";
+
+import { Sidebar } from "@/components/sidebar/sidebar";
+import { SidebarItem } from "@/components/sidebar/sidebar-item";
+import { SidebarSectionTitle } from "@/components/sidebar/sidebar-section";
 import {
-  TabList,
-  TabListProps,
-  TabSlot,
-  TabTrigger,
-  TabTriggerSlotProps,
-  Tabs,
-} from 'expo-router/ui';
-import { SymbolView } from 'expo-symbols';
-import { Pressable, StyleSheet, View, useColorScheme } from 'react-native';
-
-import { ExternalLink } from './external-link';
-import { ThemedText } from './themed-text';
-import { ThemedView } from './themed-view';
-
-import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
-
-import { useState } from 'react';
+  navigationSections,
+  SIDEBAR_COLLAPSED_WIDTH,
+  SIDEBAR_EXPANDED_WIDTH,
+} from "@/components/sidebar/navigation";
+import { api } from "../../convex/_generated/api";
 
 export default function AppTabs() {
   const [isOpen, setIsOpen] = useState(true);
+  const sidebarWidth = useSharedValue(SIDEBAR_EXPANDED_WIDTH);
+
+  const conversations = useQuery(api.conversations.list);
+  const unreadNotifications = useQuery(api.notifications.unreadCount);
+
+  const badgeCounts: Record<string, number> = {
+    messages: conversations
+      ? conversations.reduce((sum, c) => sum + c.unreadCount, 0)
+      : 0,
+    notifications: unreadNotifications ?? 0,
+  };
+
+  const toggle = () => {
+    const target = isOpen ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_EXPANDED_WIDTH;
+    setIsOpen(!isOpen);
+    sidebarWidth.value = withTiming(target, {
+      duration: 220,
+      easing: Easing.inOut(Easing.ease),
+    });
+  };
+
+  const contentStyle = useAnimatedStyle(() => ({
+    paddingLeft: sidebarWidth.value,
+  }));
+
   return (
     <Tabs>
-      <TabSlot style={{ height: '100%', paddingLeft: isOpen ? 240 : 80, }} />
-      <View style={styles.topActions}>
-        <Pressable style={styles.iconButton}>
-          <SymbolView name={{ ios: 'bell', web: 'alarm' }} size={22} />
-        </Pressable>
-
-        <Pressable style={styles.iconButton}>
-          <SymbolView name={{ ios: 'envelope', web: 'mail' }} size={22} />
-        </Pressable>
-
-        <Pressable style={styles.iconButton}>
-          <SymbolView name={{ ios: 'cart', web: 'shopping_cart' }} size={20} />
-        </Pressable>
-        </View>
+      <Animated.View style={[styles.content, contentStyle]}>
+        <TabSlot style={styles.slot} />
+      </Animated.View>
 
       <TabList asChild>
-        <CustomTabList isOpen={isOpen} setIsOpen={setIsOpen}>
-          <TabTrigger name="home" href="/" asChild>
-            <TabButton>Home</TabButton>
-          </TabTrigger>
-          <TabTrigger name="explore" href="/explore" asChild>
-            <TabButton>Explore</TabButton>
-          </TabTrigger>
-          <TabTrigger name="settings" href="/settings" asChild>
-            <TabButton>Settings</TabButton>
-          </TabTrigger>
-          <TabTrigger name="profile" href="/profile" asChild>
-            <TabButton>Profile</TabButton>
-          </TabTrigger>
-          <TabTrigger name="testing" href="/testing" asChild>
-            <TabButton>Testing</TabButton>
-          </TabTrigger>
-        </CustomTabList>
+        <Sidebar isOpen={isOpen} onToggle={toggle} sidebarWidth={sidebarWidth}>
+          {/* NOTE: expo-router's headless Tabs only discovers <TabTrigger>
+              children through <Fragment> (or <TabList>). Keep triggers in
+              flat fragments so they stay registered with the router. */}
+          {navigationSections.map((section) => (
+            <Fragment key={section.id}>
+              <SidebarSectionTitle
+                title={section.title ?? ""}
+                isOpen={isOpen}
+              />
+              {section.items.map((item) => (
+                <TabTrigger
+                  key={item.id}
+                  name={item.id}
+                  href={item.href as Href}
+                  asChild
+                >
+                  <SidebarItem
+                    item={item}
+                    isOpen={isOpen}
+                    badgeCount={
+                      item.badgeKey ? badgeCounts[item.badgeKey] : undefined
+                    }
+                  />
+                </TabTrigger>
+              ))}
+            </Fragment>
+          ))}
+        </Sidebar>
       </TabList>
     </Tabs>
   );
 }
 
-export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps) {
-  return (
-    <Pressable {...props} style={({ pressed }) => pressed && styles.pressed}>
-      <ThemedView
-        type={isFocused ? 'backgroundSelected' : 'backgroundElement'}
-        style={styles.tabButtonView}>
-        <ThemedText type="small" themeColor={isFocused ? 'text' : 'textSecondary'}>
-          {children}
-        </ThemedText>
-      </ThemedView>
-    </Pressable>
-  );
-}
-
-export function CustomTabList(props: TabListProps & {isOpen: boolean; setIsOpen: (value:boolean) => void}) {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
-
-  return (
-    <View {...props} style={[styles.tabListContainer, { width: props.isOpen ? 240 : 80},]}>
-      <ThemedView type="backgroundElement" style={[styles.innerContainer, !props.isOpen && styles.collapsedContainer]}>
-        <Pressable onPress={() => props.setIsOpen(!props.isOpen)}>
-          <ThemedText>☰</ThemedText>
-        </Pressable>
-
-        {props.isOpen && (
-          <>
-        <ThemedText type="smallBold" style={styles.brandText}>
-          UDepop
-        </ThemedText>
-
-        {props.children}
-
-        <ExternalLink href="https://docs.expo.dev" asChild>
-          <Pressable style={styles.externalPressable}>
-            <ThemedText type="link">Contact Us</ThemedText>
-            <SymbolView
-              tintColor={colors.text}
-              name={{ ios: 'arrow.up.right.square', web: 'link' }}
-              size={12}
-            />
-          </Pressable>
-        </ExternalLink>
-        </>
-        )}
-      </ThemedView>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  tabListContainer: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    padding: Spacing.three,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    flexDirection: 'column',
+  content: {
+    flex: 1,
+    height: "100%",
   },
-  innerContainer: {
-    paddingVertical: Spacing.three,
-    paddingHorizontal: Spacing.five,
-    borderRadius: Spacing.five,
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    flexGrow: 1,
-    gap: Spacing.two,
-    maxWidth: MaxContentWidth,
-    justifyContent: 'flex-start',
-  },
-  brandText: {
-    marginBottom: Spacing.two,
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  tabButtonView: {
-    paddingVertical: Spacing.one,
-    paddingHorizontal: Spacing.three,
-    borderRadius: Spacing.three,
-  },
-  externalPressable: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: Spacing.one,
-    marginLeft: Spacing.three,
-  },
-  collapsedContainer: {
-    width: 60,
-    height: 60,
-    flexGrow: 0,
-    padding: 0,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  topActions: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-  
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f2f2f2',
+  slot: {
+    flex: 1,
+    height: "100%",
   },
 });
