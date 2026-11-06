@@ -11,6 +11,10 @@ import OwnMessages from "./UserMessaging/OwnMessages";
 
 export default function ProfileScreen() {
   const me = useQuery(api.users.getMe);
+  const rating = useQuery(
+    api.reviews.getRating,
+    me?._id ? { userId: me._id } : "skip"
+  );
   const currentUserId = me?._id; //undefined while loading
 
   const [showPopup, setShowPopup] = useState<boolean>(false);
@@ -29,9 +33,27 @@ export default function ProfileScreen() {
       <View style={styles.banner}>
         <ProfilePicture />
         <Text style={styles.bannerText}>
-          @username <Ionicons name="star" size={25} color="gold" /> 5.0
+          @{me?.username ?? "Loading..."}{" "}
+          {rating && rating.count > 0 ? (
+            <>
+              <Ionicons name="star" size={25} color="gold" />{" "}
+              {rating.average.toFixed(1)}
+            </>
+          ) : (
+            "No ratings"
+          )}
         </Text>
-        <Text>3 Products | 50 Followers</Text>
+        <Text>
+          {me?.firstName} {me?.lastName}
+        </Text>
+        {me?.bio ? (
+          <Text>{me.bio}</Text>
+        ) : null}
+
+        {me?.location ? (
+          <Text>{me.location}</Text>
+        ) : null}
+        <Text>{myListings.length} Products</Text>
       </View>
       <Text style={styles.bannerText}>Products:</Text>
       <View style={{ alignItems: "center" }}>
