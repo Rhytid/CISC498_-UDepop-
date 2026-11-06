@@ -1,7 +1,7 @@
 {
   "name": "udepop",
   "main": "expo-router/entry",
-  "homepage": "https://github.io",
+  "homepage": "https://rhytid.github.io/CISC498_-UDepop-/",
   "version": "1.0.0",
   "dependencies": {
     "@convex-dev/auth": "^0.0.96",
@@ -59,8 +59,7 @@
     "test": "vitest",
     "test:once": "vitest run",
     "typecheck": "tsc --noEmit",
-    "predeploy": "npx expo export -p web",
-    "deploy": "gh-pages --nojekyll -d dist"
+    "build:web": "expo export --platform web"
   },
   "private": true
 }

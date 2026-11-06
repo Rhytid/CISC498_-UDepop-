@@ -75,6 +75,8 @@ export const seed = mutation({
       listingId: lamp,
       lastMessage: "Is this still available?",
       unreadCount: 1,
+      unreadCountA: userA === alice ? 1 : 0,
+      unreadCountB: userB === alice ? 1 : 0,
       archived: false,
       createdAt: now,
       updatedAt: now,

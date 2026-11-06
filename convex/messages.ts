@@ -49,6 +49,8 @@ export const send = mutation({
     }
 
     const now = Date.now();
+    const recipientId =
+      conversation.userA === me._id ? conversation.userB : conversation.userA;
     const messageId = await ctx.db.insert("messages", {
       conversationId: args.conversationId,
       senderId: me._id,
@@ -61,13 +63,14 @@ export const send = mutation({
     await ctx.db.patch(args.conversationId, {
       lastMessage: args.body,
       unreadCount: conversation.unreadCount + 1,
+      ...(conversation.userA === recipientId
+        ? { unreadCountA: (conversation.unreadCountA ?? 0) + 1 }
+        : { unreadCountB: (conversation.unreadCountB ?? 0) + 1 }),
       updatedAt: now,
     });
 
-    const otherId =
-      conversation.userA === me._id ? conversation.userB : conversation.userA;
     await notify(ctx, {
-      userId: otherId,
+      userId: recipientId,
       type: "message",
       body: `${me.firstName} ${me.lastName}: ${args.body}`,
       listingId: conversation.listingId,
@@ -115,6 +118,8 @@ export const attachImage = mutation({
     }
 
     const now = Date.now();
+    const recipientId =
+      conversation.userA === me._id ? conversation.userB : conversation.userA;
     const messageId = await ctx.db.insert("messages", {
       conversationId: args.conversationId,
       senderId: me._id,
@@ -127,13 +132,14 @@ export const attachImage = mutation({
     await ctx.db.patch(args.conversationId, {
       lastMessage: "📷 Image",
       unreadCount: conversation.unreadCount + 1,
+      ...(conversation.userA === recipientId
+        ? { unreadCountA: (conversation.unreadCountA ?? 0) + 1 }
+        : { unreadCountB: (conversation.unreadCountB ?? 0) + 1 }),
       updatedAt: now,
     });
 
-    const otherId =
-      conversation.userA === me._id ? conversation.userB : conversation.userA;
     await notify(ctx, {
-      userId: otherId,
+      userId: recipientId,
       type: "message",
       body: `${me.firstName} ${me.lastName} sent a photo`,
       listingId: conversation.listingId,
