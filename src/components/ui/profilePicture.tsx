@@ -1,6 +1,8 @@
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 export default function ProfilePicture() {
   /**
@@ -12,6 +14,7 @@ export default function ProfilePicture() {
    *
    */
   const [picture, setPicture] = useState<string | null>(null);
+  const me = useQuery(api.users.getMe);
   const [hovered, setHovered] = useState(false);
 
   const pickImage = async () => {
@@ -45,10 +48,10 @@ export default function ProfilePicture() {
         onHoverIn={() => setHovered(true)}
         onHoverOut={() => setHovered(false)}
       >
-        {picture ? (
+        {(picture || me?.profilePicture) ? (
           <View>
             <Image
-              source={{ uri: picture }}
+              source={{ uri: picture || me?.profilePicture }}
               style={styles.profilePicture}
               alt="Profile Picture"
             />

@@ -14,12 +14,15 @@ async function summarize(
 ) {
   const otherId =
     conversation.userA === meId ? conversation.userB : conversation.userA;
+  const { unreadCountA, unreadCountB, ...conversationData } = conversation;
   const [other, listing] = await Promise.all([
     ctx.db.get(otherId),
     ctx.db.get(conversation.listingId),
   ]);
   return {
-    ...conversation,
+    ...conversationData,
+    unreadCount:
+      (conversation.userA === meId ? unreadCountA : unreadCountB) ?? 0,
     otherUser:
       other === null
         ? null
@@ -35,6 +38,7 @@ async function summarize(
         ? null
         : {
             _id: listing._id,
+            ownerId: listing.ownerId,
             title: listing.title,
             price: listing.price,
             photos: listing.photos,
@@ -129,6 +133,8 @@ export const startItemConvo = mutation({
       listingId: args.listingId,
       lastMessage: "",
       unreadCount: 0,
+      unreadCountA: 0,
+      unreadCountB: 0,
       archived: false,
       createdAt: now,
       updatedAt: now,
@@ -163,7 +169,12 @@ export const markRead = mutation({
       }
     }
 
-    await ctx.db.patch(args.id, { unreadCount: 0 });
+    await ctx.db.patch(args.id, {
+      unreadCount: 0,
+      ...(conversation.userA === me._id
+        ? { unreadCountA: 0 }
+        : { unreadCountB: 0 }),
+    });
     return await ctx.db.get(args.id);
   },
 });
