@@ -5,7 +5,7 @@ import { NewItem } from "@/items/newItem";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
 import React, { useState } from "react";
-import { Button, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../convex/_generated/api";
 
 export default function ProfileScreen() {

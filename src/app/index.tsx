@@ -66,10 +66,8 @@ export default function HomeScreen() {
 
         setRotatingWordIndex((previous) => (previous + 1) % rotatingWords.length);
 
-        // Place the next word below
         slideAnim.setValue(40);
 
-        // Slide the new word upward
         Animated.timing(slideAnim, {
           toValue: 0,
           duration: 400,
