@@ -1,7 +1,7 @@
 import ProfilePicture from "@/components/ui/profilePicture";
 import { useListingActions } from "@/hooks/listingActions";
-import ItemCard from "@/Items/itemCard";
-import { NewItem } from "@/Items/newItem";
+import ItemCard from "@/items/itemCard";
+import { NewItem } from "@/items/newItem";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
 import React, { useState } from "react";
@@ -13,7 +13,7 @@ export default function ProfileScreen() {
   const me = useQuery(api.users.getMe);
   const rating = useQuery(
     api.reviews.getRating,
-    me?._id ? { userId: me._id } : "skip"
+    me?._id ? { userId: me._id } : "skip",
   );
   const currentUserId = me?._id; //undefined while loading
 
@@ -46,13 +46,9 @@ export default function ProfileScreen() {
         <Text>
           {me?.firstName} {me?.lastName}
         </Text>
-        {me?.bio ? (
-          <Text>{me.bio}</Text>
-        ) : null}
+        {me?.bio ? <Text>{me.bio}</Text> : null}
 
-        {me?.location ? (
-          <Text>{me.location}</Text>
-        ) : null}
+        {me?.location ? <Text>{me.location}</Text> : null}
         <Text>{myListings.length} Products</Text>
       </View>
       <Text style={styles.bannerText}>Products:</Text>

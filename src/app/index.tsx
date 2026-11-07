@@ -15,7 +15,7 @@ import SearchBar from "@/components/searchbar";
 import { ThemedText } from "@/components/themed-text";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import ItemCard from "../Items/itemCard";
+import ItemCard from "../items/itemCard";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import itemData from "../data/itemData.json";
