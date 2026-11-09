@@ -1,13 +1,12 @@
 import { useQuery } from "convex/react";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 
 export default function singleUserList() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const router = useRouter();
   const user = useQuery(
     api.users.getPublicById,
     id && id !== "index" ? { userId: id as Id<"users">} : "skip"
@@ -31,9 +30,7 @@ export default function singleUserList() {
   }
   return (
     <ScrollView style={styles.scrollView}>
-      <Pressable onPress={() => router.replace("/allusers")}>
-        <Text style={{ color: "white", fontSize: 18}}>← Back to All Users</Text>
-      </Pressable>
+      <Stack.Screen options={{ title: `@${user.username}`, headerBackVisible: true,}}></Stack.Screen>
       <View style={styles.banner}>
         <Text style={[styles.bannerText, { color: "black" }]}>@{user.username}</Text>
         <Text>{user.firstname} {user.lastname}</Text>
@@ -41,9 +38,10 @@ export default function singleUserList() {
         <Text>{user.location}</Text>
         <Text>{UserListings.length} listings</Text>
       </View>
+      <Text style={{ color: "white" }}>{user.username}'s listings:</Text>
       {UserListings.map((item) => (
         <View key={item._id} style={styles.itemContainer}>
-          <Text>
+          <Text style={{ color: "white" }}>
             {item.title} - ${item.price}
           </Text>
         </View>
