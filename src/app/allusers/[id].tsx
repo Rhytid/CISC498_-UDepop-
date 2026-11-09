@@ -7,6 +7,10 @@ import { Id } from "../../../convex/_generated/dataModel";
 
 export default function singleUserList() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const user = useQuery(
+    api.users.getPublicById,
+    id && id !== "index" ? { userId: id as Id<"users">} : "skip"
+  );
   const UserListings = useQuery(
     api.listings.listByUser,
     id ? { userId: id as Id<"users"> } : "skip",
@@ -15,14 +19,24 @@ export default function singleUserList() {
     return <Text>Loading...</Text>;
   }
 
-  if (UserListings.length === 0) {
-    return <Text>No listings yet</Text>;
-  }
   if (!id || id === "index") {
     return null; // Or a loading spinner while the index route mounts properly
   }
+  if (user === undefined){
+    return <Text style={{ color: "white" }}>Loading Profile...</Text>
+  }
+  if (user === null) {
+    return <Text style={{ color: "white"}}>User does not exist</Text>
+  }
   return (
-    <ScrollView contentContainerStyle={styles.itemContainer}>
+    <ScrollView style={styles.scrollView}>
+      <View style={styles.banner}>
+        <Text style={[styles.bannerText, { color: "black" }]}>@{user.username}</Text>
+        <Text>{user.firstname} {user.lastname}</Text>
+        <Text>{user.bio}</Text>
+        <Text>{user.location}</Text>
+        <Text>{UserListings.length} listings</Text>
+      </View>
       {UserListings.map((item) => (
         <View key={item._id} style={styles.itemContainer}>
           <Text>

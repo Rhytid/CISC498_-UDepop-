@@ -1,8 +1,9 @@
 import { usePaginatedQuery } from "convex/react";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Image, Pressable, Text } from "react-native";
+import { Image, Pressable, ScrollView, Text } from "react-native";
 import { api } from "../../../convex/_generated/api";
+
 export default function allusers() {
   const { results, status, loadMore } = usePaginatedQuery(
     api.users.listAll,
@@ -11,7 +12,7 @@ export default function allusers() {
   );
   const router = useRouter();
   return (
-    <div>
+    <ScrollView style={{ flex: 1, padding: 20 }}>
       {results?.map(({ _id, username, pfp }) => (
         <Pressable
           key={_id}
@@ -30,7 +31,7 @@ export default function allusers() {
             source={{ uri: pfp }}
             style={{ width: 40, height: 40, borderRadius: 20 }}
           />
-          <Text>{username}</Text>
+          <Text style={{ color: "white" }}>{username}</Text>
         </Pressable>
       ))}
       <Pressable
@@ -39,6 +40,6 @@ export default function allusers() {
       >
         <Text>Load More</Text>
       </Pressable>
-    </div>
+    </ScrollView>
   );
 }

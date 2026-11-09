@@ -41,6 +41,22 @@ export const getById = query({
   },
 });
 
+export const getPublicById = query ({
+  args: { userId: v.id('users') },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    if (!user) return null;
+    return {
+      username: user.username,
+      firstname: user.firstName,
+      lastname: user.lastName,
+      bio: user.bio,
+      location: user.location,
+      profilePicture: user.profilePicture,
+    };
+  },
+});
+
 // Edit name, bio, avatar, campus.
 export const updateProfile = mutation({
   args: profileFields,
