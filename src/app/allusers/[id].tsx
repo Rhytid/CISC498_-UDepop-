@@ -1,5 +1,7 @@
+import { useListingActions } from "@/hooks/listingActions";
+import ItemCard from "@/items/itemCard";
 import { useQuery } from "convex/react";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../../convex/_generated/api";
@@ -7,6 +9,9 @@ import { Id } from "../../../convex/_generated/dataModel";
 
 export default function singleUserList() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const me = useQuery(api.users.getMe);
+  const { sellList, deleteListing } = useListingActions();
+  const router = useRouter();
   const user = useQuery(
     api.users.getPublicById,
     id && id !== "index" ? { userId: id as Id<"users">} : "skip"
@@ -30,7 +35,7 @@ export default function singleUserList() {
   }
   return (
     <ScrollView style={styles.scrollView}>
-      <Stack.Screen options={{ title: `@${user.username}`, headerBackVisible: true,}}></Stack.Screen>
+      <Stack.Screen options={{ title: `@${user.username}`}}></Stack.Screen>
       <View style={styles.banner}>
         <Text style={[styles.bannerText, { color: "black" }]}>@{user.username}</Text>
         <Text>{user.firstname} {user.lastname}</Text>
@@ -39,13 +44,18 @@ export default function singleUserList() {
         <Text>{UserListings.length} listings</Text>
       </View>
       <Text style={{ color: "white" }}>{user.username}'s listings:</Text>
-      {UserListings.map((item) => (
-        <View key={item._id} style={styles.itemContainer}>
-          <Text style={{ color: "white" }}>
-            {item.title} - ${item.price}
-          </Text>
-        </View>
+      <View style={styles.itemContainer}>
+        {me && UserListings.map((item) => (
+          <ItemCard
+            key={item._id}
+            listing={item}
+            currentUserId={me._id}
+            onSellListing={sellList}
+            onDeleteListing={deleteListing}
+            >
+          </ItemCard>
       ))}
+      </View>
     </ScrollView>
   );
 }
