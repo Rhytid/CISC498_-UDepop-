@@ -3,7 +3,7 @@ import ItemCard from "@/items/itemCard";
 import { useQuery } from "convex/react";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 
@@ -37,13 +37,15 @@ export default function singleUserList() {
     <ScrollView style={styles.scrollView}>
       <Stack.Screen options={{ title: `@${user.username}`}}></Stack.Screen>
       <View style={styles.banner}>
+        <Image source={user.profilePicture ? { uri: user.profilePicture } : require("@/assets/images/default-profile-picture.png")}
+         style={{width: 100, height: 100, borderRadius: 50}}>
+        </Image>
         <Text style={[styles.bannerText, { color: "black" }]}>@{user.username}</Text>
         <Text>{user.firstname} {user.lastname}</Text>
         <Text>{user.bio}</Text>
         <Text>{user.location}</Text>
         <Text>{UserListings.length} listings</Text>
       </View>
-      <Text style={{ color: "white" }}>{user.username}'s listings:</Text>
       <View style={styles.itemContainer}>
         {me && UserListings.map((item) => (
           <ItemCard
@@ -66,13 +68,14 @@ const styles = StyleSheet.create({
   },
   banner: {
     width: "100%",
-    height: 250,
+    minHeight: 300,
     borderRadius: 10,
     marginTop: 10,
     backgroundColor: "#ccc",
     textAlign: "center",
     justifyContent: "center",
     alignItems: "center",
+    padding: 20,
   },
   bannerText: {
     fontSize: 24,
