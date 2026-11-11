@@ -11,14 +11,14 @@ import {
   View,
 } from "react-native";
 
+import ItemCard from "@/features/listings/components/itemCard";
 import SearchBar from "@/shared/components/searchbar";
 import { ThemedText } from "@/shared/ui/themed-text";
-import { useQuery } from "convex/react";
 import { api } from "@convex/_generated/api";
-import ItemCard from "@/features/listings/components/itemCard";
+import { useQuery } from "convex/react";
 
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import itemData from "@/data/itemData.json";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 function getDevMenuHint() {
   if (Platform.OS === "web") {
@@ -54,10 +54,12 @@ export default function HomeScreen() {
   const [search, setSearch] = React.useState("");
   const me = useQuery(api.users.getMe);
   const currentUserId = me?._id; //undefined while loading
+  const scrollRef = useRef<ScrollView>(null);
+  const listingsPos = useRef(0);
 
-  const result = useQuery(api.listings.list, {
-    searchText: search || undefined, // empty string would trigger the search branch
-  });
+  const [filteredYear, setFilteredYear] = useState<string | "">("");
+
+  const result = useQuery(api.listings.list, {});
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -73,10 +75,8 @@ export default function HomeScreen() {
           (previous) => (previous + 1) % rotatingWords.length,
         );
 
-        // Place the next word below
         slideAnim.setValue(40);
 
-        // Slide the new word upward into position
         Animated.timing(slideAnim, {
           toValue: 0,
           duration: 400,
@@ -92,12 +92,36 @@ export default function HomeScreen() {
     };
   }, [slideAnim]);
 
+  const searchSubmit = () => {
+    if (search.trim() !== "") {
+      scrollRef.current?.scrollTo({ y: listingsPos.current, animated: true });
+    }
+  };
+
   if (result === undefined) {
     return <Text>Loading...</Text>;
   }
 
+  {
+    /* Searches for item with tag or item with search word in name
+      Can use button and search combined (i.e., junior + 'kitchen') */
+  }
+  const filteredListings = result.page.filter((item) => {
+    const matchesYear =
+      filteredYear === "" || item.tags.includes(filteredYear.toLowerCase());
+
+    const searchText = search.toLowerCase().trim();
+
+    const matchesSearch =
+      item.title.toLowerCase().includes(searchText) ||
+      item.tags.some((tag) => tag.toLowerCase().includes(searchText));
+
+    return matchesYear && matchesSearch;
+  });
+
   return (
     <ScrollView
+      ref={scrollRef}
       style={styles.scrollView}
       contentContainerStyle={styles.container}
     >
@@ -120,7 +144,12 @@ export default function HomeScreen() {
               </Animated.Text>
             </View>
           </View>
-          <SearchBar />
+          <SearchBar
+            search={search}
+            setSearch={setSearch}
+            onSubmit={searchSubmit}
+            listings={result.page}
+          />
         </View>
       </View>
       {/* End Banner & Search Code */}
@@ -134,7 +163,11 @@ export default function HomeScreen() {
             <Pressable
               key={category.name}
               style={styles.categoryButton}
-              onPress={() => console.log(category.name)}
+              onPress={() =>
+                setFilteredYear(
+                  filteredYear === category.name ? "" : category.name,
+                )
+              }
             >
               <MaterialCommunityIcons
                 name={category.icon}
@@ -146,10 +179,15 @@ export default function HomeScreen() {
           ))}
         </View>
       </View>
-      <Text style={styles.bannerText}>Listings:</Text>
-
+      <View
+        onLayout={(event) => {
+          listingsPos.current = event.nativeEvent.layout.y;
+        }}
+      >
+        <Text style={styles.bannerText}>Listings:</Text>
+      </View>
       <View style={styles.itemContainer}>
-        {result.page.map((item) => (
+        {filteredListings.map((item) => (
           <ItemCard
             key={item._id}
             listing={item}
@@ -195,6 +233,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#607D8B",
     alignItems: "center",
     justifyContent: "center",
+    zIndex: 10,
   },
   searchBannerText: {
     fontSize: 28,
