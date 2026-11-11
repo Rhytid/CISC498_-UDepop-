@@ -51,9 +51,9 @@ export const navigationSections: SidebarSectionDef[] = [
         iconActive: "home",
       },
       {
-        id: "allusers",
+        id: "all-users",
         label: "All Users",
-        href: "/allusers",
+        href: "/all-users",
         icon: "people-outline",
         iconActive: "people",
       },

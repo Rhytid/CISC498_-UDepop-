@@ -1,70 +1,138 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
+import { useTheme } from "@/shared/hooks/use-theme";
 
 export default function AUserScreen() {
+  const theme = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const UserListings = useQuery(
+  const userId = id && id !== "index" ? (id as Id<"users">) : undefined;
+
+  const user = useQuery(api.users.getById, userId ? { userId } : "skip");
+  const listings = useQuery(
     api.listings.listByUser,
-    id ? { userId: id as Id<"users"> } : "skip",
+    userId ? { userId } : "skip",
   );
-  if (UserListings === undefined) {
-    return <Text>Loading...</Text>;
+
+  const loading = user === undefined || listings === undefined;
+
+  let content;
+  if (!userId) {
+    content = (
+      <View style={styles.center}>
+        <Text style={{ color: theme.textSecondary }}>No user selected.</Text>
+      </View>
+    );
+  } else if (loading) {
+    content = (
+      <View style={styles.center}>
+        <ActivityIndicator />
+      </View>
+    );
+  } else if (user === null) {
+    content = (
+      <View style={styles.center}>
+        <Text style={{ color: theme.textSecondary }}>User not found.</Text>
+      </View>
+    );
+  } else {
+    content = (
+      <>
+        <Text style={[styles.heading, { color: theme.text }]}>
+          @{user.username}
+        </Text>
+        {listings.length === 0 ? (
+          <View style={styles.center}>
+            <Text style={{ color: theme.textSecondary }}>No listings yet</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={listings}
+            keyExtractor={(listing) => listing._id}
+            contentContainerStyle={styles.listContent}
+            renderItem={({ item }) => (
+              <View
+                style={[
+                  styles.listingCard,
+                  {
+                    backgroundColor: theme.backgroundElement,
+                    borderColor: theme.backgroundSelected,
+                  },
+                ]}
+              >
+                <Text style={[styles.listingTitle, { color: theme.text }]}>
+                  {item.title}
+                </Text>
+                <Text
+                  style={[styles.listingPrice, { color: theme.textSecondary }]}
+                >
+                  ${item.price}
+                  {item.sold ? " · Sold" : ""}
+                </Text>
+              </View>
+            )}
+          />
+        )}
+      </>
+    );
   }
 
-  if (UserListings.length === 0) {
-    return <Text>No listings yet</Text>;
-  }
-  if (!id || id === "index") {
-    return null; // Or a loading spinner while the index route mounts properly
-  }
   return (
-    <ScrollView contentContainerStyle={styles.itemContainer}>
-      {UserListings.map((item) => (
-        <View key={item._id} style={styles.itemContainer}>
-          <Text>
-            {item.title} - ${item.price}
-          </Text>
-        </View>
-      ))}
-    </ScrollView>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Pressable
+        onPress={() => router.navigate("/all-users")}
+        accessibilityRole="button"
+        accessibilityLabel="Back to All Users"
+        style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
+      >
+        <Ionicons name="arrow-back" size={22} color={theme.text} />
+        <Text style={[styles.backText, { color: theme.text }]}>Back</Text>
+      </Pressable>
+
+      {content}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-  },
-  banner: {
-    width: "100%",
-    height: 250,
-    borderRadius: 10,
-    marginTop: 10,
-    backgroundColor: "#ccc",
-    textAlign: "center",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  bannerText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    paddingTop: 20,
-  },
-  itemContainer: {
+  container: { flex: 1, padding: 16 },
+  backButton: {
+    alignSelf: "flex-start",
     flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    alignItems: "flex-start",
-  },
-  button: {
-    backgroundColor: "#eee",
-    borderRadius: 10,
-    padding: 10,
-    margin: 10,
-    width: 150,
     alignItems: "center",
+    gap: 4,
+    paddingVertical: 8,
+    paddingRight: 12,
+    marginBottom: 8,
   },
+  backText: { fontSize: 16, fontWeight: "600" },
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 32,
+  },
+  heading: { fontSize: 24, fontWeight: "800", marginBottom: 12 },
+  listContent: { gap: 10, paddingBottom: 16 },
+  listingCard: {
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+    gap: 4,
+  },
+  listingTitle: { fontSize: 16, fontWeight: "600" },
+  listingPrice: { fontSize: 14 },
+  pressed: { opacity: 0.7 },
 });

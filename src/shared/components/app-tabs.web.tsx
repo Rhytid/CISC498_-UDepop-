@@ -82,6 +82,20 @@ export default function AppTabs() {
               ))}
             </Fragment>
           ))}
+          {/* Register standalone sub-screens as tabs so they render in
+              <TabSlot /> alongside the sidebar, without showing them as nav items. */}
+          <Fragment>
+            <TabTrigger
+              name="a-user"
+              href="/a-user"
+              style={styles.hiddenTrigger}
+            />
+            <TabTrigger
+              name="listing-editor"
+              href="/listing-editor"
+              style={styles.hiddenTrigger}
+            />
+          </Fragment>
         </Sidebar>
       </TabList>
     </Tabs>
@@ -96,5 +110,8 @@ const styles = StyleSheet.create({
   slot: {
     flex: 1,
     height: "100%",
+  },
+  hiddenTrigger: {
+    display: "none",
   },
 });

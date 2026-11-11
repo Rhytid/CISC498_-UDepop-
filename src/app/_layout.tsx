@@ -37,7 +37,6 @@ function AppContent() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="listing-editor" />
     </Stack>
   );
 }

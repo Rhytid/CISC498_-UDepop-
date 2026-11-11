@@ -22,7 +22,7 @@ export default function AppTabs() {
         />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="allusers">
+      <NativeTabs.Trigger name="all-users">
         <NativeTabs.Trigger.Label>All Users</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           src={require("@/assets/images/tabIcons/massUser.png")}
