@@ -1,22 +1,23 @@
-import { useMutation, useQuery, useConvex } from "convex/react";
+import { useConvex, useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  useWindowDimensions,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
   type LayoutChangeEvent,
 } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
-import type { FunctionReturnType } from "convex/server";
 
 import { useTheme } from "@/hooks/use-theme";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { ChatWindow } from "./chat-window";
 import { ConversationList } from "./conversation-list";
-import type { Conversation } from "./types";
 
-type ConversationQueryResult = FunctionReturnType<typeof api.conversations.list>;
+type ConversationQueryResult = FunctionReturnType<
+  typeof api.conversations.list
+>;
 
 export default function MessagesPage() {
   return <MessagesErrorBoundary />;
@@ -85,16 +86,28 @@ function MessagesContent() {
   const [sending, setSending] = useState(false);
   const [operationError, setOperationError] = useState<string | null>(null);
 
-  const displayedConversations =
-    refreshResult !== undefined ? refreshResult : conversations;
-  const selectedConversation = displayedConversations?.find(
-    (conversation) => conversation._id === selectedId,
+  const displayedConversations = useMemo(() => {
+    const source = refreshResult !== undefined ? refreshResult : conversations;
+    return source?.filter((conversation) => conversation.lastMessage);
+  }, [refreshResult, conversations]);
+  const selectedFromGet = useQuery(
+    api.conversations.get,
+    selectedId ? { id: selectedId } : "skip",
   );
+
+  const selectedConversation =
+    displayedConversations?.find((c) => c._id === selectedId) ??
+    selectedFromGet ??
+    undefined;
   const messages = useQuery(
     api.messages.list,
     selectedId ? { conversationId: selectedId } : "skip",
   );
-
+  useEffect(() => {
+    if (selectedId && selectedFromGet === null) {
+      setSelectedId(undefined);
+    }
+  }, [selectedFromGet, selectedId]);
   const sendMessage = useMutation(api.messages.send);
   const markRead = useMutation(api.conversations.markRead);
 
@@ -112,9 +125,9 @@ function MessagesContent() {
     () =>
       Boolean(
         me?._id &&
-          messages?.some(
-            (message) => message.senderId !== me._id && !message.read,
-          ),
+        messages?.some(
+          (message) => message.senderId !== me._id && !message.read,
+        ),
       ),
     [me?._id, messages],
   );
@@ -126,7 +139,9 @@ function MessagesContent() {
 
     markRead({ id: selectedId }).catch((error: unknown) => {
       setOperationError(
-        error instanceof Error ? error.message : "Could not mark messages read.",
+        error instanceof Error
+          ? error.message
+          : "Could not mark messages read.",
       );
     });
   }, [markRead, selectedId, unreadMessages]);
@@ -153,12 +168,15 @@ function MessagesContent() {
   const refreshConversations = async () => {
     setRefreshing(true);
     setOperationError(null);
+
     try {
       const result = await convex.query(api.conversations.list, {});
       setRefreshResult(result);
     } catch (error) {
       setOperationError(
-        error instanceof Error ? error.message : "Could not refresh conversations.",
+        error instanceof Error
+          ? error.message
+          : "Could not refresh conversations.",
       );
     } finally {
       setRefreshing(false);
@@ -222,8 +240,8 @@ function MessagesContent() {
         </Text>
       )}
       {(!isMobile || !selectedId) && conversationList}
-      {(!isMobile || Boolean(selectedId)) && (
-        selectedConversation ? (
+      {(!isMobile || Boolean(selectedId)) &&
+        (selectedConversation ? (
           <ChatWindow
             conversation={selectedConversation}
             messages={messages}
@@ -250,13 +268,14 @@ function MessagesContent() {
             <Text style={[styles.noSelectionTitle, { color: theme.text }]}>
               Select a conversation
             </Text>
-            <Text style={[styles.noSelectionText, { color: theme.textSecondary }]}>
+            <Text
+              style={[styles.noSelectionText, { color: theme.textSecondary }]}
+            >
               Choose a buyer or seller conversation to see its messages and
               listing details.
             </Text>
           </View>
-        )
-      )}
+        ))}
     </View>
   );
 }
