@@ -3,11 +3,14 @@ import AnimatedMulti, { TagType } from "@/features/tags/tagDef";
 import { useMutation, useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Button, Pressable, Text, TextInput, View } from "react-native";
+import { Button, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
 
+import { useTheme } from "@/shared/hooks/use-theme";
+
 export default function ListingEditorScreen() {
+  const theme = useTheme();
   const { listingId } = useLocalSearchParams<{ listingId: string }>();
   const listing = useQuery(api.listings.get, {
     id: listingId as Id<"listings">,
@@ -30,10 +33,24 @@ export default function ListingEditorScreen() {
     setTags(listing.tags.map((t) => ({ value: t, label: t })));
   }, [listing?._id]);
 
-  if (listing === undefined)
-    return <Text style={{ padding: 20 }}>Loading...</Text>;
-  if (listing === null)
-    return <Text style={{ padding: 20 }}>Listing not found.</Text>;
+  if (listing === undefined) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <Text style={{ paddingVertical: 20, color: theme.textSecondary }}>
+          Loading...
+        </Text>
+      </View>
+    );
+  }
+  if (listing === null) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <Text style={{ paddingVertical: 20, color: theme.textSecondary }}>
+          Listing not found.
+        </Text>
+      </View>
+    );
+  }
 
   const onSave = async () => {
     setError(null);
@@ -64,31 +81,26 @@ export default function ListingEditorScreen() {
 
   const input = {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: theme.backgroundSelected,
     borderRadius: 6,
     padding: 8,
     marginBottom: 12,
+    color: theme.text,
+    backgroundColor: theme.backgroundElement,
   } as const;
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
-      <Pressable
-        onPress={() => router.back()}
-        style={{ alignSelf: "flex-start", paddingVertical: 8, marginBottom: 8 }}
-      >
-        <Text style={{ color: "#2563eb", fontSize: 16, fontWeight: "600" }}>
-          ← Back
-        </Text>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Text style={[styles.backText, { color: theme.text }]}>← Back</Text>
       </Pressable>
 
-      <Text style={{ fontWeight: "bold", fontSize: 18, paddingBottom: 12 }}>
-        Edit listing
-      </Text>
+      <Text style={[styles.heading, { color: theme.text }]}>Edit listing</Text>
 
-      <Text>Title</Text>
+      <Text style={[styles.label, { color: theme.text }]}>Title</Text>
       <TextInput style={input} value={title} onChangeText={setTitle} />
 
-      <Text>Price</Text>
+      <Text style={[styles.label, { color: theme.text }]}>Price</Text>
       <TextInput
         style={input}
         value={price}
@@ -96,9 +108,9 @@ export default function ListingEditorScreen() {
         keyboardType="decimal-pad"
       />
 
-      <Text>Description</Text>
+      <Text style={[styles.label, { color: theme.text }]}>Description</Text>
       <TextInput
-        style={[input, { height: 100 }]}
+        style={[input, styles.multiline]}
         value={description}
         onChangeText={setDescription}
         multiline
@@ -106,9 +118,7 @@ export default function ListingEditorScreen() {
 
       <AnimatedMulti value={Tags} onChange={setTags} />
 
-      {error && (
-        <Text style={{ color: "#dc2626", marginBottom: 8 }}>{error}</Text>
-      )}
+      {error && <Text style={styles.error}>{error}</Text>}
 
       <Button
         title={saving ? "Saving..." : "Save changes"}
@@ -118,3 +128,13 @@ export default function ListingEditorScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16 },
+  backButton: { alignSelf: "flex-start", paddingVertical: 8, marginBottom: 8 },
+  backText: { fontSize: 16, fontWeight: "600" },
+  heading: { fontWeight: "bold", fontSize: 18, paddingBottom: 12 },
+  label: { marginBottom: 4 },
+  multiline: { height: 100 },
+  error: { color: "#dc2626", marginBottom: 8 },
+});

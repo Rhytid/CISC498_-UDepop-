@@ -7,11 +7,14 @@ import {
 } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
-import { useColorScheme } from "react-native";
 
 import SignInScreen from "@/features/auth/sign-in";
 import { authStorage } from "@/lib/auth-storage";
 import { convex } from "@/lib/convex";
+import {
+  ThemePreferenceProvider,
+  useThemePreference,
+} from "@/shared/hooks/theme-preference";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -39,13 +42,21 @@ function AppContent() {
   );
 }
 
+function ThemedRoot() {
+  const { preference } = useThemePreference();
+  return (
+    <ThemeProvider value={preference === "dark" ? DarkTheme : DefaultTheme}>
+      <AppContent />
+    </ThemeProvider>
+  );
+}
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   return (
     <ConvexAuthProvider client={convex} storage={authStorage}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <AppContent />
-      </ThemeProvider>
+      <ThemePreferenceProvider>
+        <ThemedRoot />
+      </ThemePreferenceProvider>
     </ConvexAuthProvider>
   );
 }
