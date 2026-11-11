@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   banner: {
-    width: "75%",
+    width: "90%",
     height: "25%",
     borderRadius: 20,
     backgroundColor: '#607D8B',
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   categoriesContainer: {
-    width: "75%",
+    width: "90%",
     marginTop: 40,
   },
   categoriesTitle: {
