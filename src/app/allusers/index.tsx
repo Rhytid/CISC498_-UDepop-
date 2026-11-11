@@ -1,7 +1,7 @@
 import { usePaginatedQuery } from "convex/react";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Image, Pressable, ScrollView, Text } from "react-native";
+import { Image, Pressable, ScrollView, Text, useColorScheme } from "react-native";
 import { api } from "../../../convex/_generated/api";
 
 export default function allusers() {
@@ -11,6 +11,7 @@ export default function allusers() {
     { initialNumItems: 20 },
   );
   const router = useRouter();
+  const colorScheme = useColorScheme();
   return (
     <ScrollView style={{ flex: 1, padding: 20 }}>
       {results?.map(({ _id, username, pfp }) => (
@@ -28,10 +29,10 @@ export default function allusers() {
           }}
         >
           <Image
-            source={{ uri: pfp }}
+            source={ pfp ? { uri: pfp } : require("@/assets/images/default-profile-picture.png")}
             style={{ width: 40, height: 40, borderRadius: 20 }}
           />
-          <Text style={{ color: "white" }}>{username}</Text>
+          <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>{username}</Text>
         </Pressable>
       ))}
       <Pressable

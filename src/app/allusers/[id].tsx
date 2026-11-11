@@ -3,7 +3,7 @@ import ItemCard from "@/items/itemCard";
 import { useQuery } from "convex/react";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View, useColorScheme } from "react-native";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 
@@ -12,6 +12,7 @@ export default function singleUserList() {
   const me = useQuery(api.users.getMe);
   const { sellList, deleteListing } = useListingActions();
   const router = useRouter();
+  const colorScheme = useColorScheme()
   const user = useQuery(
     api.users.getPublicById,
     id && id !== "index" ? { userId: id as Id<"users">} : "skip"
@@ -40,7 +41,7 @@ export default function singleUserList() {
         <Image source={user.profilePicture ? { uri: user.profilePicture } : require("@/assets/images/default-profile-picture.png")}
          style={{width: 100, height: 100, borderRadius: 50}}>
         </Image>
-        <Text style={[styles.bannerText, { color: "black" }]}>@{user.username}</Text>
+        <Text style={[styles.bannerText, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>@{user.username}</Text>
         <Text>{user.firstname} {user.lastname}</Text>
         <Text>{user.bio}</Text>
         <Text>{user.location}</Text>
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     minHeight: 300,
     borderRadius: 10,
     marginTop: 10,
-    backgroundColor: "#ccc",
+    backgroundColor: "#607D8B",
     textAlign: "center",
     justifyContent: "center",
     alignItems: "center",
