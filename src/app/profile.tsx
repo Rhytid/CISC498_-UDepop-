@@ -141,7 +141,6 @@ export default function ProfileScreen() {
           </View>
         </View>
       </Modal>
-      <OwnMessages />
     </ScrollView>
   );
 }
