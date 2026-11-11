@@ -7,7 +7,6 @@ import { useQuery } from "convex/react";
 import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { api } from "../../convex/_generated/api";
-import OwnMessages from "./UserMessaging/OwnMessages";
 
 export default function ProfileScreen() {
   const me = useQuery(api.users.getMe);
@@ -74,7 +73,6 @@ export default function ProfileScreen() {
           />
         ))}
       </View>
-      <OwnMessages />
     </ScrollView>
   );
 }
