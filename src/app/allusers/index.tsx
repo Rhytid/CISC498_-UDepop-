@@ -1,21 +1,43 @@
 import { Picker } from "@react-native-picker/picker";
-import { usePaginatedQuery } from "convex/react";
+import { usePaginatedQuery, useQuery } from "convex/react";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Image, Pressable, ScrollView, Text, View, useColorScheme } from "react-native";
+import { Image, Pressable, ScrollView, Text, TextInput, View, useColorScheme } from "react-native";
 import { api } from "../../../convex/_generated/api";
 
 export default function allusers() {
   const [sortBy, setSortBy] = useState<"username" | "reviews" | "listings">("username");
+  const [search, setSearch] = useState("");
+  
+  const searchedUsers = useQuery( api.users.search, search.trim() ? { query: search.trim() } : "skip");
   const { results, status, loadMore } = usePaginatedQuery(
     api.users.listAll,
     { sortBy },
     { initialNumItems: 20 },
   );
+  const usersShown = search.trim() ? searchedUsers?.map(( user ) => ({
+    _id: user._id,
+    username: user.username,
+    pfp: user.profilePicture,
+  })) ?? [] : results;
   const router = useRouter();
   const colorScheme = useColorScheme();
   return (
     <ScrollView style={{ flex: 1, padding: 20 }}>
+      <TextInput
+      placeholder="Search users..."
+      value={search}
+      onChangeText={setSearch}
+      placeholderTextColor='black'
+      style={{
+        backgroundColor: "white",
+        color: "black",
+        padding: 12,
+        borderRadius: 10,
+        marginBottom: 15,
+      }}
+      >
+      </TextInput>
       <View style={{ width: 200, marginBottom: 20 }}>
         <Picker selectedValue={sortBy} onValueChange={(value) => setSortBy(value)}>
           <Picker.Item label="Username (A-Z)" value="username"></Picker.Item>
@@ -23,7 +45,7 @@ export default function allusers() {
           <Picker.Item label="Most Listings" value="listings"></Picker.Item>
         </Picker>
       </View>
-      {results?.map(({ _id, username, pfp }) => (
+      {usersShown.map(({ _id, username, pfp }) => (
         <Pressable
           key={_id}
           style={{
@@ -44,12 +66,14 @@ export default function allusers() {
           <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>{username}</Text>
         </Pressable>
       ))}
-      <Pressable
-        onPress={() => loadMore(5)}
-        disabled={status !== "CanLoadMore"}
-      >
-        <Text>Load More</Text>
-      </Pressable>
+      {!search.trim() && (
+        <Pressable
+          onPress={() => loadMore(5)}
+          disabled={status !== "CanLoadMore"}
+        >
+          <Text>Load More</Text>
+        </Pressable>
+      )}
     </ScrollView>
   );
 }
