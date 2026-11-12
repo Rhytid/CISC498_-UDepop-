@@ -128,16 +128,62 @@ export const search = query({
 
 //Gives a mass list of all Users
 export const listAll = query({
-  args: { paginationOpts: paginationOptsValidator },
+  args: {
+    paginationOpts: paginationOptsValidator,
+    sortBy: v.union(
+      v.literal("username"),
+      v.literal("reviews"),
+      v.literal("listings")
+    ),
+  },
   handler: async (ctx, args) => {
-    const results = await ctx.db.query("users").paginate(args.paginationOpts);
+    if (args.sortBy === "username") {
+      const results = await ctx.db.query("users").withIndex("by_username").order('asc').paginate(args.paginationOpts);
+
+      return {
+        ...results,
+        page: results.page.map((user) => ({
+          _id: user._id,
+          username: user.username,
+          pfp: user.profilePicture,
+        })),
+      };
+    }
+    const users = await ctx.db.query("users").collect();
+    const sortUsers = await Promise.all(
+      users.map(async(user) => {
+        let sortValue = 0;
+        if (args.sortBy === "reviews") {
+          const reviews = await ctx.db.query("reviews").withIndex("by_ratee", (q) => q.eq("rateeId", user._id)).collect()
+          sortValue = reviews.length ? reviews.reduce((sum, r) => sum + r.score, 0) / reviews.length : 0;
+        }
+        if (args.sortBy === 'listings') {
+          const listings = await ctx.db.query("listings").withIndex("by_owner_createdAt", (q) => q.eq("ownerId", user._id)).collect()
+          sortValue = listings.length;
+        }
+        return {
+          _id: user._id,
+          username: user.username,
+          pfp: user.profilePicture,
+          sortValue,
+        };
+      })
+    );
+    sortUsers.sort(
+      (a, b) => b.sortValue - a.sortValue || a.username.localeCompare(b.username)
+    );
+    const start = Number(args.paginationOpts.cursor ?? 0);
+    const end = start + args.paginationOpts.numItems;
     return {
-      ...results,
-      page: results.page.map((user) => ({
-        _id: user._id,
-        username: user.username,
-        pfp: user.profilePicture,
-      })),
+      page: sortUsers.slice(start, end).map(
+        ({ _id, username, pfp }) => ({
+          _id,
+          username,
+          pfp,
+        })
+      ),
+      isDone: end >= sortUsers.length,
+      continueCursor: String(end),
     };
   },
 });

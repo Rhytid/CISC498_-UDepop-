@@ -1,19 +1,28 @@
+import { Picker } from "@react-native-picker/picker";
 import { usePaginatedQuery } from "convex/react";
 import { useRouter } from "expo-router";
-import React from "react";
-import { Image, Pressable, ScrollView, Text, useColorScheme } from "react-native";
+import React, { useState } from "react";
+import { Image, Pressable, ScrollView, Text, View, useColorScheme } from "react-native";
 import { api } from "../../../convex/_generated/api";
 
 export default function allusers() {
+  const [sortBy, setSortBy] = useState<"username" | "reviews" | "listings">("username");
   const { results, status, loadMore } = usePaginatedQuery(
     api.users.listAll,
-    {},
+    { sortBy },
     { initialNumItems: 20 },
   );
   const router = useRouter();
   const colorScheme = useColorScheme();
   return (
     <ScrollView style={{ flex: 1, padding: 20 }}>
+      <View style={{ width: 200, marginBottom: 20 }}>
+        <Picker selectedValue={sortBy} onValueChange={(value) => setSortBy(value)}>
+          <Picker.Item label="Username (A-Z)" value="username"></Picker.Item>
+          <Picker.Item label="Highest Rated" value="reviews"></Picker.Item>
+          <Picker.Item label="Most Listings" value="listings"></Picker.Item>
+        </Picker>
+      </View>
       {results?.map(({ _id, username, pfp }) => (
         <Pressable
           key={_id}
