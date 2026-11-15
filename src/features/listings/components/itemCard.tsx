@@ -11,6 +11,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { Doc, Id } from "@convex/_generated/dataModel";
+import { useTheme } from "@/shared/hooks/use-theme";
 
 export interface ItemCardProps {
   listing: Doc<"listings">;
@@ -60,6 +61,8 @@ export default function ItemCard({
   const isOwner =
     currentUserId !== undefined && listing.ownerId === currentUserId;
 
+  const theme = useTheme();
+  
   return (
     <Pressable
       style={styles.cardWrapper}
@@ -67,7 +70,7 @@ export default function ItemCard({
       onHoverOut={handleHoverOut}
     >
       {
-        <Animated.View style={[styles.card, animatedCard]}>
+        <Animated.View style={[{...styles.card, backgroundColor: theme.backgroundElement}, animatedCard]}>
           <Pressable onPress={handlePress}>
             <PhotoRow photos={listing.photos as string[] | undefined} />
             <Text style={styles.name}>
@@ -81,7 +84,6 @@ export default function ItemCard({
             <Animated.View style={{ flex: 1 }} exiting={FadeOut.duration(300)}>
               <ScrollView
                 nestedScrollEnabled
-                showsVerticalScrollIndicator
                 contentContainerStyle={{ paddingBottom: 10 }}
               >
                 {listing.tags.length > 0 && (
@@ -153,7 +155,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     margin: 10,
-    backgroundColor: "#ddd",
   },
   name: {
     fontSize: 18,

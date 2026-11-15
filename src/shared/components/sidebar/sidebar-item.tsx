@@ -27,7 +27,7 @@ export function SidebarItem({
 
   const active = Boolean(isFocused);
   const backgroundColor = active
-    ? SIDEBAR_ACCENT
+    ? theme.secondary
     : hovered
       ? theme.backgroundSelected
       : "transparent";
