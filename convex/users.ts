@@ -112,16 +112,89 @@ export const search = query({
 
 //Gives a mass list of all Users
 export const listAll = query({
-  args: { paginationOpts: paginationOptsValidator },
+  args: {
+    paginationOpts: paginationOptsValidator,
+    sortBy: v.optional(
+      v.union(
+        v.literal("username"),
+        v.literal("reviews"),
+        v.literal("listings"),
+      ),
+    ),
+  },
   handler: async (ctx, args) => {
-    const results = await ctx.db.query("users").paginate(args.paginationOpts);
-    return {
-      ...results,
-      page: results.page.map((user) => ({
+    const sortBy = args.sortBy ?? "username";
+
+    if (sortBy === "username") {
+      const results = await ctx.db
+        .query("users")
+        .withIndex("by_username")
+        .order("asc")
+        .paginate(args.paginationOpts);
+      return {
+        ...results,
+        page: results.page.map((user) => ({
+          _id: user._id,
+          username: user.username,
+          pfp: user.profilePicture,
+        })),
+      };
+    }
+
+    const users = await ctx.db.query("users").collect();
+    const sortValues = new Map<string, number>();
+
+    if (sortBy === "reviews") {
+      const reviews = await ctx.db.query("reviews").collect();
+      const ratings = new Map<string, { total: number; count: number }>();
+      for (const review of reviews) {
+        const rating = ratings.get(review.rateeId) ?? { total: 0, count: 0 };
+        rating.total += review.score;
+        rating.count += 1;
+        ratings.set(review.rateeId, rating);
+      }
+      for (const [userId, rating] of ratings) {
+        sortValues.set(userId, rating.total / rating.count);
+      }
+    } else {
+      const listings = await ctx.db.query("listings").collect();
+      for (const listing of listings) {
+        sortValues.set(
+          listing.ownerId,
+          (sortValues.get(listing.ownerId) ?? 0) + 1,
+        );
+      }
+    }
+
+    const sortedUsers = users
+      .map((user) => ({
         _id: user._id,
         username: user.username,
         pfp: user.profilePicture,
+        sortValue: sortValues.get(user._id) ?? 0,
+      }))
+      .sort(
+        (a, b) =>
+          b.sortValue - a.sortValue ||
+          a.username.localeCompare(b.username) ||
+          a._id.localeCompare(b._id),
+      );
+
+    const cursor = args.paginationOpts.cursor;
+    const start = cursor === null ? 0 : Number(cursor);
+    if (!Number.isSafeInteger(start) || start < 0) {
+      throw new Error("Invalid users pagination cursor");
+    }
+    const end = start + args.paginationOpts.numItems;
+
+    return {
+      page: sortedUsers.slice(start, end).map((user) => ({
+        _id: user._id,
+        username: user.username,
+        pfp: user.pfp,
       })),
+      isDone: end >= sortedUsers.length,
+      continueCursor: String(end),
     };
   },
 });
