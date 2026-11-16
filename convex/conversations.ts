@@ -66,15 +66,13 @@ export const list = query({
         .collect(),
     ]);
 
-    const conversations = [...asA, ...asB].sort(
-      (a, b) => b.updatedAt - a.updatedAt,
-    );
+    const conversations = [...asA, ...asB]
+      .filter((c) => c.lastMessage) // drops "" and undefined
+      .sort((a, b) => b.updatedAt - a.updatedAt);
 
-    const result = [];
-    for (const conversation of conversations) {
-      result.push(await summarize(ctx, conversation, me._id));
-    }
-    return result;
+    return await Promise.all(
+      conversations.map((conversation) => summarize(ctx, conversation, me._id)),
+    );
   },
 });
 

@@ -1,7 +1,6 @@
 import ItemCard from "@/features/listings/components/itemCard";
 import { NewItem } from "@/features/listings/components/newItem";
 import { useListingActions } from "@/features/listings/hooks/listingActions";
-import OwnMessages from "@/features/messaging/components/OwnMessages";
 import ProfilePicture from "@/shared/ui/profilePicture";
 import { api } from "@convex/_generated/api";
 import { Ionicons } from "@expo/vector-icons";
@@ -142,7 +141,6 @@ export default function ProfileScreen() {
           </View>
         </View>
       </Modal>
-      <OwnMessages />
     </ScrollView>
   );
 }
