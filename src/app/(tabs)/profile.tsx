@@ -2,9 +2,11 @@ import ItemCard from "@/features/listings/components/itemCard";
 import { NewItem } from "@/features/listings/components/newItem";
 import { useListingActions } from "@/features/listings/hooks/listingActions";
 import ProfilePicture from "@/shared/ui/profilePicture";
+import { useTheme } from "@/shared/hooks/use-theme";
 import { api } from "@convex/_generated/api";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Modal,
@@ -16,6 +18,7 @@ import {
 } from "react-native";
 
 export default function ProfileScreen() {
+  const theme = useTheme();
   const me = useQuery(api.users.getMe);
   const rating = useQuery(
     api.reviews.getRating,
@@ -41,7 +44,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <ScrollView>
+    <ScrollView style={{ backgroundColor: theme.background }}>
       <View style={styles.banner}>
         <ProfilePicture />
         <Text style={styles.bannerText}>@{me?.username ?? "Loading..."} </Text>
@@ -69,6 +72,33 @@ export default function ProfileScreen() {
         {me?.location ? <Text>{me.location}</Text> : null}
         <Text>{myListings.length} Products</Text>
       </View>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push("/bookmarks")}
+        style={({ pressed }) => [
+          styles.bookmarksCard,
+          {
+            backgroundColor: theme.backgroundElement,
+            borderColor: theme.backgroundSelected,
+          },
+          pressed && styles.pressed,
+        ]}
+      >
+        <Ionicons name="bookmark-outline" size={22} color={theme.text} />
+        <View style={styles.bookmarksCopy}>
+          <Text style={[styles.bookmarksTitle, { color: theme.text }]}>
+            Bookmarked Listings
+          </Text>
+          <Text style={[styles.bookmarksSubtitle, { color: theme.textSecondary }]}>
+            View the items you saved
+          </Text>
+        </View>
+        <Ionicons
+          name="chevron-forward"
+          size={18}
+          color={theme.textSecondary}
+        />
+      </Pressable>
       <Text style={styles.bannerText}>Products:</Text>
       <View style={{ alignItems: "center" }}>
         {myListings.length === 0 && <Text>You have no listings</Text>}
@@ -177,6 +207,30 @@ const styles = StyleSheet.create({
     margin: 10,
     width: 150,
     alignItems: "center",
+  },
+  bookmarksCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 14,
+    marginHorizontal: 16,
+    marginTop: 16,
+  },
+  bookmarksCopy: {
+    flex: 1,
+  },
+  bookmarksTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  bookmarksSubtitle: {
+    marginTop: 3,
+    fontSize: 12,
+  },
+  pressed: {
+    opacity: 0.75,
   },
   clickableRating: {
     flexDirection: "row",

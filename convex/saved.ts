@@ -62,14 +62,41 @@ export const list = query({
       .withIndex("by_user_listing", (q) => q.eq("userId", user._id))
       .collect();
 
-    const items = [];
-    for (const save of saves) {
-      const listing = await ctx.db.get(save.listingId);
-      if (listing !== null) {
-        items.push({ _id: save._id, savedAt: save.savedAt, listing });
-      }
-    }
-    return items;
+    const items = await Promise.all(
+      saves.map(async (save) => {
+        const listing = await ctx.db.get(save.listingId);
+        if (listing === null) {
+          return {
+            _id: save._id,
+            listingId: save.listingId,
+            savedAt: save.savedAt,
+            listing: null,
+          };
+        }
+
+        const seller = await ctx.db.get(listing.ownerId);
+        return {
+          _id: save._id,
+          listingId: save.listingId,
+          savedAt: save.savedAt,
+          listing: {
+            ...listing,
+            seller:
+              seller === null
+                ? null
+                : {
+                    _id: seller._id,
+                    username: seller.username,
+                    firstName: seller.firstName,
+                    lastName: seller.lastName,
+                    profilePicture: seller.profilePicture,
+                  },
+          },
+        };
+      }),
+    );
+
+    return items.sort((a, b) => b.savedAt - a.savedAt);
   },
 });
 

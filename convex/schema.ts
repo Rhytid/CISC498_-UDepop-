@@ -28,6 +28,7 @@ export default defineSchema({
     title: v.string(),
     description: v.string(),
     category: v.string(),
+    condition: v.optional(v.string()),
     tags: v.array(v.string()),
     photos: v.array(v.string()),
     // Denormalized "title + description + tags" for full-text search.
@@ -51,6 +52,7 @@ export default defineSchema({
     savedAt: v.number(),
   })
     .index("by_user_listing", ["userId", "listingId"])
+    // Reverse lookup for future listing price/availability notifications.
     .index("by_listing", ["listingId"]),
 
   conversations: defineTable({
