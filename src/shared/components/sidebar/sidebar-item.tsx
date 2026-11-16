@@ -29,13 +29,13 @@ export function SidebarItem({
   const backgroundColor = active
     ? theme.secondary
     : hovered
-      ? theme.backgroundSelected
+      ? theme.secondary
       : "transparent";
   const foreground = active
-    ? "#FFFFFF"
+    ? theme.text
     : hovered
       ? theme.text
-      : theme.textSecondary;
+      : theme.textLight;
 
   return (
     <Pressable

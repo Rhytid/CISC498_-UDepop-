@@ -23,7 +23,7 @@ export function SidebarSectionTitle({
   }
 
   return (
-    <Text style={[styles.title, { color: theme.textSecondary }]}>
+    <Text style={[styles.title, { color: theme.textLight }]}>
       {title.toUpperCase()}
     </Text>
   );

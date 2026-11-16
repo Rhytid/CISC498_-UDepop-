@@ -140,7 +140,7 @@ export default function HomeScreen() {
 						<Text
 							style={{
 								...styles.searchBannerText,
-								color: theme.textContrast,
+								color: theme.textLight,
 							}}
 						>
 							Find your new favorite {""}
@@ -151,7 +151,7 @@ export default function HomeScreen() {
 									styles.searchBannerText,
 									{
 										...styles.rotatingText,
-										color: theme.secondary,
+										color: theme.accent,
 									},
 									{ transform: [{ translateY: slideAnim }] },
 								]}
