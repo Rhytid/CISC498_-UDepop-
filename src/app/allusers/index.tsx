@@ -19,6 +19,8 @@ export default function allusers() {
     _id: user._id,
     username: user.username,
     pfp: user.profilePicture,
+    firstName: user.firstName,
+    lastName: user.lastName,
   })) ?? [] : results;
   const router = useRouter();
   const colorScheme = useColorScheme();
@@ -45,14 +47,19 @@ export default function allusers() {
           <Picker.Item label="Most Listings" value="listings"></Picker.Item>
         </Picker>
       </View>
-      {usersShown.map(({ _id, username, pfp }) => (
+      {usersShown.map(({ _id, username, pfp, firstName, lastName }) => (
         <Pressable
           key={_id}
           style={{
             flexDirection: "row",
             alignItems: "center",
-            gap: 12,
-            padding: 8,
+            gap: 15,
+            padding: 15,
+            marginBottom: 10,
+            borderRadius: 12,
+            backgroundColor: colorScheme === 'dark' ? '#263238' : 'white',
+            borderWidth: 1,
+            borderColor: colorScheme === 'dark' ? '#455A64' : 'light gray',
           }}
           onPress={() => {
             console.log("pressed", _id);
@@ -63,7 +70,22 @@ export default function allusers() {
             source={ pfp ? { uri: pfp } : require("@/assets/images/default-profile-picture.png")}
             style={{ width: 40, height: 40, borderRadius: 20 }}
           />
-          <Text style={{ color: colorScheme === 'dark' ? 'white' : 'black' }}>{username}</Text>
+          <View>
+            <Text style={{
+              color: colorScheme === 'dark' ? 'white' : 'black',
+              fontSize: 17,
+              fontWeight: 'bold',
+            }}>
+              {firstName} {lastName}
+            </Text>
+            <Text style={{ 
+              color: colorScheme === 'dark' ? '#B0BEC5' : '#607D8B', 
+              fontSize: 13,
+              marginTop: 3, 
+            }}>
+              @{username}
+            </Text>
+          </View>
         </Pressable>
       ))}
       {!search.trim() && (

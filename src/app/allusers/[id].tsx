@@ -42,7 +42,7 @@ export default function singleUserList() {
          style={{width: 100, height: 100, borderRadius: 50}}>
         </Image>
         <Text style={[styles.bannerText, { color: colorScheme === 'dark' ? 'white' : 'black' }]}>@{user.username}</Text>
-        <Text>{user.firstname} {user.lastname}</Text>
+        <Text>{user.firstName} {user.lastName}</Text>
         <Text>{user.bio}</Text>
         <Text>{user.location}</Text>
         <Text>{UserListings.length} listings</Text>

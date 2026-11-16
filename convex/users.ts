@@ -48,8 +48,8 @@ export const getPublicById = query ({
     if (!user) return null;
     return {
       username: user.username,
-      firstname: user.firstName,
-      lastname: user.lastName,
+      firstName: user.firstName,
+      lastName: user.lastName,
       bio: user.bio,
       location: user.location,
       profilePicture: user.profilePicture,
@@ -146,6 +146,8 @@ export const listAll = query({
           _id: user._id,
           username: user.username,
           pfp: user.profilePicture,
+          firstName: user.firstName,
+          lastName: user.lastName,
         })),
       };
     }
@@ -165,6 +167,8 @@ export const listAll = query({
           _id: user._id,
           username: user.username,
           pfp: user.profilePicture,
+          firstName: user.firstName,
+          lastName: user.lastName,
           sortValue,
         };
       })
@@ -176,10 +180,12 @@ export const listAll = query({
     const end = start + args.paginationOpts.numItems;
     return {
       page: sortUsers.slice(start, end).map(
-        ({ _id, username, pfp }) => ({
+        ({ _id, username, pfp, firstName, lastName }) => ({
           _id,
           username,
           pfp,
+          firstName,
+          lastName,
         })
       ),
       isDone: end >= sortUsers.length,
