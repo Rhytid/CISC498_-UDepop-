@@ -84,6 +84,7 @@ export default function ItemCard({
             <Animated.View style={{ flex: 1 }} exiting={FadeOut.duration(300)}>
               <ScrollView
                 nestedScrollEnabled
+                showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 10 }}
               >
                 {listing.tags.length > 0 && (
@@ -174,7 +175,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "30%",
-    backgroundColor: "#fff",
     borderRadius: 10,
   },
 });

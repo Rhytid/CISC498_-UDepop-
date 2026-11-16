@@ -1,14 +1,14 @@
 import * as Device from "expo-device";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Animated,
-  Easing,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+	Animated,
+	Easing,
+	Platform,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
 } from "react-native";
 
 import ItemCard from "@/features/listings/components/itemCard";
@@ -18,8 +18,8 @@ import { api } from "@convex/_generated/api";
 import { useQuery } from "convex/react";
 
 import itemData from "@/data/itemData.json";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "@/shared/hooks/use-theme";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 function getDevMenuHint() {
 	if (Platform.OS === "web") {
@@ -60,7 +60,7 @@ export default function HomeScreen() {
 	const listingsPos = useRef(0);
 	const [filteredYear, setFilteredYear] = useState<string | "">("");
 	const result = useQuery(api.listings.list, {});
-  const theme = useTheme();
+	const theme = useTheme();
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -128,20 +128,31 @@ export default function HomeScreen() {
 		<ScrollView
 			ref={scrollRef}
 			style={{ ...styles.scrollView, backgroundColor: theme.background }}
-			contentContainerStyle={{ ...styles.container, backgroundColor: theme.background }}
+			contentContainerStyle={{
+				...styles.container,
+				backgroundColor: theme.background,
+			}}
 		>
 			{/* Banner & Search Code */}
 			<View style={{ ...styles.banner, backgroundColor: theme.primary }}>
 				<View style={styles.insideBanner}>
 					<View style={styles.textContainer}>
-						<Text style={{ ...styles.searchBannerText, color: "#F5EDE8" }}>
+						<Text
+							style={{
+								...styles.searchBannerText,
+								color: theme.textContrast,
+							}}
+						>
 							Find your new favorite {""}
 						</Text>
 						<View>
 							<Animated.Text
 								style={[
 									styles.searchBannerText,
-									{ ...styles.rotatingText, color: theme.secondary },
+									{
+										...styles.rotatingText,
+										color: theme.secondary,
+									},
 									{ transform: [{ translateY: slideAnim }] },
 								]}
 							>
@@ -167,7 +178,13 @@ export default function HomeScreen() {
 					{categories.map((category) => (
 						<Pressable
 							key={category.name}
-							style={{...styles.categoryButton, backgroundColor: filteredYear === category.name ? theme.secondary : theme.primary}}
+							style={{
+								...styles.categoryButton,
+								backgroundColor:
+									filteredYear === category.name
+										? theme.secondary
+										: theme.primary,
+							}}
 							onPress={() =>
 								setFilteredYear(
 									filteredYear === category.name
