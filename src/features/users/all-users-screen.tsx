@@ -1,18 +1,11 @@
 import { usePaginatedQuery } from "convex/react";
 import { useRouter } from "expo-router";
 import React from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Image, Pressable, StyleSheet, Text } from "react-native";
+import SearchBox from "./user-search";
 
-import { api } from "@convex/_generated/api";
 import { useTheme } from "@/shared/hooks/use-theme";
+import { api } from "@convex/_generated/api";
 
 export default function AllUsersScreen() {
   const theme = useTheme();
@@ -23,14 +16,6 @@ export default function AllUsersScreen() {
     { initialNumItems: 20 },
   );
 
-  if (results === undefined) {
-    return (
-      <View style={[styles.center, { backgroundColor: theme.background }]}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
   return (
     <FlatList
       style={[styles.list, { backgroundColor: theme.background }]}
@@ -38,13 +23,17 @@ export default function AllUsersScreen() {
       data={results}
       keyExtractor={(user) => user._id}
       ListHeaderComponent={
-        <Text style={[styles.heading, { color: theme.text }]}>All Users</Text>
+        <>
+          <Text style={[styles.heading, { color: theme.text }]}>All Users</Text>
+          <SearchBox />
+        </>
       }
       ListEmptyComponent={
         <Text style={{ color: theme.textSecondary, textAlign: "center" }}>
           No users yet.
         </Text>
       }
+
       renderItem={({ item }) => (
         <Pressable
           onPress={() =>
@@ -96,7 +85,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
   },
-  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#cccccc" },
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "#cccccc",
+  },
   username: { fontSize: 16, fontWeight: "600" },
   loadMore: {
     alignItems: "center",
