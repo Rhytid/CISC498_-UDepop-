@@ -6,6 +6,7 @@ import { Id } from "@convex/_generated/dataModel";
 export interface NewListingInput {
   title: string;
   price: number;
+  condition?: string;
   tags: string[];
   description: string;
   category: string;
