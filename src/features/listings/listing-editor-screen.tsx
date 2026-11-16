@@ -20,6 +20,7 @@ export default function ListingEditorScreen() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [condition, setCondition] = useState("");
   const [Tags, setTags] = useState<TagType[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -30,6 +31,7 @@ export default function ListingEditorScreen() {
     setTitle(listing.title);
     setDescription(listing.description);
     setPrice(String(listing.price));
+    setCondition(listing.condition ?? "");
     setTags(listing.tags.map((t) => ({ value: t, label: t })));
   }, [listing?._id]);
 
@@ -66,6 +68,7 @@ export default function ListingEditorScreen() {
         id: listing._id,
         title: title.trim(),
         description,
+        condition: condition.trim(),
         price: parsedPrice,
         tags: Tags.map((t) => t.value),
         category: listing.category,
@@ -106,6 +109,15 @@ export default function ListingEditorScreen() {
         value={price}
         onChangeText={setPrice}
         keyboardType="decimal-pad"
+      />
+
+      <Text style={[styles.label, { color: theme.text }]}>Condition</Text>
+      <TextInput
+        style={input}
+        value={condition}
+        onChangeText={setCondition}
+        placeholder="e.g. New, Good, Fair"
+        placeholderTextColor={theme.textSecondary}
       />
 
       <Text style={[styles.label, { color: theme.text }]}>Description</Text>

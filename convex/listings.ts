@@ -8,18 +8,27 @@ const listingInput = {
   title: v.string(),
   description: v.string(),
   category: v.string(),
+  condition: v.optional(v.string()),
   price: v.number(),
   tags: v.array(v.string()),
   photos: v.array(v.string()),
 };
 
-// Full-text search payload, kept in sync with title/description/tags.
+// Full-text search payload, kept in sync with title/description/tags/condition.
 function buildSearchText(args: {
   title: string;
   description: string;
+  condition?: string;
   tags: string[];
 }) {
-  return [args.title, args.description, ...args.tags].join(" ").toLowerCase();
+  return [
+    args.title,
+    args.description,
+    args.condition ?? "",
+    ...args.tags,
+  ]
+    .join(" ")
+    .toLowerCase();
 }
 //Adds something to the list
 export const create = mutation({
@@ -31,6 +40,7 @@ export const create = mutation({
       title: args.title,
       description: args.description,
       category: args.category,
+      ...(args.condition !== undefined ? { condition: args.condition } : {}),
       price: args.price,
       tags: args.tags,
       photos: args.photos,
@@ -152,6 +162,7 @@ export const update = mutation({
       searchText: buildSearchText(fields),
       updatedAt: Date.now(),
     });
+    // Future bookmark events can resolve subscribers through saved.by_listing here.
     return await ctx.db.get(id);
   },
 });
@@ -169,15 +180,8 @@ export const remove = mutation({
       throw new Error("You can only delete your own listings");
     }
 
-    // Clean up saved rows pointing at this listing.
-    const saves = await ctx.db
-      .query("saved")
-      .withIndex("by_listing", (q) => q.eq("listingId", args.id))
-      .collect();
-    for (const save of saves) {
-      await ctx.db.delete(save._id);
-    }
-
+    // Keep bookmarks so their owners can see that the listing was removed.
+    // Future removal notifications can be emitted before deleting the listing.
     await ctx.db.delete(args.id);
     return { deleted: true };
   },

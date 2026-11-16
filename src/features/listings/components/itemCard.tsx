@@ -4,6 +4,7 @@ import PhotoRow from "@/shared/ui/photoRow";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { BookmarkToggleButton } from "@/features/bookmarks/components/bookmark-toggle-button";
 import Animated, {
   FadeOut,
   useAnimatedStyle,
@@ -76,6 +77,10 @@ export default function ItemCard({
             </Text>
             <Text style={styles.price}>${listing.price.toFixed(2)}</Text>
           </Pressable>
+          <BookmarkToggleButton
+            listingId={listing._id}
+            style={styles.bookmarkButton}
+          />
 
           {expanded && (
             <Animated.View style={{ flex: 1 }} exiting={FadeOut.duration(300)}>
@@ -84,6 +89,10 @@ export default function ItemCard({
                 showsVerticalScrollIndicator
                 contentContainerStyle={{ paddingBottom: 10 }}
               >
+                <Text style={styles.listingMeta}>
+                  {listing.category} · Condition:{" "}
+                  {listing.condition?.trim() || "Not specified"}
+                </Text>
                 {listing.tags.length > 0 && (
                   <Text style={{ fontStyle: "italic" }}>
                     Tags: {listing.tags.join(", ")}
@@ -145,6 +154,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   card: {
+    position: "relative",
     width: 300,
     height: 300,
     overflow: "hidden",
@@ -163,6 +173,16 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     marginBottom: 5,
+  },
+  bookmarkButton: {
+    position: "absolute",
+    top: 14,
+    right: 14,
+    zIndex: 2,
+  },
+  listingMeta: {
+    fontSize: 13,
+    fontWeight: "600",
   },
   description: {
     fontSize: 14,

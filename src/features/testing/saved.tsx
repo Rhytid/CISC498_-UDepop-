@@ -45,8 +45,12 @@ export default function SavedTest() {
       ) : (
         saved.map(({ _id, listing }) => (
           <View key={_id} style={styles.row}>
-            <Text style={styles.rowTitle}>{listing.title}</Text>
-            <Text style={styles.rowSub}>${listing.price}</Text>
+            <Text style={styles.rowTitle}>
+              {listing?.title ?? "Listing unavailable"}
+            </Text>
+            {listing && (
+              <Text style={styles.rowSub}>${listing.price}</Text>
+            )}
           </View>
         ))
       )}

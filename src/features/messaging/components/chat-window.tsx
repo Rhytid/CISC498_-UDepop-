@@ -5,7 +5,7 @@ import { useTheme } from "@/shared/hooks/use-theme";
 import { ChatHeader } from "./chat-header";
 import { MessageComposer } from "./message-composer";
 import { MessageList } from "./message-list";
-import type { Conversation, Message } from "../types";
+import type { ConversationContext, Message } from "../types";
 
 export function ChatWindow({
   conversation,
@@ -19,7 +19,7 @@ export function ChatWindow({
   onSend,
   onBack,
 }: {
-  conversation: Conversation;
+  conversation: ConversationContext;
   messages?: Message[] | null;
   currentUserId?: string;
   isSeller?: boolean;
