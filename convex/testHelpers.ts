@@ -41,6 +41,7 @@ export async function seedListing(
     title: string;
     description: string;
     category: string;
+    condition?: string;
     price: number;
     tags: string[];
   },
@@ -51,6 +52,9 @@ export async function seedListing(
       title: input.title,
       description: input.description,
       category: input.category,
+      ...(input.condition !== undefined
+        ? { condition: input.condition }
+        : {}),
       price: input.price,
       tags: input.tags,
       photos: [],

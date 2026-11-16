@@ -37,6 +37,50 @@ export function orderPair<T extends string>(
   return a < b ? { userA: a, userB: b } : { userA: b, userB: a };
 }
 
+export async function getOrCreateConversationForListing(
+  ctx: MutationCtx,
+  user: User,
+  listingId: Id<"listings">,
+): Promise<Doc<"conversations">> {
+  const listing = await ctx.db.get(listingId);
+  if (listing === null) {
+    throw new Error("Listing not found");
+  }
+  if (listing.ownerId === user._id) {
+    throw new Error("You can't message yourself about your own listing");
+  }
+
+  const { userA, userB } = orderPair(user._id, listing.ownerId);
+  const existing = await ctx.db
+    .query("conversations")
+    .withIndex("by_listing_pair", (q) =>
+      q.eq("listingId", listingId).eq("userA", userA).eq("userB", userB),
+    )
+    .first();
+  if (existing !== null) {
+    return existing;
+  }
+
+  const now = Date.now();
+  const id = await ctx.db.insert("conversations", {
+    userA,
+    userB,
+    listingId,
+    lastMessage: "",
+    unreadCount: 0,
+    unreadCountA: 0,
+    unreadCountB: 0,
+    archived: false,
+    createdAt: now,
+    updatedAt: now,
+  });
+  const created = await ctx.db.get(id);
+  if (created === null) {
+    throw new Error("Could not create conversation");
+  }
+  return created;
+}
+
 // Inserts an in-app notification for a user. Called from other mutations
 // (messages.send, reviews.create, listings.markSold).
 export async function notify(

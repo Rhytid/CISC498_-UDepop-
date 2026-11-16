@@ -39,6 +39,23 @@ describe("listings", () => {
     expect(result.page[0].sold).toBe(false);
   });
 
+  test("stores listing condition and includes it in search", async () => {
+    const t = convexTest(schema, modules);
+    const sellerId = await seedUser(t, { username: "seller" });
+    const asSeller = asUser(t, sellerId);
+
+    const id = await asSeller.mutation(api.listings.create, {
+      ...listingInput,
+      photos: [],
+      condition: "Gently used",
+    });
+
+    expect((await t.query(api.listings.get, { id }))?.condition).toBe(
+      "Gently used",
+    );
+    expect(await t.query(api.listings.search, { query: "gently used" })).toHaveLength(1);
+  });
+
   test("get includes seller, then update, markSold, remove", async () => {
     const t = convexTest(schema, modules);
     const sellerId = await seedUser(t, { username: "seller" });
@@ -74,6 +91,20 @@ describe("listings", () => {
     expect(
       (await t.query(api.listings.list, { includeSold: true })).page,
     ).toHaveLength(0);
+  });
+
+  test("removing a listing leaves bookmarks available to their owners", async () => {
+    const t = convexTest(schema, modules);
+    const sellerId = await seedUser(t, { username: "seller" });
+    const listingId = await seedListing(t, sellerId, listingInput);
+    const saverId = await seedUser(t, { username: "saver" });
+    await asUser(t, saverId).mutation(api.saved.add, { listingId });
+
+    await asUser(t, sellerId).mutation(api.listings.remove, { id: listingId });
+
+    const bookmarks = await asUser(t, saverId).query(api.saved.list);
+    expect(bookmarks).toHaveLength(1);
+    expect(bookmarks?.[0].listing).toBeNull();
   });
 
   test("filters by category and price range", async () => {

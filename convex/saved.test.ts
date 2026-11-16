@@ -30,7 +30,8 @@ describe("saved", () => {
     await asSaver.mutation(api.saved.add, { listingId });
     const list = await asSaver.query(api.saved.list);
     expect(list).toHaveLength(1);
-    expect(list?.[0].listing.title).toBe("Lamp");
+    expect(list?.[0].listing?.title).toBe("Lamp");
+    expect(list?.[0].listing?.seller?.username).toBe("owner");
 
     await asSaver.mutation(api.saved.remove, { listingId });
     expect(await asSaver.query(api.saved.isSaved, { listingId })).toBe(false);
@@ -48,5 +49,27 @@ describe("saved", () => {
       tags: [],
     });
     expect(await t.query(api.saved.isSaved, { listingId })).toBe(false);
+  });
+
+  test("list keeps orphaned bookmarks visible when a listing is missing", async () => {
+    const t = convexTest(schema, modules);
+    const owner = await seedUser(t, { username: "owner" });
+    const listingId = await seedListing(t, owner, {
+      title: "Lamp",
+      description: "Bright",
+      category: "Dorm",
+      price: 10,
+      tags: [],
+    });
+    const saver = await seedUser(t, { username: "saver" });
+    const asSaver = asUser(t, saver);
+    await asSaver.mutation(api.saved.add, { listingId });
+    await t.mutation(async (ctx) => {
+      await ctx.db.delete(listingId);
+    });
+
+    const list = await asSaver.query(api.saved.list);
+    expect(list).toHaveLength(1);
+    expect(list?.[0].listing).toBeNull();
   });
 });

@@ -33,6 +33,47 @@ async function setup(t: TestConvex<typeof schema>) {
 }
 
 describe("messages", () => {
+  test("sending the first message creates and saves the conversation", async () => {
+    const t = convexTest(schema, modules);
+    const seller = await seedUser(t, { username: "seller" });
+    const listingId = await seedListing(t, seller, listingInput);
+    const buyerId = await seedUser(t, { username: "buyer" });
+    const asBuyer = asUser(t, buyerId);
+
+    expect(await asBuyer.query(api.conversations.list)).toEqual([]);
+
+    const first = await asBuyer.mutation(api.messages.send, {
+      listingId,
+      body: "Is this still available?",
+    });
+    const second = await asBuyer.mutation(api.messages.send, {
+      listingId,
+      body: "I can pick it up tomorrow.",
+    });
+
+    expect(first.conversationId).toBe(second.conversationId);
+    expect(first.body).toBe("Is this still available?");
+    expect((await asBuyer.query(api.conversations.list))).toHaveLength(1);
+    expect(
+      await asBuyer.query(api.messages.list, {
+        conversationId: first.conversationId,
+      }),
+    ).toHaveLength(2);
+  });
+
+  test("an empty first message does not create a conversation", async () => {
+    const t = convexTest(schema, modules);
+    const seller = await seedUser(t, { username: "seller" });
+    const listingId = await seedListing(t, seller, listingInput);
+    const buyerId = await seedUser(t, { username: "buyer" });
+    const asBuyer = asUser(t, buyerId);
+
+    await expect(
+      asBuyer.mutation(api.messages.send, { listingId, body: "  " }),
+    ).rejects.toThrow("cannot be empty");
+    expect(await asBuyer.query(api.conversations.list)).toEqual([]);
+  });
+
   test("send delivers a message and notifies the other user", async () => {
     const t = convexTest(schema, modules);
     const { seller, asBuyer, conversationId } = await setup(t);
