@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import { useTheme } from "@/hooks/use-theme";
+import { useLocalSearchParams } from "expo-router";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { ChatWindow } from "./chat-window";
@@ -88,7 +89,7 @@ function MessagesContent() {
 
   const displayedConversations = useMemo(() => {
     const source = refreshResult !== undefined ? refreshResult : conversations;
-    return source?.filter((conversation) => conversation.lastMessage);
+    return source?.filter((c) => c.lastMessage);
   }, [refreshResult, conversations]);
   const selectedFromGet = useQuery(
     api.conversations.get,
@@ -121,6 +122,16 @@ function MessagesContent() {
     }
   }, [displayedConversations, selectedConversation, selectedId]);
 
+  const rawParam = useLocalSearchParams<{
+    conversationId?: string | string[];
+  }>().conversationId;
+  const param = Array.isArray(rawParam) ? rawParam[0] : rawParam;
+
+  useEffect(() => {
+    if (param && param !== "undefined") {
+      setSelectedId(param as Id<"conversations">);
+    }
+  }, [param]);
   const unreadMessages = useMemo(
     () =>
       Boolean(
