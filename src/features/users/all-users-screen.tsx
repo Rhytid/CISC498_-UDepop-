@@ -19,7 +19,7 @@ export default function AllUsersScreen() {
   const router = useRouter();
   const { results, status, loadMore } = usePaginatedQuery(
     api.users.listAll,
-    {},
+    { sortBy: "username" },
     { initialNumItems: 20 },
   );
 

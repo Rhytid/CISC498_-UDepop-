@@ -1,23 +1,27 @@
-import { useMutation, useQuery, useConvex } from "convex/react";
+import { useConvex, useMutation, useQuery } from "convex/react";
+import type { FunctionReturnType } from "convex/server";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  useWindowDimensions,
+  ActivityIndicator,
+  Pressable,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
   type LayoutChangeEvent,
 } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
-import type { FunctionReturnType } from "convex/server";
-import { useLocalSearchParams } from "expo-router";
 
 import { useTheme } from "@/shared/hooks/use-theme";
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
 import { ChatWindow } from "./chat-window";
 import { ConversationList } from "./conversation-list";
-import type { Conversation } from "../types";
+import type { ConversationContext } from "../types";
 
-type ConversationQueryResult = FunctionReturnType<typeof api.conversations.list>;
+type ConversationQueryResult = FunctionReturnType<
+  typeof api.conversations.list
+>;
 
 export default function MessagesPage() {
   return <MessagesErrorBoundary />;
@@ -78,6 +82,7 @@ function MessagesContent() {
   const conversations = useQuery(api.conversations.list);
   const me = useQuery(api.users.getMe);
   const [selectedId, setSelectedId] = useState<Id<"conversations">>();
+  const [draftListingId, setDraftListingId] = useState<Id<"listings">>();
   const [search, setSearch] = useState("");
   const [refreshResult, setRefreshResult] = useState<
     ConversationQueryResult | undefined
@@ -86,29 +91,77 @@ function MessagesContent() {
   const [sending, setSending] = useState(false);
   const [operationError, setOperationError] = useState<string | null>(null);
 
-  const { conversationId } = useLocalSearchParams<{
+  const { conversationId, listingId } = useLocalSearchParams<{
     conversationId?: string | string[];
+    listingId?: string | string[];
   }>();
 
   useEffect(() => {
-    const param = Array.isArray(conversationId)
+    const conversationParam = Array.isArray(conversationId)
       ? conversationId[0]
       : conversationId;
-    if (param && param !== "undefined") {
-      setSelectedId(param as Id<"conversations">);
-    }
-  }, [conversationId]);
+    const listingParam = Array.isArray(listingId)
+      ? listingId[0]
+      : listingId;
 
-  const displayedConversations =
-    refreshResult !== undefined ? refreshResult : conversations;
-  const selectedConversation = displayedConversations?.find(
-    (conversation) => conversation._id === selectedId,
+    if (conversationParam && conversationParam !== "undefined") {
+      setSelectedId(conversationParam as Id<"conversations">);
+      setDraftListingId(undefined);
+    } else if (listingParam && listingParam !== "undefined") {
+      setSelectedId(undefined);
+      setDraftListingId(listingParam as Id<"listings">);
+    } else {
+      setSelectedId(undefined);
+      setDraftListingId(undefined);
+    }
+  }, [conversationId, listingId]);
+
+  const displayedConversations = useMemo(() => {
+    const source = refreshResult !== undefined ? refreshResult : conversations;
+    return source?.filter((conversation) => conversation.lastMessage);
+  }, [refreshResult, conversations]);
+  const existingDraftConversation = draftListingId
+    ? displayedConversations?.find(
+        (conversation) => conversation.listingId === draftListingId,
+      )
+    : undefined;
+  const activeConversationId = selectedId ?? existingDraftConversation?._id;
+  const draftListing = useQuery(
+    api.listings.get,
+    draftListingId ? { id: draftListingId } : "skip",
   );
+  const draftConversation: ConversationContext | undefined = draftListing
+    ? {
+        otherUser: draftListing.seller,
+        listing: {
+          _id: draftListing._id,
+          ownerId: draftListing.ownerId,
+          title: draftListing.title,
+          price: draftListing.price,
+          photos: draftListing.photos,
+        },
+      }
+    : undefined;
+  const selectedFromGet = useQuery(
+    api.conversations.get,
+    activeConversationId ? { id: activeConversationId } : "skip",
+  );
+
+  const selectedConversation =
+    displayedConversations?.find((c) => c._id === activeConversationId) ??
+    selectedFromGet ??
+    draftConversation;
   const messages = useQuery(
     api.messages.list,
-    selectedId ? { conversationId: selectedId } : "skip",
+    activeConversationId
+      ? { conversationId: activeConversationId }
+      : "skip",
   );
-
+  useEffect(() => {
+    if (selectedId && selectedFromGet === null) {
+      setSelectedId(undefined);
+    }
+  }, [selectedFromGet, selectedId]);
   const sendMessage = useMutation(api.messages.send);
   const markRead = useMutation(api.conversations.markRead);
 
@@ -116,34 +169,30 @@ function MessagesContent() {
     setRefreshResult(undefined);
   }, [conversations]);
 
-  useEffect(() => {
-    if (selectedId && displayedConversations && !selectedConversation) {
-      setSelectedId(undefined);
-    }
-  }, [displayedConversations, selectedConversation, selectedId]);
-
   const unreadMessages = useMemo(
     () =>
       Boolean(
         me?._id &&
-          messages?.some(
-            (message) => message.senderId !== me._id && !message.read,
-          ),
+        messages?.some(
+          (message) => message.senderId !== me._id && !message.read,
+        ),
       ),
     [me?._id, messages],
   );
 
   useEffect(() => {
-    if (!selectedId || !unreadMessages) {
+    if (!activeConversationId || !unreadMessages) {
       return;
     }
 
-    markRead({ id: selectedId }).catch((error: unknown) => {
+    markRead({ id: activeConversationId }).catch((error: unknown) => {
       setOperationError(
-        error instanceof Error ? error.message : "Could not mark messages read.",
+        error instanceof Error
+          ? error.message
+          : "Could not mark messages read.",
       );
     });
-  }, [markRead, selectedId, unreadMessages]);
+  }, [activeConversationId, markRead, unreadMessages]);
 
   const photoIds = useMemo(() => {
     const listingPhotos =
@@ -154,11 +203,12 @@ function MessagesContent() {
       messages
         ?.filter((message) => message.messageType === "image")
         .map((message) => message.body) ?? [];
+    const draftPhotos = draftListing?.photos.slice(0, 1) ?? [];
 
-    return [...new Set([...listingPhotos, ...messagePhotos])].filter(
+    return [...new Set([...listingPhotos, ...messagePhotos, ...draftPhotos])].filter(
       (photo) => !photo.startsWith("http://") && !photo.startsWith("https://"),
     );
-  }, [displayedConversations, messages]);
+  }, [displayedConversations, draftListing, messages]);
   const photoUrls = useQuery(
     api.storage.getUrls,
     photoIds.length > 0 ? { storageIds: photoIds } : "skip",
@@ -167,12 +217,15 @@ function MessagesContent() {
   const refreshConversations = async () => {
     setRefreshing(true);
     setOperationError(null);
+
     try {
       const result = await convex.query(api.conversations.list, {});
       setRefreshResult(result);
     } catch (error) {
       setOperationError(
-        error instanceof Error ? error.message : "Could not refresh conversations.",
+        error instanceof Error
+          ? error.message
+          : "Could not refresh conversations.",
       );
     } finally {
       setRefreshing(false);
@@ -180,14 +233,19 @@ function MessagesContent() {
   };
 
   const handleSend = async (body: string) => {
-    if (!selectedId) {
+    if (!activeConversationId && !draftListingId) {
       return false;
     }
 
     setSending(true);
     setOperationError(null);
     try {
-      await sendMessage({ conversationId: selectedId, body });
+      if (activeConversationId) {
+        await sendMessage({ conversationId: activeConversationId, body });
+      } else if (draftListingId) {
+        const message = await sendMessage({ listingId: draftListingId, body });
+        setSelectedId(message.conversationId);
+      }
       return true;
     } catch (error) {
       setOperationError(
@@ -201,8 +259,20 @@ function MessagesContent() {
 
   const selectConversation = (id: Id<"conversations">) => {
     setSelectedId(id);
+    setDraftListingId(undefined);
     setOperationError(null);
+    router.setParams({ conversationId: id, listingId: undefined });
   };
+
+  const backToConversations = () => {
+    setSelectedId(undefined);
+    setDraftListingId(undefined);
+    setOperationError(null);
+    router.setParams({ conversationId: undefined, listingId: undefined });
+  };
+
+  const hasActiveChat = Boolean(activeConversationId || draftListingId);
+  const chatMessages = activeConversationId ? messages : [];
 
   const conversationList = (
     <ConversationList
@@ -210,7 +280,7 @@ function MessagesContent() {
       loading={conversations === undefined}
       search={search}
       onSearchChange={setSearch}
-      selectedId={selectedId}
+      selectedId={activeConversationId}
       photoUrls={photoUrls}
       refreshing={refreshing}
       isMobile={isMobile}
@@ -235,25 +305,57 @@ function MessagesContent() {
           {operationError}
         </Text>
       )}
-      {(!isMobile || !selectedId) && conversationList}
-      {(!isMobile || Boolean(selectedId)) && (
-        selectedConversation ? (
+      {(!isMobile || !hasActiveChat) && conversationList}
+      {(!isMobile || hasActiveChat) &&
+        (selectedConversation ? (
           <ChatWindow
+            key={activeConversationId ?? `draft-${draftListingId}`}
             conversation={selectedConversation}
-            messages={messages}
+            messages={chatMessages}
             currentUserId={me?._id}
             isSeller={
               selectedConversation.listing && me?._id
                 ? selectedConversation.listing.ownerId === me._id
                 : undefined
             }
-            loading={messages === undefined}
+            loading={Boolean(activeConversationId && messages === undefined)}
             sending={sending}
             error={operationError}
             photoUrls={photoUrls}
             onSend={handleSend}
-            onBack={isMobile ? () => setSelectedId(undefined) : undefined}
+            onBack={isMobile ? backToConversations : undefined}
           />
+        ) : draftListingId && draftListing === undefined ? (
+          <View
+            style={[
+              styles.noSelection,
+              { borderColor: theme.backgroundSelected },
+            ]}
+          >
+            <ActivityIndicator color={theme.textSecondary} />
+            <Text style={[styles.noSelectionText, { color: theme.textSecondary }]}>
+              Loading listing…
+            </Text>
+          </View>
+        ) : draftListingId && draftListing === null ? (
+          <View
+            style={[
+              styles.noSelection,
+              { borderColor: theme.backgroundSelected },
+            ]}
+          >
+            <Text style={[styles.noSelectionTitle, { color: theme.text }]}>
+              Listing unavailable
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={backToConversations}
+            >
+              <Text style={[styles.noSelectionText, { color: theme.textSecondary }]}>
+                Back to conversations
+              </Text>
+            </Pressable>
+          </View>
         ) : (
           <View
             style={[
@@ -264,13 +366,14 @@ function MessagesContent() {
             <Text style={[styles.noSelectionTitle, { color: theme.text }]}>
               Select a conversation
             </Text>
-            <Text style={[styles.noSelectionText, { color: theme.textSecondary }]}>
+            <Text
+              style={[styles.noSelectionText, { color: theme.textSecondary }]}
+            >
               Choose a buyer or seller conversation to see its messages and
               listing details.
             </Text>
           </View>
-        )
-      )}
+        ))}
     </View>
   );
 }

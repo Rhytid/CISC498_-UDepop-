@@ -1,14 +1,8 @@
 import React, { useEffect, useRef } from "react";
-import {
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 
-import { useTheme } from "@/shared/hooks/use-theme";
 import { SIDEBAR_ACCENT } from "@/shared/components/sidebar/navigation";
+import { useTheme } from "@/shared/hooks/use-theme";
 import type { Message } from "../types";
 import { formatMessageTime } from "../utils";
 

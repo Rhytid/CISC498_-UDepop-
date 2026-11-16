@@ -2,7 +2,11 @@ import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import type { QueryCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
-import { getCurrentUser, orderPair, requireUser } from "./lib";
+import {
+  getCurrentUser,
+  getOrCreateConversationForListing,
+  requireUser,
+} from "./lib";
 
 type Conversation = Doc<"conversations">;
 
@@ -66,15 +70,13 @@ export const list = query({
         .collect(),
     ]);
 
-    const conversations = [...asA, ...asB].sort(
-      (a, b) => b.updatedAt - a.updatedAt,
-    );
+    const conversations = [...asA, ...asB]
+      .filter((conversation) => conversation.lastMessage)
+      .sort((a, b) => b.updatedAt - a.updatedAt);
 
-    const result = [];
-    for (const conversation of conversations) {
-      result.push(await summarize(ctx, conversation, me._id));
-    }
-    return result;
+    return await Promise.all(
+      conversations.map((conversation) => summarize(ctx, conversation, me._id)),
+    );
   },
 });
 
@@ -104,41 +106,12 @@ export const startItemConvo = mutation({
   args: { listingId: v.id("listings") },
   handler: async (ctx, args) => {
     const me = await requireUser(ctx);
-
-    const listing = await ctx.db.get(args.listingId);
-
-    if (listing === null) {
-      throw new Error("Listing not found");
-    }
-    if (listing.ownerId === me._id) {
-      throw new Error("You can't message yourself about your own listing");
-    }
-
-    const { userA, userB } = orderPair(me._id, listing.ownerId);
-
-    const existing = await ctx.db
-      .query("conversations")
-      .withIndex("by_listing_pair", (q) =>
-        q.eq("listingId", args.listingId).eq("userA", userA).eq("userB", userB),
-      )
-      .first();
-    if (existing !== null) {
-      return existing._id;
-    }
-
-    const now = Date.now();
-    return await ctx.db.insert("conversations", {
-      userA,
-      userB,
-      listingId: args.listingId,
-      lastMessage: "",
-      unreadCount: 0,
-      unreadCountA: 0,
-      unreadCountB: 0,
-      archived: false,
-      createdAt: now,
-      updatedAt: now,
-    });
+    const conversation = await getOrCreateConversationForListing(
+      ctx,
+      me,
+      args.listingId,
+    );
+    return conversation._id;
   },
 });
 
