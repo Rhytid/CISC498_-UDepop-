@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -28,7 +28,6 @@ export default function ListingDetailsScreen() {
     api.listings.get,
     listingId ? { id: listingId } : "skip",
   );
-  const [messageError, setMessageError] = useState<string | null>(null);
 
   const photoIds = useMemo(
     () =>
@@ -79,20 +78,8 @@ export default function ListingDetailsScreen() {
             listing={listing}
             photoUrls={photoUrls ?? undefined}
           />
-          {messageError && (
-            <Text accessibilityRole="alert" style={styles.error}>
-              {messageError}
-            </Text>
-          )}
           <MessageButton
             listingId={listing._id}
-            onError={(error) =>
-              setMessageError(
-                error instanceof Error
-                  ? error.message
-                  : "Could not start a conversation.",
-              )
-            }
             style={styles.messageButton}
           >
             <Ionicons name="chatbubble-outline" size={18} color="#FFFFFF" />
@@ -153,10 +140,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 13,
     fontWeight: "700",
-  },
-  error: {
-    color: "#F28B82",
-    fontSize: 12,
   },
   pressed: {
     opacity: 0.75,

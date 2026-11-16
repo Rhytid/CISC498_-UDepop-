@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, type Href } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
   Pressable,
   ScrollView,
@@ -26,15 +26,7 @@ export function BookmarkDetail({
   onBack?: () => void;
 }) {
   const theme = useTheme();
-  const [messageError, setMessageError] = useState<{
-    listingId: string;
-    message: string;
-  } | null>(null);
   const listing = bookmark?.listing;
-  const visibleMessageError =
-    listing && messageError?.listingId === listing._id
-      ? messageError.message
-      : null;
 
   return (
     <View
@@ -114,12 +106,6 @@ export function BookmarkDetail({
               initiallySaved
             />
 
-            {visibleMessageError && (
-              <Text accessibilityRole="alert" style={styles.messageError}>
-                {visibleMessageError}
-              </Text>
-            )}
-
             <View style={styles.actions}>
               <Pressable
                 accessibilityRole="button"
@@ -147,17 +133,6 @@ export function BookmarkDetail({
                   styles.messageButton,
                   { backgroundColor: SIDEBAR_ACCENT },
                 ]}
-                onError={(error) =>
-                  setMessageError(
-                    {
-                      listingId: listing._id,
-                      message:
-                        error instanceof Error
-                          ? error.message
-                          : "Could not start a conversation.",
-                    },
-                  )
-                }
               >
                 <Ionicons name="chatbubble-outline" size={18} color="#FFFFFF" />
                 <Text style={[styles.actionText, styles.messageText]}>
@@ -273,10 +248,6 @@ const styles = StyleSheet.create({
   },
   messageText: {
     color: "#FFFFFF",
-  },
-  messageError: {
-    color: "#F28B82",
-    fontSize: 12,
   },
   removeButton: {
     alignSelf: "flex-start",
