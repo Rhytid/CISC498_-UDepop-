@@ -1,3 +1,5 @@
+// Interactive diagnostic for creating and querying seller reviews.
+// Hosted by the testing route to validate marketplace review operations.
 import { AuthNote, Button, Field, Result, Section } from "@/shared/components/test-ui";
 import { useConvex, useMutation, useQuery } from "convex/react";
 import React, { useState } from "react";

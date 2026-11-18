@@ -1,3 +1,5 @@
+// Paginated directory of marketplace users with navigation to their profiles.
+// Rendered by the all-users route to explore sellers and other campus users.
 import { usePaginatedQuery } from "convex/react";
 import { useRouter } from "expo-router";
 import React from "react";

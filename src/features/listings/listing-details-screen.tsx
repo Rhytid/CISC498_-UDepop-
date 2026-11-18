@@ -1,3 +1,5 @@
+// Loads and presents one listing selected by its route parameter.
+// Combines shared listing details with seller messaging and marketplace navigation.
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";

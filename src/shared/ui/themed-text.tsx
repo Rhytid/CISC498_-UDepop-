@@ -1,3 +1,5 @@
+// Text primitive with shared typography variants and active-theme colors.
+// Screens compose it to maintain readable, consistent marketplace UI styling.
 import { Platform, StyleSheet, Text, type TextProps } from 'react-native';
 
 import { Fonts, ThemeColor } from '@/constants/theme';

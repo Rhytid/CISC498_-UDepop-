@@ -1,3 +1,5 @@
+// Interactive diagnostic for listing-linked conversations and inbox actions.
+// Hosted by the testing route to exercise buyer-seller conversation backend flows.
 import { AuthNote, Button, Field, Result, Section } from "@/shared/components/test-ui";
 import { useConvex, useMutation, useQuery } from "convex/react";
 import React, { useState } from "react";

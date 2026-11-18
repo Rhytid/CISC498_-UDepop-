@@ -1,3 +1,5 @@
+// Compact card for one saved listing, used in the bookmarks list.
+// Provides the listing summary and selection affordance for the detail panel.
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";

@@ -1,3 +1,5 @@
+// Web-specific animated branding and icon visuals shared by app loading UI.
+// Platform resolution selects this implementation for web builds.
 import { Image } from "expo-image";
 import { StyleSheet, View } from "react-native";
 import Animated, { Easing, Keyframe } from "react-native-reanimated";

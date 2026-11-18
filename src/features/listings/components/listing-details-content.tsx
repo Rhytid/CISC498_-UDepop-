@@ -1,3 +1,5 @@
+// Reusable listing information layout with photos, seller identity, and save action.
+// Shared by the listing detail screen and saved-listing detail panel.
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";

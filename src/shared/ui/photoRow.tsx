@@ -1,3 +1,5 @@
+// Displays a listing's photos and resolves Convex storage IDs to image URLs.
+// Listing cards use it to show stored marketplace photos with loading and fallback states.
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
 import React from "react";

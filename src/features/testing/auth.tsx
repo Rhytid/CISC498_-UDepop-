@@ -1,3 +1,5 @@
+// Interactive diagnostic for Convex Auth state and the current signed-in user.
+// Hosted by the developer testing route to verify authentication integration.
 import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react";
 import { useQuery } from "convex/react";
 import { Button, Section } from "@/shared/components/test-ui";

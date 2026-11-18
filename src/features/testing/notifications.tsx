@@ -1,3 +1,5 @@
+// Interactive diagnostic for notification queries and read-state mutations.
+// Hosted by the testing route to check marketplace notification backend behavior.
 import { AuthNote, Button, Field, Result, Section } from "@/shared/components/test-ui";
 import { useMutation, useQuery } from "convex/react";
 import React, { useState } from "react";

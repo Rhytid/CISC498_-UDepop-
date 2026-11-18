@@ -1,3 +1,5 @@
+// Compact listing photo used to connect a conversation to the item being discussed.
+// Shared by inbox rows and chat headers, with a fallback when no photo is available.
 import React from "react";
 import { Image, StyleSheet, View } from "react-native";
 
