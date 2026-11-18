@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput } from "react-native";
 
+//Lowkey Deprecated I gotta fix this sometime -Alex
 export default function UserSoldSearchBox() {
   const [text, setText] = useState("");
   const term = text.trim();
@@ -27,7 +28,11 @@ export default function UserSoldSearchBox() {
           <Pressable
             key={user._id}
             onPress={
-              () => router.push({ pathname: "/(tabs)", params: {} }) //Needs to also send a message to the user
+              () =>
+                router.push({
+                  pathname: "/(tabs)",
+                  params: { id: user._id, listingId },
+                }) //Needs to also send a message to the user
             }
             style={({ pressed }) => [pressed && { opacity: 0.7 }]}
           >

@@ -2,10 +2,10 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { useTheme } from "@/shared/hooks/use-theme";
+import type { ConversationContext, Message } from "../types";
 import { ChatHeader } from "./chat-header";
 import { MessageComposer } from "./message-composer";
 import { MessageList } from "./message-list";
-import type { ConversationContext, Message } from "../types";
 
 export function ChatWindow({
   conversation,
@@ -36,7 +36,10 @@ export function ChatWindow({
     <View
       style={[
         styles.container,
-        { backgroundColor: theme.background, borderColor: theme.backgroundSelected },
+        {
+          backgroundColor: theme.background,
+          borderColor: theme.backgroundSelected,
+        },
       ]}
     >
       <ChatHeader

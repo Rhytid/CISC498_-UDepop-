@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
-
 import { SIDEBAR_ACCENT } from "@/shared/components/sidebar/navigation";
 import { useTheme } from "@/shared/hooks/use-theme";
+import React, { useEffect, useRef } from "react";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import type { Message } from "../types";
 import { formatMessageTime } from "../utils";
+import { LinkifiedText } from "./linkified-text";
 
 export function MessageList({
   messages,
@@ -98,14 +98,7 @@ export function MessageList({
                   </Text>
                 )
               ) : (
-                <Text
-                  style={[
-                    styles.body,
-                    { color: outgoing ? "#FFFFFF" : theme.text },
-                  ]}
-                >
-                  {item.body}
-                </Text>
+                <LinkifiedText body={item.body} style={{ color: theme.text }} />
               )}
             </View>
             <View style={styles.meta}>
