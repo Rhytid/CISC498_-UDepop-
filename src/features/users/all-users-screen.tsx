@@ -1,4 +1,3 @@
-
 import { Picker } from "@react-native-picker/picker";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { useRouter } from "expo-router";
@@ -16,6 +15,7 @@ import {
 
 import { useTheme } from "@/shared/hooks/use-theme";
 import { api } from "@convex/_generated/api";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function AllUsersScreen() {
   const theme = useTheme();
@@ -63,38 +63,54 @@ export default function AllUsersScreen() {
       keyExtractor={(user) => user._id}
       ListHeaderComponent={
         <View>
-          <Text style={[styles.heading, { color: theme.text }]}>
-            All Users
-          </Text>
-
-          <TextInput
-            placeholder="Search users..."
-            placeholderTextColor={theme.textSecondary}
-            value={search}
-            onChangeText={setSearch}
-            style={[
+          <View style={styles.headerRow}>
+            <View>
+              <Text style={[styles.heading, { color: theme.text }]}>
+                All Users
+              </Text>
+              <Text style={{ color: theme.textSecondary }}>
+                Discover other users
+              </Text>
+            </View>
+            </View>
+            <View style={[
               styles.searchBar,
               {
                 backgroundColor: theme.backgroundElement,
-                color: theme.text,
                 borderColor: theme.backgroundSelected,
               },
-            ]}
-          />
-
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={sortBy}
-              onValueChange={(value) => setSortBy(value)}
-              style={{ color: 'black', backgroundColor: 'white' }}
-            >
-              <Picker.Item label="Username (A-Z)" value="username" />
-              <Picker.Item label="Highest Rated" value="reviews" />
-              <Picker.Item label="Most Listings" value="listings" />
-            </Picker>
+            ]}>
+              <Ionicons name="search-outline" size={23} color={theme.textSecondary}/>
+              <TextInput
+                placeholder="Search by name or username"
+                placeholderTextColor={theme.textSecondary}
+                value={search}
+                onChangeText={setSearch}
+                style={[styles.searchInput, { color: theme.text }]}
+              >
+              </TextInput>
+            </View>
+            <View style={styles.orgRow}>
+              <Text style={{ color: theme.textSecondary, fontSize: 16 }}>
+                Browse profiles
+              </Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={sortBy}
+                  onValueChange={(value) => setSortBy(value)}
+                  style={{
+                    color: theme.text,
+                    backgroundColor: theme.backgroundElement,
+                  }}
+                >
+                  <Picker.Item label="Username (A-Z)" value="username"/>
+                  <Picker.Item label="Highest Rated" value="reviews"/>
+                  <Picker.Item label="Most Listings" value="listings"/>
+                </Picker>
+              </View>
+            </View>
           </View>
-        </View>
-      }
+        }
       ListEmptyComponent={
         search.trim() && searchedUsers === undefined ? (
           <ActivityIndicator />
@@ -140,6 +156,7 @@ export default function AllUsersScreen() {
               @{item.username}
             </Text>
           </View>
+          <Ionicons name="chevron-forward" size={22} color={theme.textSecondary} style={{ marginLeft: "auto" }}/>
         </Pressable>
       )}
       ListFooterComponent={
@@ -164,16 +181,17 @@ const styles = StyleSheet.create({
   list: { flex: 1 },
   content: { padding: 16, gap: 10 },
   center: { flex: 1, alignItems: "center", justifyContent: "center" },
-  heading: { fontSize: 24, fontWeight: "800", marginBottom: 16 },
+  heading: { fontSize: 28, fontWeight: "800", marginBottom: 5 },
   searchBar: {
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    borderRadius: 12,
+    marginBottom: 20,
     borderWidth: 1,
   },
   pickerContainer: {
     width: 200,
-    marginBottom: 20,
   },
   userRow: {
     flexDirection: "row",
@@ -182,6 +200,32 @@ const styles = StyleSheet.create({
     padding: 15,
     borderWidth: 1,
     borderRadius: 12,
+  },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  
+  headerIcon: {
+    backgroundColor: "#607D8B",
+    padding: 12,
+    borderRadius: 15,
+  },
+  
+  searchInput: {
+    flex: 1,
+    padding: 12,
+    fontSize: 16,
+  },
+  
+  orgRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginBottom: 20,
   },
   avatar: {
     width: 44,
