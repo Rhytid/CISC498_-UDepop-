@@ -1,3 +1,5 @@
+// Displays a listing's images with navigation and a fallback for unavailable photos.
+// Used within listing details so both ordinary and saved listings share photo viewing.
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {

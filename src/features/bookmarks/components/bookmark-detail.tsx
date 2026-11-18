@@ -1,3 +1,5 @@
+// Detail panel for a selected saved listing, including seller contact and save controls.
+// Used alongside BookmarkList on the bookmarks page.
 import { Ionicons } from "@expo/vector-icons";
 import { router, type Href } from "expo-router";
 import React from "react";

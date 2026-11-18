@@ -1,3 +1,5 @@
+// Saved-listings page: loads the current user's bookmarks and coordinates selection.
+// It composes the list and detail panels used by the bookmarks route.
 import { useQuery } from "convex/react";
 import { router } from "expo-router";
 import React, { useMemo, useState } from "react";

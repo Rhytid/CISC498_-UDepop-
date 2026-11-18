@@ -1,3 +1,5 @@
+// Saves or unsaves a listing through Convex and reflects its current state.
+// Reused on listing cards and detail views throughout the marketplace.
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery } from "convex/react";
 import React, { useState } from "react";

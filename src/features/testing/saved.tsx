@@ -1,3 +1,5 @@
+// Interactive diagnostic for adding and removing saved listings.
+// Hosted by the testing route to verify bookmark persistence through Convex.
 import { AuthNote, Button, Field, Result, Section } from "@/shared/components/test-ui";
 import { useMutation, useQuery } from "convex/react";
 import React, { useState } from "react";

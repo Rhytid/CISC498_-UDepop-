@@ -1,3 +1,5 @@
+// Listing search and results view backed by the Convex listings query.
+// Provides a reusable way for marketplace screens to browse matching inventory.
 import MessageButton from "@/features/messaging/components/CallingMessagePopup";
 import { useQuery } from "convex/react";
 import React, { useState } from "react";

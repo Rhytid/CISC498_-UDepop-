@@ -1,3 +1,5 @@
+// Searchable inbox list with loading, refresh, and conversation selection states.
+// MessagesPage supplies its data and opens the selected chat.
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {

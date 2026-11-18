@@ -1,3 +1,5 @@
+// Small profile image with a default avatar for missing or invalid URLs.
+// Used in conversation and chat UI to identify marketplace participants.
 import React from "react";
 import { Image } from "react-native";
 

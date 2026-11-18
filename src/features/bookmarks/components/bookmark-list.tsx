@@ -1,3 +1,5 @@
+// Searchable, scrollable collection of a user's saved listings.
+// The bookmarks page supplies its data and responds to browse or selection actions.
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {

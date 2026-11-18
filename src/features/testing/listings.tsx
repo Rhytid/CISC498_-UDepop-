@@ -1,3 +1,5 @@
+// Interactive diagnostic for listing queries and create/update/sold operations.
+// Hosted by the testing route to validate the marketplace listing backend.
 import { AuthNote, Button, Field, Result, Section } from "@/shared/components/test-ui";
 import AnimatedMulti, { type TagType } from "@/features/tags/tagDef";
 import { useConvex, useMutation, useQuery } from "convex/react";

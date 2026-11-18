@@ -1,4 +1,5 @@
-// In-app listing editor: opens when you edit one of your own listings.
+// Creates or updates a listing using the listing ID supplied by its route.
+// This feature screen is reached from the listing editor route and owner actions.
 import AnimatedMulti, { TagType } from "@/features/tags/tagDef";
 import { useMutation, useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";

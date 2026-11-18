@@ -1,3 +1,5 @@
+// Listing creation modal for entering item details, tags, and photos.
+// The profile flow uses it to collect input before the shared listing action submits it.
 import type { NewListingInput } from "@/features/listings/hooks/listingActions";
 import type { TagType } from "@/features/tags/tags";
 import { TagPicker } from "@/features/tags/tags";

@@ -1,3 +1,5 @@
+// App settings route for user-facing preferences.
+// Currently lets the user change the theme used across marketplace screens.
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";

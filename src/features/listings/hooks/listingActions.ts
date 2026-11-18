@@ -1,3 +1,5 @@
+// Encapsulates Convex mutations for creating and managing marketplace listings.
+// Screens such as the seller profile use this hook instead of calling mutations inline.
 import { useMutation } from "convex/react";
 import { useCallback } from "react";
 import { api } from "@convex/_generated/api";

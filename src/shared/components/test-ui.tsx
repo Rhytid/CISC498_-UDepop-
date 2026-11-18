@@ -1,3 +1,5 @@
+// Reusable form controls and result displays for developer feature diagnostics.
+// Testing screens compose these controls without adding routes to the shared UI.
 import React from "react";
 import {
   Pressable,
