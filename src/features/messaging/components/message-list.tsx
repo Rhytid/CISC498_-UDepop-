@@ -98,7 +98,10 @@ export function MessageList({
                   </Text>
                 )
               ) : (
-                <LinkifiedText body={item.body} style={{ color: theme.text }} />
+                <LinkifiedText
+                  body={item.body}
+                  style={{ color: outgoing ? "#FFFFFF" : theme.text }}
+                />
               )}
             </View>
             <View style={styles.meta}>
