@@ -1,3 +1,5 @@
+// Messaging feature coordinator for the inbox and selected conversation.
+// Queries Convex data, then composes the list and chat components for its route.
 import { useConvex, useMutation, useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
 import { router, useLocalSearchParams } from "expo-router";

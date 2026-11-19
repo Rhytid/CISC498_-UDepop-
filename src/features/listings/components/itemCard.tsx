@@ -1,4 +1,6 @@
 import { BookmarkToggleButton } from "@/features/bookmarks/components/bookmark-toggle-button";
+// Marketplace listing card with photo, seller messaging, and owner actions.
+// Used by listing feeds and profile pages to expose common listing interactions.
 import EditListingButton from "@/features/listings/components/itemEditing";
 import MessageButton from "@/features/messaging/components/CallingMessagePopup";
 import PhotoRow from "@/shared/ui/photoRow";

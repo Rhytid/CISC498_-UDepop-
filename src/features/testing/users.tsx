@@ -1,3 +1,5 @@
+// Interactive diagnostic for user lookup and profile updates.
+// Hosted by the testing route to verify user data operations used across the marketplace.
 import { AuthNote, Button, Field, Result, Section } from "@/shared/components/test-ui";
 import { useConvex, useMutation, useQuery } from "convex/react";
 import React, { useState } from "react";

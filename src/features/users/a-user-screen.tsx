@@ -1,3 +1,5 @@
+// Public profile page showing a selected user and their active listings.
+// Rendered by the individual-user route to help buyers browse a seller's items.
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";

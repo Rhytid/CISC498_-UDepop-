@@ -1,3 +1,5 @@
+// Validates and submits a text message for the active conversation.
+// ChatWindow connects it to the messaging page's send action.
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {

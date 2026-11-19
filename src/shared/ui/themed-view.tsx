@@ -1,3 +1,5 @@
+// View primitive that defaults its background to the active theme palette.
+// Screens use it as a base container for consistent light/dark surfaces.
 import { View, type ViewProps } from "react-native";
 
 import { ThemeColor } from "@/constants/theme";

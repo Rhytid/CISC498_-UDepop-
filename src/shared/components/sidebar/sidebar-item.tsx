@@ -1,3 +1,5 @@
+// Renders one interactive sidebar destination with selected and badge states.
+// The web navigation shell uses it for each configured marketplace route.
 import { Ionicons } from "@expo/vector-icons";
 import type { TabTriggerSlotProps } from "expo-router/ui";
 import React, { useState } from "react";
