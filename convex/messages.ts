@@ -54,7 +54,7 @@ export const sendSoldNotice = mutation({
     if (buyer === null) throw new Error("Buyer not found");
 
     const now = Date.now();
-    const body = `Hi ${buyer.firstName}! ${me.firstName} marked "${listing.title}" as sold to you. Please follow this link to leave a review: /reviewPage`;
+    const body = `Hi ${buyer.firstName}! ${me.firstName} marked "${listing.title}" as sold to you. /reviewPage?listingId=${conversation.listingId}`;
 
     await ctx.db.insert("messages", {
       conversationId: conversation._id,

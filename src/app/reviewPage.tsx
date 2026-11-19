@@ -1,179 +1,51 @@
-import ItemCard from "@/features/listings/components/itemCard";
-import { NewItem } from "@/features/listings/components/newItem";
-import { useListingActions } from "@/features/listings/hooks/listingActions";
-import { useTheme } from "@/shared/hooks/use-theme";
-import ProfilePicture from "@/shared/ui/profilePicture";
 import { api } from "@convex/_generated/api";
-import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "convex/react";
-import { router } from "expo-router";
+import { useMutation } from "convex/react";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import {
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-} from "react-native";
+import { Pressable, StyleSheet, Text, TextInput } from "react-native";
 
-export default function ProfileScreen() {
-  const theme = useTheme();
-  const me = useQuery(api.users.getMe);
-  const rating = useQuery(
-    api.reviews.getRating,
-    me?._id ? { userId: me._id } : "skip",
-  );
-  const currentUserId = me?._id; //undefined while loading
+export default function reviewScreen() {
+  const { listingId } = useLocalSearchParams<{ listingId: any }>();
+  const createReview = useMutation(api.reviews.create);
+  const [Rating, SetRating] = useState<string>("1");
+  const [Comment, SetComment] = useState<string>("");
 
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-  const { addListing, deleteListing, sellList } = useListingActions();
-  const [showRatings, setShowRatings] = useState(false);
-
-  const reviews = useQuery(
-    api.reviews.listByUser,
-    showRatings && currentUserId ? { userId: currentUserId } : "skip",
-  );
-
-  const myListings = useQuery(
-    api.listings.listByUser,
-    currentUserId ? { userId: currentUserId } : "skip",
-  );
-  if (myListings === undefined) {
-    return <Text>Loading...</Text>;
+  async function submitRating(Score: number, review: string) {
+    try {
+      await createReview({
+        listingId: listingId,
+        score: Score,
+        comment: review,
+      });
+      router.push({ pathname: "/(tabs)" });
+    } catch (err) {
+      console.error("Failed to create review:", err);
+    }
   }
-
   return (
-    <ScrollView style={{ backgroundColor: theme.background }}>
-      <View style={styles.banner}>
-        <ProfilePicture />
-        <Text style={styles.bannerText}>@{me?.username ?? "Loading..."} </Text>
-
-        <Pressable onPress={() => setShowRatings(true)}>
-          <View style={styles.clickableRating}>
-            {rating && rating.count > 0 ? (
-              <>
-                <Ionicons name="star" size={25} color="gold" />
-                <Text>
-                  {" "}
-                  {rating.average.toFixed(1)} ({rating.count} reviews)
-                </Text>
-              </>
-            ) : (
-              <Text>No Ratings</Text>
-            )}
-          </View>
-        </Pressable>
-        <Text>
-          {me?.firstName} {me?.lastName}
-        </Text>
-        {me?.bio ? <Text>{me.bio}</Text> : null}
-
-        {me?.location ? <Text>{me.location}</Text> : null}
-        <Text>{myListings.length} Products</Text>
-      </View>
+    <>
+      <Text style={styles.banner}>
+        Please leave a rating of 1-5 stars and an optional comment
+      </Text>
+      <TextInput
+        value={Rating}
+        onChangeText={SetRating}
+        style={styles.button}
+        placeholder="Leave a rating here"
+      />
+      <TextInput
+        value={Comment}
+        onChangeText={SetComment}
+        style={styles.button}
+        placeholder="Leave a comment here"
+      />
       <Pressable
-        accessibilityRole="button"
-        onPress={() => router.push("/bookmarks")}
-        style={({ pressed }) => [
-          styles.bookmarksCard,
-          {
-            backgroundColor: theme.backgroundElement,
-            borderColor: theme.backgroundSelected,
-          },
-          pressed && styles.pressed,
-        ]}
+        style={styles.button}
+        onPress={() => submitRating(Number(Rating), String(Comment))}
       >
-        <Ionicons name="bookmark-outline" size={22} color={theme.text} />
-        <View style={styles.bookmarksCopy}>
-          <Text style={[styles.bookmarksTitle, { color: theme.text }]}>
-            Bookmarked Listings
-          </Text>
-          <Text
-            style={[styles.bookmarksSubtitle, { color: theme.textSecondary }]}
-          >
-            View the items you saved
-          </Text>
-        </View>
-        <Ionicons
-          name="chevron-forward"
-          size={18}
-          color={theme.textSecondary}
-        />
+        <Text>Submit Review</Text>
       </Pressable>
-      <Text style={styles.bannerText}>Products:</Text>
-      <View style={{ alignItems: "center" }}>
-        {myListings.length === 0 && <Text>You have no listings</Text>}
-        <Pressable onPress={() => setShowPopup(true)} style={styles.button}>
-          <Text>Create New Listing</Text>
-        </Pressable>
-        <NewItem
-          visible={showPopup}
-          onClose={() => setShowPopup(false)}
-          onSubmit={addListing}
-        ></NewItem>
-      </View>
-      <View style={styles.itemContainer}>
-        {myListings.map((item) => (
-          <ItemCard
-            key={item._id}
-            listing={item}
-            currentUserId={item.ownerId}
-            onSellListing={sellList}
-            onDeleteListing={deleteListing}
-          />
-        ))}
-      </View>
-      <Modal
-        visible={showRatings}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowRatings(false)}
-      >
-        <View style={styles.reviewsWindow}>
-          <View style={styles.reviewsContent}>
-            <Pressable onPress={() => setShowRatings(false)}>
-              <Ionicons name="close" size={28} color="black" />
-            </Pressable>
-
-            <Text style={styles.reviewsTitle}>User Reviews</Text>
-
-            <Text>
-              {rating && rating.count > 0
-                ? `⭐ ${rating.average.toFixed(1)} ($rating.count} reviews)`
-                : "No Ratings Yet"}
-            </Text>
-            <ScrollView style={{ marginTop: 15 }}>
-              {reviews === undefined ? (
-                <Text>Loading</Text>
-              ) : reviews.length === 0 ? (
-                <Text>No Reviews</Text>
-              ) : (
-                reviews.map((review) => (
-                  <View key={review._id} style={styles.reviewContainer}>
-                    <Text style={{ fontWeight: "bold" }}>
-                      @{review.rater?.username ?? "Anonymous"}
-                    </Text>
-
-                    <View style={{ flexDirection: "row", marginVertical: 5 }}>
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Ionicons
-                          key={star}
-                          name={star <= review.score ? "star" : "star-outline"}
-                          size={18}
-                          color="gold"
-                        ></Ionicons>
-                      ))}
-                    </View>
-                    {review.comment && <Text>{review.comment}</Text>}
-                  </View>
-                ))
-              )}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
-    </ScrollView>
+    </>
   );
 }
 

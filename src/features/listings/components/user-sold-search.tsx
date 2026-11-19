@@ -31,7 +31,7 @@ export default function UserSoldSearchBox() {
               () =>
                 router.push({
                   pathname: "/(tabs)",
-                  params: { id: user._id, listingId },
+                  params: { id: user._id, listingId: listingId },
                 }) //Needs to also send a message to the user
             }
             style={({ pressed }) => [pressed && { opacity: 0.7 }]}

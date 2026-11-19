@@ -98,6 +98,7 @@ export function MessageList({
                   </Text>
                 )
               ) : (
+                //Needs to be something that doesnt display the link for the sender
                 <LinkifiedText
                   body={item.body}
                   style={{ color: outgoing ? "#FFFFFF" : theme.text }}

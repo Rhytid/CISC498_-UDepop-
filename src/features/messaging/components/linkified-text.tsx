@@ -3,7 +3,8 @@ import React from "react";
 import { Text, type TextStyle } from "react-native";
 
 // Only matches in-app listing paths, so arbitrary text can't link anywhere else
-const LISTING_PATH = /(\/reviewPage|\/listing\/[A-Za-z0-9_-]+)/g;
+const LISTING_PATH =
+  /(\/reviewPage(?:\?listingId=[A-Za-z0-9_-]+)?|\/listing\/[A-Za-z0-9_-]+)/g;
 
 export function LinkifiedText({
   body,
