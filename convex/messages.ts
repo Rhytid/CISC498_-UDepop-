@@ -1,6 +1,12 @@
 import { v } from "convex/values";
+import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { getCurrentUser, notify, requireUser } from "./lib";
+import {
+  getCurrentUser,
+  getOrCreateConversationForListing,
+  notify,
+  requireUser,
+} from "./lib";
 
 // Messages in a conversation, oldest first.
 export const list = query({
@@ -32,12 +38,34 @@ export const list = query({
 // Send a text message. Bumps the conversation and notifies the other person.
 export const send = mutation({
   args: {
-    conversationId: v.id("conversations"),
+    conversationId: v.optional(v.id("conversations")),
+    listingId: v.optional(v.id("listings")),
     body: v.string(),
   },
   handler: async (ctx, args) => {
     const me = await requireUser(ctx);
-    const conversation = await ctx.db.get(args.conversationId);
+    const body = args.body.trim();
+    if (body.length === 0) {
+      throw new Error("Message cannot be empty");
+    }
+    if (
+      args.conversationId !== undefined &&
+      args.listingId !== undefined
+    ) {
+      throw new Error("Provide a conversation or listing, not both");
+    }
+    let conversation: Doc<"conversations"> | null;
+    if (args.conversationId !== undefined) {
+      conversation = await ctx.db.get(args.conversationId);
+    } else if (args.listingId !== undefined) {
+      conversation = await getOrCreateConversationForListing(
+        ctx,
+        me,
+        args.listingId,
+      );
+    } else {
+      throw new Error("A conversation or listing is required");
+    }
     if (conversation === null) {
       throw new Error("Conversation not found");
     }
@@ -52,16 +80,16 @@ export const send = mutation({
     const recipientId =
       conversation.userA === me._id ? conversation.userB : conversation.userA;
     const messageId = await ctx.db.insert("messages", {
-      conversationId: args.conversationId,
+      conversationId: conversation._id,
       senderId: me._id,
-      body: args.body,
+      body,
       timestamp: now,
       read: false,
       messageType: "text",
     });
 
-    await ctx.db.patch(args.conversationId, {
-      lastMessage: args.body,
+    await ctx.db.patch(conversation._id, {
+      lastMessage: body,
       unreadCount: conversation.unreadCount + 1,
       ...(conversation.userA === recipientId
         ? { unreadCountA: (conversation.unreadCountA ?? 0) + 1 }
@@ -72,12 +100,16 @@ export const send = mutation({
     await notify(ctx, {
       userId: recipientId,
       type: "message",
-      body: `${me.firstName} ${me.lastName}: ${args.body}`,
+      body: `${me.firstName} ${me.lastName}: ${body}`,
       listingId: conversation.listingId,
       conversationId: conversation._id,
     });
 
-    return await ctx.db.get(messageId);
+    const message = await ctx.db.get(messageId);
+    if (message === null) {
+      throw new Error("Could not save message");
+    }
+    return message;
   },
 });
 

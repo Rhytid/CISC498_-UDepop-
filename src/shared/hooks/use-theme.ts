@@ -1,6 +1,6 @@
 /**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
+ * Returns the active palette from the shared light/dark design tokens.
+ * Screens and UI components use this hook to render consistently with app preference.
  */
 
 import { Colors } from '@/constants/theme';

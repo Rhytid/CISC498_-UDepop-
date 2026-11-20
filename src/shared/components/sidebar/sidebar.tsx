@@ -1,3 +1,5 @@
+// Web sidebar frame with animated width, navigation content, and account footer.
+// The web tab shell composes this around its route links and section headings.
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router, type Href } from "expo-router";

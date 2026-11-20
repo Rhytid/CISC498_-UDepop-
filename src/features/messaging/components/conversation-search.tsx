@@ -1,3 +1,5 @@
+// Text input for filtering the user's conversation inbox.
+// Passes query changes to the parent messaging page.
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, TextInput, View } from "react-native";

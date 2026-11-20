@@ -1,40 +1,37 @@
+// Listing-level action that opens a message conversation with its seller.
+// Listing cards and detail screens use it to start buyer-seller contact.
 import { Ionicons } from "@expo/vector-icons";
-import { useMutation } from "convex/react";
 import { router } from "expo-router";
-import React, { useState } from "react";
-import { Pressable } from "react-native";
-import { api } from "@convex/_generated/api";
-import { Id } from "@convex/_generated/dataModel";
+import React, { type ReactNode } from "react";
+import {
+  Pressable,
+  type StyleProp,
+  type ViewStyle,
+} from "react-native";
+import type { Id } from "@convex/_generated/dataModel";
 
 export default function MessageButton({
   listingId,
+  children,
+  style,
 }: {
   listingId: Id<"listings">;
+  children?: ReactNode;
+  style?: StyleProp<ViewStyle>;
 }) {
-  const startConvo = useMutation(api.conversations.startItemConvo);
-  const [starting, setStarting] = useState(false);
-
-  const onPress = async () => {
-    if (!listingId || starting) {
-      return;
-    }
-    setStarting(true);
-    try {
-      const conversationId = await startConvo({ listingId });
-      router.push({
-        pathname: "/messages",
-        params: { conversationId },
-      });
-    } catch (e) {
-      console.warn(e instanceof Error ? e.message : String(e));
-    } finally {
-      setStarting(false);
-    }
-  };
-
   return (
-    <Pressable onPress={onPress} disabled={starting}>
-      <Ionicons name="chatbubble-outline" size={40} />
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Start a message to the seller"
+      onPress={() =>
+        router.push({
+          pathname: "/messages",
+          params: { listingId, conversationId: undefined },
+        })
+      }
+      style={style}
+    >
+      {children ?? <Ionicons name="chatbubble-outline" size={40} />}
     </Pressable>
   );
 }

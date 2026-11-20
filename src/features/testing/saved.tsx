@@ -1,3 +1,5 @@
+// Interactive diagnostic for adding and removing saved listings.
+// Hosted by the testing route to verify bookmark persistence through Convex.
 import { AuthNote, Button, Field, Result, Section } from "@/shared/components/test-ui";
 import { useMutation, useQuery } from "convex/react";
 import React, { useState } from "react";
@@ -45,8 +47,12 @@ export default function SavedTest() {
       ) : (
         saved.map(({ _id, listing }) => (
           <View key={_id} style={styles.row}>
-            <Text style={styles.rowTitle}>{listing.title}</Text>
-            <Text style={styles.rowSub}>${listing.price}</Text>
+            <Text style={styles.rowTitle}>
+              {listing?.title ?? "Listing unavailable"}
+            </Text>
+            {listing && (
+              <Text style={styles.rowSub}>${listing.price}</Text>
+            )}
           </View>
         ))
       )}

@@ -1,3 +1,5 @@
+// Displays the signed-in user's profile image and supports choosing a replacement.
+// The profile UI uses it to personalize the user's marketplace identity.
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";

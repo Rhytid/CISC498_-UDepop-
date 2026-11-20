@@ -1,3 +1,5 @@
+// Legacy listing creation form that submits listing fields and selected tags.
+// Provides a creation UI for listing flows that use the older tag selector.
 import type { TagType } from "@/features/tags/tagDef";
 import AnimatedMulti from "@/features/tags/tagDef";
 import { useMutation } from "convex/react";

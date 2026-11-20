@@ -1,3 +1,5 @@
+// Listing creation modal for entering item details, tags, and photos.
+// The profile flow uses it to collect input before the shared listing action submits it.
 import type { NewListingInput } from "@/features/listings/hooks/listingActions";
 import type { TagType } from "@/features/tags/tags";
 import { TagPicker } from "@/features/tags/tags";
@@ -27,6 +29,7 @@ interface NewItemProps {
 export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
 	const [title, setTitle] = useState<string>("");
 	const [price, setPrice] = useState<number>(0);
+	const [condition, setCondition] = useState<string>("");
 	const [tags, setTags] = useState<TagType[]>([]);
 	const [description, setDescription] = useState<string>("");
 	const [category, setCategory] = useState<string>("");
@@ -84,6 +87,7 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
 				title,
 				description,
 				price,
+				condition: condition.trim(),
 				category,
 				tags: tags.map((t) => t.value),
 				photos: storageIds, // IDs, not local URIs
@@ -91,6 +95,7 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
 			if (ok) {
 				setTitle("");
 				setPrice(0);
+				setCondition("");
 				setTags([]);
 				setDescription("");
 				setPhotos([]);
@@ -163,6 +168,12 @@ export function NewItem({ visible, onClose, onSubmit }: NewItemProps) {
 						inputMode="numeric"
 						value={price === 0 ? "" : price.toString()}
 						onChangeText={(value) => setPrice(+value)}
+					/>
+					<TextInput
+						style={styles.input}
+						placeholder="Condition (e.g. New, Good, Fair)"
+						value={condition}
+						onChangeText={setCondition}
 					/>
 					<TextInput
 						style={[styles.input, styles.multilineinput]}

@@ -1,12 +1,8 @@
-import { PlaceholderScreen } from "@/shared/ui/placeholder-screen";
+// Expo Router entry for saved marketplace listings.
+// Renders the bookmarks feature, which handles the saved-listing experience.
+import BookmarksPage from "@/features/bookmarks/bookmarks-page";
 import React from "react";
 
 export default function BookmarksScreen() {
-  return (
-    <PlaceholderScreen
-      title="Bookmarks"
-      message="Saved Listings Coming Soon"
-      icon="bookmark-outline"
-    />
-  );
+  return <BookmarksPage />;
 }

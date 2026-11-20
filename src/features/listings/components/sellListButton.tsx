@@ -1,4 +1,5 @@
-// Edit this to edit how the edit button looks and what it calls
+// Listing action control that opens the editor for the selected listing.
+// Used in owner listing flows to route changes through the shared editor screen.
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";

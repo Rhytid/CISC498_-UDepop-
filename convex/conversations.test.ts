@@ -52,15 +52,33 @@ describe("conversations", () => {
     const id = await asBuyer.mutation(api.conversations.startItemConvo, {
       listingId,
     });
+    await asBuyer.mutation(api.messages.send, {
+      conversationId: id,
+      body: "Hi!",
+    });
 
     const list = await asBuyer.query(api.conversations.list);
     expect(list).toHaveLength(1);
+    expect(list?.[0]._id).toBe(id);
+    expect(list?.[0].lastMessage).toBe("Hi!");
     expect(list?.[0].otherUser?.username).toBe("seller");
 
     const got = await asBuyer.query(api.conversations.get, { id });
     expect(got?.otherUser?.username).toBe("seller");
     expect(got?.listing?.title).toBe("Lamp");
     expect(got?.listing?.ownerId).toBe(sellerId);
+  });
+
+  test("does not list a conversation before a message is sent", async () => {
+    const t = convexTest(schema, modules);
+    const sellerId = await seedUser(t, { username: "seller" });
+    const listingId = await seedListing(t, sellerId, listingInput);
+    const buyerId = await seedUser(t, { username: "buyer" });
+    const asBuyer = asUser(t, buyerId);
+
+    await asBuyer.mutation(api.conversations.startItemConvo, { listingId });
+
+    expect(await asBuyer.query(api.conversations.list)).toEqual([]);
   });
 
   test("archive and unarchive", async () => {

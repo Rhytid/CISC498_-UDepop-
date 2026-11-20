@@ -1,3 +1,5 @@
+// Chat context header showing the conversation participant and related listing.
+// The chat window uses it to orient buyers and sellers within a conversation.
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -5,7 +7,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useTheme } from "@/shared/hooks/use-theme";
 import { Avatar } from "./avatar";
 import { ListingThumbnail } from "./listing-thumbnail";
-import type { Conversation } from "../types";
+import type { ConversationContext } from "../types";
 import { getDisplayName } from "../utils";
 
 export function ChatHeader({
@@ -14,7 +16,7 @@ export function ChatHeader({
   photoUrls,
   onBack,
 }: {
-  conversation: Conversation;
+  conversation: ConversationContext;
   isSeller?: boolean;
   photoUrls?: Record<string, string | null>;
   onBack?: () => void;
