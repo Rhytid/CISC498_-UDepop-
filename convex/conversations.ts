@@ -115,6 +115,44 @@ export const startItemConvo = mutation({
   },
 });
 
+//Only lists people the user has a convo with
+export const listBuyerCandidates = query({
+  args: { listingId: v.id("listings") },
+  handler: async (ctx, args) => {
+    const me = await requireUser(ctx);
+    const listing = await ctx.db.get(args.listingId);
+    if (listing === null || listing.ownerId !== me._id) {
+      throw new Error("Only the listing owner can do this");
+    }
+
+    // by_listing_pair starts with listingId, so a prefix match works
+    const conversations = await ctx.db
+      .query("conversations")
+      .withIndex("by_listing_pair", (q) => q.eq("listingId", args.listingId))
+      .collect();
+
+    const rows = await Promise.all(
+      conversations.map(async (c) => {
+        const otherId = c.userA === me._id ? c.userB : c.userA;
+        const other = await ctx.db.get(otherId);
+        if (other === null) return null;
+        return {
+          conversationId: c._id,
+          buyerId: other._id,
+          username: other.username,
+          pfp: other.profilePicture,
+          lastMessage: c.lastMessage,
+          updatedAt: c.updatedAt,
+        };
+      }),
+    );
+
+    return rows
+      .filter((r) => r !== null)
+      .sort((a, b) => b.updatedAt - a.updatedAt);
+  },
+});
+
 // Mark every message from the other person in this conversation as read.
 export const markRead = mutation({
   args: { id: v.id("conversations") },
