@@ -29,15 +29,15 @@ export function SidebarItem({
 
   const active = Boolean(isFocused);
   const backgroundColor = active
-    ? SIDEBAR_ACCENT
+    ? theme.secondary
     : hovered
-      ? theme.backgroundSelected
+      ? theme.secondary
       : "transparent";
   const foreground = active
-    ? "#FFFFFF"
+    ? theme.text
     : hovered
       ? theme.text
-      : theme.textSecondary;
+      : theme.textLight;
 
   return (
     <Pressable

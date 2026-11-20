@@ -35,7 +35,7 @@ export function Sidebar({
       {...rest}
       style={[
         styles.container,
-        { backgroundColor: theme.backgroundElement },
+        { backgroundColor: theme.primary },
         widthStyle,
       ]}
     >
@@ -57,7 +57,7 @@ export function Sidebar({
             />
           </Pressable>
           {isOpen && (
-            <Text style={[styles.logoText, { color: theme.text }]}>UDepop</Text>
+            <Text style={[styles.logoText, { color: theme.textLight }]}>UDepop</Text>
           )}
           {isOpen && (
             <Pressable
@@ -69,7 +69,7 @@ export function Sidebar({
               <Ionicons
                 name="chevron-back"
                 size={18}
-                color={theme.textSecondary}
+                color={theme.textLight}
               />
             </Pressable>
           )}
@@ -88,7 +88,7 @@ export function Sidebar({
             <Ionicons
               name="chevron-forward"
               size={18}
-              color={theme.textSecondary}
+              color={theme.textLight}
             />
           </Pressable>
         )}
@@ -100,13 +100,13 @@ export function Sidebar({
         accessibilityLabel="Search listings"
         style={({ pressed }) => [
           styles.search,
-          { backgroundColor: theme.backgroundSelected },
+          { backgroundColor: theme.primary },
           pressed && styles.pressed,
         ]}
       >
-        <Ionicons name="search" size={18} color={theme.textSecondary} />
+        <Ionicons name="search" size={18} color={theme.textLight} />
         {isOpen && (
-          <Text style={[styles.searchText, { color: theme.textSecondary }]}>
+          <Text style={[styles.searchText, { color: theme.textLight }]}>
             Search
           </Text>
         )}

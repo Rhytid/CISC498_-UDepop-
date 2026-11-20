@@ -33,7 +33,7 @@ export function SidebarFooter({ isOpen }: { isOpen: boolean }) {
         style={[
           styles.footer,
           styles.footerCollapsed,
-          { borderTopColor: theme.backgroundSelected },
+          { borderTopColor: "#066369" },
         ]}
       >
         <Link href="/profile" asChild>
@@ -54,7 +54,7 @@ export function SidebarFooter({ isOpen }: { isOpen: boolean }) {
           <Ionicons
             name="log-out-outline"
             size={20}
-            color={theme.textSecondary}
+            color={theme.textLight}
           />
         </Pressable>
       </View>
@@ -62,7 +62,7 @@ export function SidebarFooter({ isOpen }: { isOpen: boolean }) {
   }
 
   return (
-    <View style={[styles.footer, { borderTopColor: theme.backgroundSelected }]}>
+    <View style={[styles.footer, { borderTopColor: "#066369" }]}>
       <Link href="/profile" asChild>
         <Pressable
           accessibilityRole="link"
@@ -71,13 +71,13 @@ export function SidebarFooter({ isOpen }: { isOpen: boolean }) {
         >
           <Image source={avatarSource} style={styles.avatar} />
           <View style={styles.userMeta}>
-            <Text numberOfLines={1} style={[styles.name, { color: theme.text }]}>
+            <Text numberOfLines={1} style={[styles.name, { color: theme.textLight }]}>
               {name || "UDepop member"}
             </Text>
             {school !== "" && (
               <Text
                 numberOfLines={1}
-                style={[styles.school, { color: theme.textSecondary }]}
+                style={[styles.school, { color: theme.textLight }]}
               >
                 {school}
               </Text>
@@ -94,7 +94,7 @@ export function SidebarFooter({ isOpen }: { isOpen: boolean }) {
         <Ionicons
           name="log-out-outline"
           size={20}
-          color={theme.textSecondary}
+          color={theme.textLight}
         />
       </Pressable>
     </View>
