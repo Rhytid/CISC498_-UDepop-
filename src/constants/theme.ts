@@ -19,15 +19,14 @@ export const Colors = {
 		backgroundElement: "#FAD2BC",
 	},
 	dark: {
-		primary: "#69BDEB",
-		secondary: "#B7B9FF",
-		background: "#181311",
-		text: "#F5EDE8",
-		accent: "#FF8A78",
+		primary: "#4E1A6A",
+		secondary: "#585C8D",
+		accent: "#F6BB9D",
 		accentDark: "#D94B3A",
+		text: "#F5EDE8",
+		textLight: "#E6F9F8",
+		background: "#100D13",
 		backgroundElement: "#2A211D",
-		backgroundSelected: "#3D302A",
-		textSecondary: "#C2B2A9",
 	},
 } as const;
 

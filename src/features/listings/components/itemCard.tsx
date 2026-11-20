@@ -78,11 +78,13 @@ export default function ItemCard({
         <Animated.View style={[{...styles.card, backgroundColor: theme.backgroundElement}, animatedCard]}>
           <Pressable onPress={handlePress}>
             <PhotoRow photos={listing.photos as string[] | undefined} />
-            <Text style={styles.name}>
+            <Text style={{...styles.name, color: theme.text}}>
               {listing.title}
               {listing.sold && <Text style={{ color: "red" }}> (Sold)</Text>}
             </Text>
-            <Text style={styles.price}>${listing.price.toFixed(2)}</Text>
+            <Text style={{...styles.price, color: theme.text}}>
+              ${listing.price.toFixed(2)}
+            </Text>
           </Pressable>
           <BookmarkToggleButton
             listingId={listing._id}
@@ -96,16 +98,18 @@ export default function ItemCard({
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 10 }}
               >
-                <Text style={styles.listingMeta}>
+                <Text style={{...styles.listingMeta, color: theme.text}}>
                   {listing.category} · Condition:{" "}
                   {listing.condition?.trim() || "Not specified"}
                 </Text>
                 {listing.tags.length > 0 && (
-                  <Text style={{ fontStyle: "italic" }}>
+                  <Text style={{...styles.description, fontStyle: "italic", color: theme.text}}>
                     Tags: {listing.tags.join(", ")}
                   </Text>
                 )}
-                <Text style={styles.description}>{listing.description}</Text>
+                <Text style={{...styles.description, color: theme.text}}>
+                  {listing.description}
+                </Text>
                 <View
                   style={{ flexDirection: "row", justifyContent: "center" }}
                 >
@@ -182,7 +186,6 @@ const styles = StyleSheet.create({
     height: 300,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "#ccc",
     borderRadius: 20,
     padding: 10,
     margin: 10,
