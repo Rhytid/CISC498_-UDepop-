@@ -21,9 +21,9 @@ export const create = mutation({
       throw new Error("Listing not found");
     }
     const rateeId = listing.ownerId;
-    if (rateeId === rater._id) {
+    /*if (rateeId === rater._id) {
       throw new Error("You can't review yourself");
-    }
+    }*/
 
     const existing = await ctx.db
       .query("reviews")
