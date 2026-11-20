@@ -1,3 +1,5 @@
+// Signed-in user's profile route, including their listings and seller rating.
+// Uses listing actions and shared profile UI to manage their marketplace presence.
 import ItemCard from "@/features/listings/components/itemCard";
 import { NewItem } from "@/features/listings/components/newItem";
 import { useListingActions } from "@/features/listings/hooks/listingActions";

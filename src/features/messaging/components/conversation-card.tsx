@@ -1,3 +1,5 @@
+// Inbox row summarizing a conversation, its listing, and the other participant.
+// ConversationList uses it to let users select a marketplace chat.
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";

@@ -1,3 +1,5 @@
+// Reusable themed empty/coming-soon screen for unfinished destinations.
+// Routes use it to communicate unavailable features without custom page layouts.
 import { Ionicons } from "@expo/vector-icons";
 import type { ComponentProps } from "react";
 import React from "react";

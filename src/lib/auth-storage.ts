@@ -1,3 +1,5 @@
+// Provides Convex Auth with platform-appropriate persistent session storage.
+// The root layout supplies this adapter so sign-in survives app restarts.
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 import type { TokenStorage } from "@convex-dev/auth/react";

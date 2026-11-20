@@ -1,3 +1,5 @@
+// Sidebar account area showing the current user and sign-out navigation.
+// The web navigation shell uses it at the bottom of the marketplace sidebar.
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";

@@ -1,3 +1,5 @@
+// Web-oriented animated tag selector and its available tag definitions.
+// Listing forms and test screens use it to collect tags for a marketplace item.
 import React from "react";
 import Select, { type StylesConfig } from "react-select";
 import makeAnimated from "react-select/animated";

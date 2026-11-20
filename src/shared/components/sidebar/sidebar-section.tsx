@@ -1,3 +1,5 @@
+// Styled heading for a group of web sidebar destinations.
+// The sidebar shell places it above the corresponding navigation items.
 import React from "react";
 import { StyleSheet, Text } from "react-native";
 

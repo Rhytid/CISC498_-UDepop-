@@ -1,3 +1,5 @@
+// Native-friendly tag definitions and picker for listing categories and logistics.
+// Listing creation and editing use these tags to label items for marketplace discovery.
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { useState } from "react";

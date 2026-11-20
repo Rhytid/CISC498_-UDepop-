@@ -1,3 +1,5 @@
+// Root app shell: connects Convex authentication and theme state to Expo Router.
+// It gates the marketplace behind sign-in and supplies providers to every route.
 import { ConvexAuthProvider, useConvexAuth } from "@convex-dev/auth/react";
 import {
   DarkTheme,

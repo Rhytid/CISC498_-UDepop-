@@ -1,3 +1,5 @@
+// Marketplace home route: presents searchable listings and entry points to browse.
+// It combines listing data with shared search and card components.
 import * as Device from "expo-device";
 import React, { useEffect, useRef, useState } from "react";
 import {

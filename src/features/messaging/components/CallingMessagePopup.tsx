@@ -1,3 +1,5 @@
+// Listing-level action that opens a message conversation with its seller.
+// Listing cards and detail screens use it to start buyer-seller contact.
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { type ReactNode } from "react";
