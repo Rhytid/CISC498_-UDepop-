@@ -1,3 +1,5 @@
+// Sign-in and account-creation screen backed by Convex Auth.
+// The root app layout uses this screen to gate access to marketplace routes.
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Button, Field, Section } from "@/shared/components/test-ui";
 import React, { useState } from "react";

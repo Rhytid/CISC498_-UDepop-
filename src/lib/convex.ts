@@ -1,3 +1,5 @@
+// Creates the shared Convex client used by marketplace queries and mutations.
+// The root layout injects it into the app's authenticated data-provider tree.
 import { ConvexReactClient } from "convex/react";
 
 // The backend URL the app connects to. On web and native alike, the Convex

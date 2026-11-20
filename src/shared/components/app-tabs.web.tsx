@@ -1,3 +1,5 @@
+// Web navigation shell with a collapsible sidebar and marketplace activity badges.
+// Expo Router resolves this platform-specific layout instead of native tabs on web.
 import { useQuery } from "convex/react";
 import type { Href } from "expo-router";
 import { TabList, Tabs, TabSlot, TabTrigger } from "expo-router/ui";

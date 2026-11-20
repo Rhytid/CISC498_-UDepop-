@@ -1,5 +1,7 @@
+// Small profile image with a default avatar for missing or invalid URLs.
+// Used in conversation and chat UI to identify marketplace participants.
 import React from "react";
-import { Image } from "react-native";
+import { Image, View } from "react-native";
 
 const DEFAULT_AVATAR = require("@/assets/images/default-profile-picture.png");
 
@@ -16,10 +18,12 @@ export function Avatar({
       : DEFAULT_AVATAR;
 
   return (
-    <Image
-      source={source}
-      style={{ width: size, height: size, borderRadius: size / 2 }}
-      resizeMode="cover"
-    />
+    <View style={{ width: size, height: size, borderRadius: size / 2, alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+      <Image
+        source={source}
+        style={{ width: size + 12, height: size + 12 }}
+        resizeMode="cover"
+      />
+    </View>
   );
 }

@@ -1,3 +1,5 @@
+// Interactive diagnostic for querying, sending, and removing conversation messages.
+// Hosted by the testing route to validate Convex messaging operations.
 import { AuthNote, Button, Field, Result, Section } from "@/shared/components/test-ui";
 import { useConvex, useMutation } from "convex/react";
 import React, { useState } from "react";

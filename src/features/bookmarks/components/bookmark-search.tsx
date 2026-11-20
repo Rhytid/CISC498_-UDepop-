@@ -1,3 +1,5 @@
+// Search input for filtering saved listings on the bookmarks page.
+// Reports text changes to its parent, which owns the filtering state.
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, TextInput, View } from "react-native";

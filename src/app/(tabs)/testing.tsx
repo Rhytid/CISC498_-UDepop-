@@ -1,3 +1,5 @@
+// Developer-facing route that groups interactive Convex feature checks.
+// It hosts the focused test screens used to exercise marketplace backend flows.
 import React, { useState } from "react";
 import {
   Pressable,

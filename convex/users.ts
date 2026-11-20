@@ -41,6 +41,22 @@ export const getById = query({
   },
 });
 
+export const getPublicById = query ({
+  args: { userId: v.id('users') },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    if (!user) return null;
+    return {
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      bio: user.bio,
+      location: user.location,
+      profilePicture: user.profilePicture,
+    };
+  },
+});
+
 // Edit name, bio, avatar, campus.
 export const updateProfile = mutation({
   args: profileFields,
@@ -137,6 +153,8 @@ export const listAll = query({
           _id: user._id,
           username: user.username,
           pfp: user.profilePicture,
+          firstName: user.firstName,
+          lastName: user.lastName,
         })),
       };
     }
@@ -172,6 +190,8 @@ export const listAll = query({
         username: user.username,
         pfp: user.profilePicture,
         sortValue: sortValues.get(user._id) ?? 0,
+        firstName: user.firstName,
+        lastName: user.lastName
       }))
       .sort(
         (a, b) =>
@@ -192,6 +212,8 @@ export const listAll = query({
         _id: user._id,
         username: user.username,
         pfp: user.pfp,
+        firstName: user.firstName,
+        lastName: user.lastName,
       })),
       isDone: end >= sortedUsers.length,
       continueCursor: String(end),

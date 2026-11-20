@@ -1,3 +1,5 @@
+// Assembles a conversation's header, message history, and message composer.
+// MessagesPage renders it for the currently selected buyer-seller conversation.
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 

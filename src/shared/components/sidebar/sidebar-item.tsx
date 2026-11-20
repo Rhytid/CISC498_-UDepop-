@@ -1,3 +1,5 @@
+// Renders one interactive sidebar destination with selected and badge states.
+// The web navigation shell uses it for each configured marketplace route.
 import { Ionicons } from "@expo/vector-icons";
 import type { TabTriggerSlotProps } from "expo-router/ui";
 import React, { useState } from "react";
@@ -27,15 +29,15 @@ export function SidebarItem({
 
   const active = Boolean(isFocused);
   const backgroundColor = active
-    ? SIDEBAR_ACCENT
+    ? theme.secondary
     : hovered
-      ? theme.backgroundSelected
+      ? theme.secondary
       : "transparent";
   const foreground = active
-    ? "#FFFFFF"
+    ? theme.text
     : hovered
       ? theme.text
-      : theme.textSecondary;
+      : theme.textLight;
 
   return (
     <Pressable

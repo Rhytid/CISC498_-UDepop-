@@ -1,3 +1,5 @@
+// Stores and distributes the user's light/dark theme preference across platforms.
+// The app root and themed UI hooks use this provider to keep screens in sync.
 import * as SecureStore from "expo-secure-store";
 import React, {
   createContext,

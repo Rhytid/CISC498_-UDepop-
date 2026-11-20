@@ -1,3 +1,5 @@
+// Listing search field with delayed title and tag suggestions.
+// The marketplace home screen supplies listings and handles submitted searches.
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 

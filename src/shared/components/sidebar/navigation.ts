@@ -1,16 +1,10 @@
+/**
+ * Defines web sidebar sections, routes, icons, and badge keys.
+ * The web tab shell consumes this configuration to build marketplace navigation.
+ */
+
 import type { ComponentProps } from "react";
 import { Ionicons } from "@expo/vector-icons";
-
-/**
- * Single source of truth for the sidebar navigation.
- *
- * To add a new sidebar item:
- *   1. Create the page/route under src/app (e.g. src/app/notifications.tsx).
- *   2. Add one object to the section of your choice below.
- *
- * Nothing else needs to change — the sidebar renders items straight from
- * this configuration.
- */
 
 export type SidebarIconName = ComponentProps<typeof Ionicons>["name"];
 

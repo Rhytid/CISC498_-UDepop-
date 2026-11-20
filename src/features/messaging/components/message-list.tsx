@@ -1,3 +1,5 @@
+// Renders a conversation's messages with sender styling, timestamps, and photos.
+// ChatWindow uses it to show the ongoing exchange between buyer and seller.
 import { SIDEBAR_ACCENT } from "@/shared/components/sidebar/navigation";
 import { useTheme } from "@/shared/hooks/use-theme";
 import React, { useEffect, useRef } from "react";

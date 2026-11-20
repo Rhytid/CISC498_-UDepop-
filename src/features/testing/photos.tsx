@@ -1,3 +1,5 @@
+// Interactive diagnostic for selecting and uploading listing photos.
+// Hosted by the testing route to exercise Convex-backed photo storage operations.
 import { AuthNote, Button, Field, Result, Section } from "@/shared/components/test-ui";
 import { useMutation } from "convex/react";
 import * as ImagePicker from "expo-image-picker";

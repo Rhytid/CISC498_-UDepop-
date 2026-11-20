@@ -1,3 +1,5 @@
+// Formatting and display-name helpers shared by inbox and chat components.
+// Keeps participant labels and message times consistent throughout messaging.
 export function getDisplayName(user: {
   firstName: string;
   lastName: string;

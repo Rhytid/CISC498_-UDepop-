@@ -1,4 +1,5 @@
-// Edit this to edit how the edit button looks and what it calls
+// Owner-only listing edit affordance that navigates to the listing editor route.
+// Listing cards use it to connect a displayed listing to its edit flow.
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
@@ -28,7 +29,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "30%",
-    backgroundColor: "#fff",
     borderRadius: 10,
   },
 });

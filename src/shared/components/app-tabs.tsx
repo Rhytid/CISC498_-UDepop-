@@ -1,3 +1,5 @@
+// Native tab navigation for the app's primary marketplace destinations.
+// The tabs route layout uses this platform-specific navigator on iOS and Android.
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 
 import { Colors } from "@/constants/theme";

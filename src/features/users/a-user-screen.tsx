@@ -1,22 +1,30 @@
+// Public profile page showing a selected user and their active listings.
+// Rendered by the individual-user route to help buyers browse a seller's items.
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
   ActivityIndicator,
-  FlatList,
+  Image,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
-  View,
+  View
 } from "react-native";
 
+import { useTheme } from "@/shared/hooks/use-theme";
 import { api } from "@convex/_generated/api";
 import { Id } from "@convex/_generated/dataModel";
-import { useTheme } from "@/shared/hooks/use-theme";
+
+import ItemCard from "@/features/listings/components/itemCard";
+import { useListingActions } from "@/features/listings/hooks/listingActions";
 
 export default function AUserScreen() {
   const theme = useTheme();
+  const me = useQuery(api.users.getMe);
+  const { sellList, deleteListing } = useListingActions();
   const { id } = useLocalSearchParams<{ id: string }>();
   const userId = id && id !== "index" ? (id as Id<"users">) : undefined;
 
@@ -50,64 +58,109 @@ export default function AUserScreen() {
   } else {
     content = (
       <>
-        <Text style={[styles.heading, { color: theme.text }]}>
-          @{user.username}
-        </Text>
-        {listings.length === 0 ? (
-          <View style={styles.center}>
-            <Text style={{ color: theme.textSecondary }}>No listings yet</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={listings}
-            keyExtractor={(listing) => listing._id}
-            contentContainerStyle={styles.listContent}
-            renderItem={({ item }) => (
-              <View
-                style={[
-                  styles.listingCard,
-                  {
-                    backgroundColor: theme.backgroundElement,
-                    borderColor: theme.backgroundSelected,
-                  },
-                ]}
+        <View style={styles.banner}>
+          <Image source ={ user.profilePicture ? { uri: user.profilePicture } : require ("@/assets/images/default-profile-picture.png")}
+            style={styles.profilePicture}>
+          </Image>
+          <Text style={styles.profileUsername}>
+            @{user.username}
+          </Text>
+          <Text style={styles.profileText}>
+            {user.firstName} {user.lastName}
+          </Text>
+          {user.bio ? (
+            <Text style={styles.profileText}>
+              {user.bio}
+            </Text>
+          ) : 
+            <Text>
+              No bio yet.
+            </Text>
+          }
+          {user.location ? (
+            <Text style={styles.profileText}>
+              {user.location}
+            </Text>
+          ) :
+            <Text>
+              No location set.
+            </Text>
+          }
+          <Text style={styles.profileText}>
+            {listings.length} listings
+          </Text>
+        </View>
+        <View style={styles.itemContainer}>
+          {listings.map((item) => 
+            <ItemCard
+              key={item._id}
+              listing={item}
+              currentUserId={me?._id}
+              onSellListing={sellList}
+              onDeleteListing={deleteListing}
               >
-                <Text style={[styles.listingTitle, { color: theme.text }]}>
-                  {item.title}
-                </Text>
-                <Text
-                  style={[styles.listingPrice, { color: theme.textSecondary }]}
-                >
-                  ${item.price}
-                  {item.sold ? " · Sold" : ""}
-                </Text>
-              </View>
-            )}
-          />
-        )}
+            </ItemCard>
+          )}
+        </View>
+          )
+        )
       </>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: theme.background }}
+      contentContainerStyle={{
+        padding: 16,
+        paddingBottom: 40,
+      }}
+    >
       <Pressable
         onPress={() => router.navigate("/all-users")}
         accessibilityRole="button"
         accessibilityLabel="Back to All Users"
-        style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
+        style={({ pressed }) => [
+          styles.backButton,
+          pressed && styles.pressed,
+        ]}
       >
-        <Ionicons name="arrow-back" size={22} color={theme.text} />
-        <Text style={[styles.backText, { color: theme.text }]}>Back</Text>
+        <Ionicons name="arrow-back" size={22} color={theme.text}/>
+        <Text style={[styles.backText, { color: theme.text }]}>
+          Back
+        </Text>
       </Pressable>
-
       {content}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
+  banner: {
+    width: "100%",
+    minHeight: 300,
+    borderRadius: 10,
+    marginTop: 10,
+    backgroundColor: "#607D8B",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    gap: 10,
+  },
+  profilePicture: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  itemContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    width: "100%",
+    marginTop: 10,
+  },
   backButton: {
     alignSelf: "flex-start",
     flexDirection: "row",
@@ -116,6 +169,18 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingRight: 12,
     marginBottom: 8,
+  },
+  profileUsername: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "white",
+    marginTop: 10,
+  },
+  profileText: {
+    fontSize: 16,
+    color: "white",
+    textAlign: "center",
+    marginTop: 10,
   },
   backText: { fontSize: 16, fontWeight: "600" },
   center: {

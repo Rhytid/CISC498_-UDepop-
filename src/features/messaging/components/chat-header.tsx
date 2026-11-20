@@ -1,3 +1,5 @@
+// Chat context header showing the conversation participant and related listing.
+// The chat window uses it to orient buyers and sellers within a conversation.
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
