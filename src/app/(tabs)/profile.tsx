@@ -1,8 +1,8 @@
 import ItemCard from "@/features/listings/components/itemCard";
 import { NewItem } from "@/features/listings/components/newItem";
 import { useListingActions } from "@/features/listings/hooks/listingActions";
-import ProfilePicture from "@/shared/ui/profilePicture";
 import { useTheme } from "@/shared/hooks/use-theme";
+import ProfilePicture from "@/shared/ui/profilePicture";
 import { api } from "@convex/_generated/api";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "convex/react";
@@ -89,7 +89,9 @@ export default function ProfileScreen() {
           <Text style={[styles.bookmarksTitle, { color: theme.text }]}>
             Bookmarked Listings
           </Text>
-          <Text style={[styles.bookmarksSubtitle, { color: theme.textSecondary }]}>
+          <Text
+            style={[styles.bookmarksSubtitle, { color: theme.textSecondary }]}
+          >
             View the items you saved
           </Text>
         </View>
@@ -111,6 +113,37 @@ export default function ProfileScreen() {
           onSubmit={addListing}
         ></NewItem>
       </View>
+      <Pressable
+        onPress={() => {
+          console.log("My Reviews pressed");
+          router.push("/myReviews");
+        }}
+        style={({ pressed }) => [
+          styles.bookmarksCard,
+          {
+            backgroundColor: theme.backgroundElement,
+            borderColor: theme.backgroundSelected,
+          },
+          pressed && styles.pressed,
+        ]}
+      >
+        <Ionicons name="star-outline" size={22} color={theme.text} />
+        <View style={styles.bookmarksCopy}>
+          <Text style={[styles.bookmarksTitle, { color: theme.text }]}>
+            My Reviews
+          </Text>
+          <Text
+            style={[styles.bookmarksSubtitle, { color: theme.textSecondary }]}
+          >
+            See and delete reviews you've written
+          </Text>
+        </View>
+        <Ionicons
+          name="chevron-forward"
+          size={18}
+          color={theme.textSecondary}
+        />
+      </Pressable>
       <View style={styles.itemContainer}>
         {myListings.map((item) => (
           <ItemCard

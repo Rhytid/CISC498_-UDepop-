@@ -104,7 +104,7 @@ export const getRating = query({
   },
 });
 
-// Reviews I've written (null when not authenticated).
+// Reviews I've written, with the reviewed user's info (null when not authenticated).
 export const listByMe = query({
   args: {},
   handler: async (ctx) => {
@@ -112,9 +112,42 @@ export const listByMe = query({
     if (me === null) {
       return null;
     }
-    return await ctx.db
+    const reviews = await ctx.db
       .query("reviews")
       .withIndex("by_rater", (q) => q.eq("raterId", me._id))
       .collect();
+
+    const result = [];
+    for (const review of reviews) {
+      const ratee = await ctx.db.get(review.rateeId);
+      result.push({
+        ...review,
+        ratee:
+          ratee === null
+            ? null
+            : {
+                _id: ratee._id,
+                username: ratee.username,
+                profilePicture: ratee.profilePicture,
+              },
+      });
+    }
+    return result;
+  },
+});
+
+// Delete a review I wrote.
+export const remove = mutation({
+  args: { reviewId: v.id("reviews") },
+  handler: async (ctx, args) => {
+    const me = await requireUser(ctx);
+    const review = await ctx.db.get(args.reviewId);
+    if (review === null) {
+      throw new Error("Review not found");
+    }
+    if (review.raterId !== me._id) {
+      throw new Error("You can only delete your own reviews");
+    }
+    await ctx.db.delete(args.reviewId);
   },
 });
