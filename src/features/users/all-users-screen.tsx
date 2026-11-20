@@ -94,13 +94,18 @@ export default function AllUsersScreen() {
               <Text style={{ color: theme.textSecondary, fontSize: 16 }}>
                 Browse profiles
               </Text>
-              <View style={styles.pickerContainer}>
+              <View style={[styles.pickerContainer, { borderColor: theme.backgroundSelected },
+                ]}
+              >
                 <Picker
                   selectedValue={sortBy}
                   onValueChange={(value) => setSortBy(value)}
                   style={{
+                    width: "100%",
+                    height: 44,
                     color: theme.text,
                     backgroundColor: theme.backgroundElement,
+                    borderWidth: 0,
                   }}
                 >
                   <Picker.Item label="Username (A-Z)" value="username"/>
@@ -192,6 +197,11 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     width: 200,
+    height: 44,
+    borderRadius: 10,
+    borderWidth: 1,
+    overflow: "hidden",
+    justifyContent: "center",
   },
   userRow: {
     flexDirection: "row",
