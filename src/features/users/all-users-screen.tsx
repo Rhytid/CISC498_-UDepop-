@@ -125,6 +125,7 @@ export default function AllUsersScreen() {
           </Text>
         )
       }
+
       renderItem={({ item }) => (
         <Pressable
           onPress={() =>

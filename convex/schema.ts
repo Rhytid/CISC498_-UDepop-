@@ -80,7 +80,9 @@ export default defineSchema({
     body: v.string(),
     timestamp: v.number(),
     read: v.boolean(),
-    messageType: v.string(), // "text" | "image" | "system"
+    messageType: v.string(),
+    linkLabel: v.optional(v.string()),
+    linkPath: v.optional(v.string()), // "text" | "image" | "system"
   }).index("by_conversation_timestamp", ["conversationId", "timestamp"]),
 
   reviews: defineTable({

@@ -17,9 +17,9 @@ import {
 import { useTheme } from "@/shared/hooks/use-theme";
 import { api } from "@convex/_generated/api";
 import type { Id } from "@convex/_generated/dataModel";
+import type { ConversationContext } from "../types";
 import { ChatWindow } from "./chat-window";
 import { ConversationList } from "./conversation-list";
-import type { ConversationContext } from "../types";
 
 type ConversationQueryResult = FunctionReturnType<
   typeof api.conversations.list
@@ -102,9 +102,7 @@ function MessagesContent() {
     const conversationParam = Array.isArray(conversationId)
       ? conversationId[0]
       : conversationId;
-    const listingParam = Array.isArray(listingId)
-      ? listingId[0]
-      : listingId;
+    const listingParam = Array.isArray(listingId) ? listingId[0] : listingId;
 
     if (conversationParam && conversationParam !== "undefined") {
       setSelectedId(conversationParam as Id<"conversations">);
@@ -120,7 +118,7 @@ function MessagesContent() {
 
   const displayedConversations = useMemo(() => {
     const source = refreshResult !== undefined ? refreshResult : conversations;
-    return source?.filter((conversation) => conversation.lastMessage);
+    return source?.filter((c) => c.lastMessage);
   }, [refreshResult, conversations]);
   const existingDraftConversation = draftListingId
     ? displayedConversations?.find(
@@ -155,9 +153,7 @@ function MessagesContent() {
     draftConversation;
   const messages = useQuery(
     api.messages.list,
-    activeConversationId
-      ? { conversationId: activeConversationId }
-      : "skip",
+    activeConversationId ? { conversationId: activeConversationId } : "skip",
   );
   useEffect(() => {
     if (selectedId && selectedFromGet === null) {
@@ -207,7 +203,9 @@ function MessagesContent() {
         .map((message) => message.body) ?? [];
     const draftPhotos = draftListing?.photos.slice(0, 1) ?? [];
 
-    return [...new Set([...listingPhotos, ...messagePhotos, ...draftPhotos])].filter(
+    return [
+      ...new Set([...listingPhotos, ...messagePhotos, ...draftPhotos]),
+    ].filter(
       (photo) => !photo.startsWith("http://") && !photo.startsWith("https://"),
     );
   }, [displayedConversations, draftListing, messages]);
@@ -335,7 +333,9 @@ function MessagesContent() {
             ]}
           >
             <ActivityIndicator color={theme.textSecondary} />
-            <Text style={[styles.noSelectionText, { color: theme.textSecondary }]}>
+            <Text
+              style={[styles.noSelectionText, { color: theme.textSecondary }]}
+            >
               Loading listing…
             </Text>
           </View>
@@ -349,11 +349,10 @@ function MessagesContent() {
             <Text style={[styles.noSelectionTitle, { color: theme.text }]}>
               Listing unavailable
             </Text>
-            <Pressable
-              accessibilityRole="button"
-              onPress={backToConversations}
-            >
-              <Text style={[styles.noSelectionText, { color: theme.textSecondary }]}>
+            <Pressable accessibilityRole="button" onPress={backToConversations}>
+              <Text
+                style={[styles.noSelectionText, { color: theme.textSecondary }]}
+              >
                 Back to conversations
               </Text>
             </Pressable>

@@ -1,19 +1,20 @@
+import { BookmarkToggleButton } from "@/features/bookmarks/components/bookmark-toggle-button";
 // Marketplace listing card with photo, seller messaging, and owner actions.
 // Used by listing feeds and profile pages to expose common listing interactions.
 import EditListingButton from "@/features/listings/components/itemEditing";
 import MessageButton from "@/features/messaging/components/CallingMessagePopup";
 import PhotoRow from "@/shared/ui/photoRow";
+import { Doc, Id } from "@convex/_generated/dataModel";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { BookmarkToggleButton } from "@/features/bookmarks/components/bookmark-toggle-button";
 import Animated, {
   FadeOut,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { Doc, Id } from "@convex/_generated/dataModel";
 
 export interface ItemCardProps {
   listing: Doc<"listings">;
@@ -62,6 +63,8 @@ export default function ItemCard({
 
   const isOwner =
     currentUserId !== undefined && listing.ownerId === currentUserId;
+
+  const router = useRouter();
 
   return (
     <Pressable
@@ -120,12 +123,28 @@ export default function ItemCard({
                   {isOwner && (
                     <Pressable
                       style={styles.button}
-                      onPress={() => {
+                      onPress={async () => {
+                        console.log("pressed", listing.sold);
+                        const markingSold = !listing.sold;
+
                         if (onSellListing) {
-                          onSellListing(listing._id, !listing.sold);
+                          const result = await onSellListing(
+                            listing._id,
+                            markingSold,
+                          );
+                          if (result === false) return; // the update failed, so don't navigate
+                        }
+
+                        if (markingSold) {
+                          router.push({
+                            pathname: "/selectuserreview",
+                            params: { listingId: listing._id },
+                          });
                         }
                       }}
-                    ></Pressable>
+                    >
+                      <Text style={styles.description}>Sold?</Text>
+                    </Pressable>
                   )}
 
                   {isOwner && (
