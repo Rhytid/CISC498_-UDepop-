@@ -1,5 +1,3 @@
-// Signed-in user's profile route, including their listings and seller rating.
-// Uses listing actions and shared profile UI to manage their marketplace presence.
 import ItemCard from "@/features/listings/components/itemCard";
 import { NewItem } from "@/features/listings/components/newItem";
 import { useListingActions } from "@/features/listings/hooks/listingActions";
@@ -46,8 +44,8 @@ export default function ProfileScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ paddingTop: 20, paddingBottom: 40, backgroundColor: theme.background }} style={styles.scrollView}>
-      <View style={{...styles.banner, backgroundColor: theme.primary }}>
+    <ScrollView style={{ backgroundColor: theme.background }}>
+      <View style={styles.banner}>
         <ProfilePicture />
         <Text style={styles.bannerText}>@{me?.username ?? "Loading..."} </Text>
 
@@ -74,7 +72,6 @@ export default function ProfileScreen() {
         {me?.location ? <Text>{me.location}</Text> : null}
         <Text>{myListings.length} Products</Text>
       </View>
-      <View style={{ alignSelf: "center", width: "90%" }}>
       <Pressable
         accessibilityRole="button"
         onPress={() => router.push("/bookmarks")}
@@ -104,12 +101,11 @@ export default function ProfileScreen() {
           color={theme.textSecondary}
         />
       </Pressable>
-      <Text style={styles.bannerText}>My Products:</Text>
+      <Text style={styles.bannerText}>Products:</Text>
       <View style={{ alignItems: "center" }}>
         {myListings.length === 0 && <Text>You have no listings</Text>}
-        <Pressable onPress={() => setShowPopup(true)} style={{...styles.button, width: 200, justifyContent: "center", backgroundColor: theme.backgroundElement}}>
-          <Ionicons name="add-circle-outline" size={20} color={theme.text} style={{ padding: 5 }}/>
-          <Text style={{ color: theme.text, fontWeight: "bold" }}>Create New Listing</Text>
+        <Pressable onPress={() => setShowPopup(true)} style={styles.button}>
+          <Text>Create New Listing</Text>
         </Pressable>
         <NewItem
           visible={showPopup}
@@ -158,7 +154,6 @@ export default function ProfileScreen() {
             onDeleteListing={deleteListing}
           />
         ))}
-      </View>
       </View>
       <Modal
         visible={showRatings}
@@ -218,14 +213,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   banner: {
-    width: "90%",
+    width: "100%",
     height: 250,
     borderRadius: 10,
     marginTop: 10,
+    backgroundColor: "#ccc",
     textAlign: "center",
     justifyContent: "center",
     alignItems: "center",
-    alignSelf: "center",
   },
   bannerText: {
     fontSize: 24,
@@ -245,7 +240,6 @@ const styles = StyleSheet.create({
     margin: 10,
     width: 150,
     alignItems: "center",
-    flexDirection: "row",
   },
   bookmarksCard: {
     flexDirection: "row",

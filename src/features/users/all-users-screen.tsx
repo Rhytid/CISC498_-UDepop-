@@ -21,30 +21,30 @@ export default function AllUsersScreen() {
   const theme = useTheme();
   const router = useRouter();
 
-  const [sortBy, setSortBy] = useState<
-    "username" | "reviews" | "listings"
-  >("username");
+  const [sortBy, setSortBy] = useState<"username" | "reviews" | "listings">(
+    "username",
+  );
   const [search, setSearch] = useState("");
 
   const searchedUsers = useQuery(
     api.users.search,
-    search.trim() ? { query: search.trim() } : "skip"
+    search.trim() ? { query: search.trim() } : "skip",
   );
 
   const { results, status, loadMore } = usePaginatedQuery(
     api.users.listAll,
     { sortBy },
-    { initialNumItems: 20 }
+    { initialNumItems: 20 },
   );
 
   const usersShown = search.trim()
-    ? searchedUsers?.map((user) => ({
+    ? (searchedUsers?.map((user) => ({
         _id: user._id,
         username: user.username,
         pfp: user.profilePicture,
         firstName: user.firstName,
         lastName: user.lastName,
-      })) ?? []
+      })) ?? [])
     : results;
 
   if (results === undefined) {
@@ -72,50 +72,58 @@ export default function AllUsersScreen() {
                 Discover other users
               </Text>
             </View>
-            </View>
-            <View style={[
+          </View>
+          <View
+            style={[
               styles.searchBar,
               {
                 backgroundColor: theme.backgroundElement,
                 borderColor: theme.backgroundSelected,
               },
-            ]}>
-              <Ionicons name="search-outline" size={23} color={theme.textSecondary}/>
-              <TextInput
-                placeholder="Search by name or username"
-                placeholderTextColor={theme.textSecondary}
-                value={search}
-                onChangeText={setSearch}
-                style={[styles.searchInput, { color: theme.text }]}
+            ]}
+          >
+            <Ionicons
+              name="search-outline"
+              size={23}
+              color={theme.textSecondary}
+            />
+            <TextInput
+              placeholder="Search by name or username"
+              placeholderTextColor={theme.textSecondary}
+              value={search}
+              onChangeText={setSearch}
+              style={[styles.searchInput, { color: theme.text }]}
+            ></TextInput>
+          </View>
+          <View style={styles.orgRow}>
+            <Text style={{ color: theme.textSecondary, fontSize: 16 }}>
+              Browse profiles
+            </Text>
+            <View
+              style={[
+                styles.pickerContainer,
+                { borderColor: theme.backgroundSelected },
+              ]}
+            >
+              <Picker
+                selectedValue={sortBy}
+                onValueChange={(value) => setSortBy(value)}
+                style={{
+                  width: "100%",
+                  height: 44,
+                  color: theme.text,
+                  backgroundColor: theme.backgroundElement,
+                  borderWidth: 0,
+                }}
               >
-              </TextInput>
-            </View>
-            <View style={styles.orgRow}>
-              <Text style={{ color: theme.textSecondary, fontSize: 16 }}>
-                Browse profiles
-              </Text>
-              <View style={[styles.pickerContainer, { borderColor: theme.backgroundSelected },
-                ]}
-              >
-                <Picker
-                  selectedValue={sortBy}
-                  onValueChange={(value) => setSortBy(value)}
-                  style={{
-                    width: "100%",
-                    height: 44,
-                    color: theme.text,
-                    backgroundColor: theme.backgroundElement,
-                    borderWidth: 0,
-                  }}
-                >
-                  <Picker.Item label="Username (A-Z)" value="username"/>
-                  <Picker.Item label="Highest Rated" value="reviews"/>
-                  <Picker.Item label="Most Listings" value="listings"/>
-                </Picker>
-              </View>
+                <Picker.Item label="Username (A-Z)" value="username" />
+                <Picker.Item label="Highest Rated" value="reviews" />
+                <Picker.Item label="Most Listings" value="listings" />
+              </Picker>
             </View>
           </View>
-        }
+        </View>
+      }
       ListEmptyComponent={
         search.trim() && searchedUsers === undefined ? (
           <ActivityIndicator />
@@ -162,7 +170,12 @@ export default function AllUsersScreen() {
               @{item.username}
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={22} color={theme.textSecondary} style={{ marginLeft: "auto" }}/>
+          <Ionicons
+            name="chevron-forward"
+            size={22}
+            color={theme.textSecondary}
+            style={{ marginLeft: "auto" }}
+          />
         </Pressable>
       )}
       ListFooterComponent={
@@ -218,19 +231,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  
+
   headerIcon: {
     backgroundColor: "#607D8B",
     padding: 12,
     borderRadius: 15,
   },
-  
+
   searchInput: {
     flex: 1,
     padding: 12,
     fontSize: 16,
   },
-  
+
   orgRow: {
     flexDirection: "row",
     justifyContent: "space-between",
